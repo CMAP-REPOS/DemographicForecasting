@@ -14,13 +14,13 @@ counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 
 
 
 
-#only load data if it isn't already; DOES NOT handle year change
+#check if data is loaded
 if (tryCatch(is.data.frame(get("df"))) == "FALSE") {
   df <- load_variables(year, "sf1")
   tibble(df)
 } 
 
-#returns GQ data for each group as outlined in model
+#returns GQ data for each desired group as outlined in model
 tables <- c("PCO010","PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 var_list <- vector()
 for (i in 1:length(tables)){
@@ -33,7 +33,7 @@ test <- df[var_list,]
 test$Category <- gsub(".*)!!","",test$label)
 test$Category <- gsub("!!", " ", test$Category)
 
-#takes about 10 seconds to load all of the GQ data, ~13k records
+#retrieve GQ data for desired states and counties
 m <- tibble()
 for (i in 1:length(names(counties))) {
 a <- map_dfr(
@@ -52,7 +52,7 @@ a <- map_dfr(
   m = rbind(m, a)
 }
 
-
+#merge for complete data set
 GQ <- merge(m, test, by.x = "variable", by.y = "name")
 
 #cleanup

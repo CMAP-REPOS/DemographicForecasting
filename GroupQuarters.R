@@ -15,9 +15,9 @@ counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 
 
 
 #only load data if it isn't already; DOES NOT handle year change
-if (tryCatch(is.data.frame(get("df"))) == "FALSE") {
-  df <- load_variables(year, "sf1")
-  tibble(df)
+if (tryCatch((exists('df_2000') && is.data.frame(get('df_2000')))) == "FALSE") {
+  df_2010 <- load_variables(year, "sf1")
+  tibble(df_2010)
 } 
 
 #returns GQ data for each group as outlined in model
@@ -27,7 +27,7 @@ for (i in 1:length(tables)){
   x <- grep(tables[i], df$name)
   var_list <- c(var_list, x)
 } 
-test <- df[var_list,]
+test <- df_2010[var_list,]
 
 #cleanup of category name
 test$Category <- gsub(".*)!!","",test$label)
@@ -62,14 +62,6 @@ GQ$Category[GQ$Category == "Female"] <- "County Female Total"
 GQ$Year = 2010
 GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
 GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
-
-
-#rm(list = ls())
-#proc.time() - ptm
-
-
-#POPULATION DATA AVAILABLE VIA API FOR 2000 and 2010; excel file for 1990
-#look into using get_estimates for 1995, 2005, 2015 populations; data from census bureau
 
 
 

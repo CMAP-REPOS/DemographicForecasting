@@ -1,8 +1,7 @@
-# CMAP | Mary Weber | 11/9/2020
+# CMAP | Mary Weber | 11/23/2020
 
 #install.packages("tidycensus")
 #install.packages("tidyverse")
-#ptm <- proc.time()
 library(tidycensus)
 library(tidyverse)
 
@@ -13,9 +12,8 @@ states <- c("IL", "IN", "WI")
 counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 201), IN=c(89,91,127), WI=c(59, 101, 127)) 
 
 
-
-#only load data if it isn't already; DOES NOT handle year change
-if (tryCatch((exists('df_2000') && is.data.frame(get('df_2000')))) == "FALSE") {
+#only load data if it isn't already; 2010 is only year of interest for GQ
+if (tryCatch((exists('df_2010') && is.data.frame(get('df_2010')))) == "FALSE") {
   df_2010 <- load_variables(year, "sf1")
   tibble(df_2010)
 } 
@@ -64,15 +62,6 @@ GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
 GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
 
 
-
-
-
-
-
-  
-
-
-
-
+#rm(list = ls())
 
 

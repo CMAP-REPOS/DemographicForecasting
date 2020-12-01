@@ -1,7 +1,7 @@
 # CMAP | Mary Weber | 11/23/2020
 
-#install.packages("tidycensus")
-#install.packages("tidyverse")
+#install.packages("tidycensus") run to update
+#install.packages("tidyverse") 
 library(tidycensus)
 library(tidyverse)
 
@@ -10,6 +10,8 @@ library(tidyverse)
 year <- 2010
 states <- c("IL", "IN", "WI")
 counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 201), IN=c(89,91,127), WI=c(59, 101, 127)) 
+#df_2010 <- load_variables(year, "sf1")
+
 
 #only load data if it isn't already; 2010 is only year of interest for GQ
 if (tryCatch((exists('df_2010') && is.data.frame(get('df_2010')))) == "FALSE") {
@@ -21,7 +23,7 @@ if (tryCatch((exists('df_2010') && is.data.frame(get('df_2010')))) == "FALSE") {
 tables <- c("PCO010","PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 var_list <- vector()
 for (i in 1:length(tables)){
-  x <- grep(tables[i], df$name)
+  x <- grep(tables[i], df_2010$name)
   var_list <- c(var_list, x)
 } 
 test <- df_2010[var_list,]
@@ -59,4 +61,4 @@ GQ$Year = 2010
 GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
 GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
 
-#rm(list = ls())
+rm(list = ls())

@@ -10,7 +10,7 @@ library(tidyverse)
 year <- 2010
 states <- c("IL", "IN", "WI")
 counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 201), IN=c(89,91,127), WI=c(59, 101, 127)) 
-#df_2010 <- load_variables(year, "sf1")
+df_2010 <- load_variables(year, "sf1")
 
 
 #only load data if it isn't already; 2010 is only year of interest for GQ

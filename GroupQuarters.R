@@ -1,4 +1,4 @@
-# CMAP | Mary Weber | 11/23/2020
+# CMAP | Mary Weber | 12/4/2020
 
 #install.packages("tidycensus") run to update
 #install.packages("tidyverse") 
@@ -8,16 +8,16 @@ library(tidyverse)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 year <- 2010
-states <- c("IL", "IN", "WI")
+#states <- c("IL", "IN", "WI")
 counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 201), IN=c(89,91,127), WI=c(59, 101, 127)) 
 df_2010 <- load_variables(year, "sf1")
-
+tibble(df_2010)
 
 #only load data if it isn't already; 2010 is only year of interest for GQ
-if (tryCatch((exists('df_2010') && is.data.frame(get('df_2010')))) == "FALSE") {
-  df_2010 <- load_variables(year, "sf1")
-  tibble(df_2010)
-} 
+#if (tryCatch((exists('df_2010') && is.data.frame(get('df_2010')))) == "FALSE") {
+ # df_2010 <- load_variables(year, "sf1")
+  #tibble(df_2010)
+#} 
 
 #returns GQ data for each group as outlined in model
 tables <- c("PCO010","PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
@@ -32,7 +32,6 @@ test <- df_2010[var_list,]
 test$Category <- gsub(".*)!!","",test$label)
 test$Category <- gsub("!!", " ", test$Category)
 
-#takes about 10 seconds to load all of the GQ data, ~13k records
 m <- tibble()
 for (i in 1:length(names(counties))) {
 a <- map_dfr(
@@ -61,4 +60,4 @@ GQ$Year = 2010
 GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
 GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
 
-rm(list = ls())
+#rm(list = ls())

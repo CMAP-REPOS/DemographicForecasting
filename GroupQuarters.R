@@ -1,14 +1,14 @@
 # CMAP | Mary Weber | 12/4/2020
 
-#install.packages("tidycensus") run to update
+#install.packages("tidycensus") 
 #install.packages("tidyverse") 
 library(tidycensus)
 library(tidyverse)
+library(dplyr)
 
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 year <- 2010
-#states <- c("IL", "IN", "WI")
 counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 201), IN=c(89,91,127), WI=c(59, 101, 127)) 
 df_2010 <- load_variables(year, "sf1")
 tibble(df_2010)
@@ -28,7 +28,7 @@ for (i in 1:length(tables)){
 } 
 test <- df_2010[var_list,]
 
-#cleanup of category name
+#cleanup category name formatting
 test$Category <- gsub(".*)!!","",test$label)
 test$Category <- gsub("!!", " ", test$Category)
 
@@ -36,15 +36,8 @@ m <- tibble()
 for (i in 1:length(names(counties))) {
 a <- map_dfr(
       year,
-    ~ get_decennial(
-      geography = "county",
-      variables = test$name,
-      county = counties[[i]],
-      state = names(counties[i]),
-      year = .x,
-      survey = "sf1",
-      cache_table = TRUE
-    ),
+    ~ get_decennial(geography = "county", variables = test$name, county = counties[[i]], state = names(counties[i]), 
+                    year = .x, survey = "sf1", cache_table = TRUE),
     .id = "year"
   )
   m = rbind(m, a)
@@ -61,3 +54,14 @@ GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
 GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
 
 #rm(list = ls())
+
+#df for institutionalized only 
+GQ_inst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE") | 
+                    (GQ$concept == "GROUP QUARTERS POPULATION IN JUVENILE FACILITIES BY SEX BY AGE") |
+                    (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE"))
+
+#df for non-institutionalized only 
+GQ_noninst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE") | 
+                       (GQ$concept == "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE") |
+                       (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE") |
+                       (GQ$concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE" ))

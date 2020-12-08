@@ -6,7 +6,7 @@ library(tidycensus)
 library(tidyverse)
 library(readxl)
 
-Pop1990 <- read_excel("Pop1990.xlsx")
+#Pop1990 <- read_excel("Pop1990.xlsx")
 df_2000 <- load_variables(2000, "sf1")
 df_2010 <- load_variables(2010, "sf1")
 year <- 2010

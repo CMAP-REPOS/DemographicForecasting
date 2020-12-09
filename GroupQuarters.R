@@ -13,12 +13,6 @@ counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 
 df_2010 <- load_variables(year, "sf1")
 tibble(df_2010)
 
-#only load data if it isn't already; 2010 is only year of interest for GQ
-#if (tryCatch((exists('df_2010') && is.data.frame(get('df_2010')))) == "FALSE") {
- # df_2010 <- load_variables(year, "sf1")
-  #tibble(df_2010)
-#} 
-
 #returns GQ data for each group as outlined in model
 tables <- c("PCO010","PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 var_list <- vector()
@@ -28,7 +22,7 @@ for (i in 1:length(tables)){
 } 
 test <- df_2010[var_list,]
 
-#cleanup category name formatting
+#cleanup
 test$Category <- gsub(".*)!!","",test$label)
 test$Category <- gsub("!!", " ", test$Category)
 
@@ -53,14 +47,20 @@ GQ$Year = 2010
 GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
 GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
 
-#rm(list = ls())
+GQ$Region <- NA
 
-#df for institutionalized only 
+CMAP <- c("Cook County", "DuPage County", "Kane County", "Kendall County", "Lake County", "McHenry County", "Will County")
+OuterCounty <- c("Boone County", "DeKalb County", "Grundy County", "Kankakee County", "LaSalle County", "Lee County", "Ogle County", "Winnebago County")
+GQ$Region[GQ$State == ' Wisconsin'] <- 'SE Wisconsin'
+GQ$Region[GQ$State == ' Indiana'] <- 'NW Indiana'
+
+GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
+GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
+
 GQ_inst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE") | 
                     (GQ$concept == "GROUP QUARTERS POPULATION IN JUVENILE FACILITIES BY SEX BY AGE") |
                     (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE"))
 
-#df for non-institutionalized only 
 GQ_noninst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE") | 
                        (GQ$concept == "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE") |
                        (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE") |

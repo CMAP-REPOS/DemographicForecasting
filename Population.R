@@ -1,12 +1,15 @@
-# CMAP | Mary Weber | 12/4/2020
+# CMAP | Mary Weber | 12/8/2020
 
-#POPULATION DATA AVAILABLE VIA API FOR 2000 and 2010; excel file for 1990
 #look into using get_estimates for 1995, 2005, 2015 populations
 library(tidycensus)
 library(tidyverse)
 library(readxl)
 
-#Pop1990 <- read_excel("Pop1990.xlsx")
+
+tf = tempfile(fileext = ".xlsx")
+download.file("https://github.com/CMAP-REPOS/DemographicForecasting/raw/main/Pop1990.xlsx", tf)
+Pop1990 <- read_excel(tf)
+
 df_2000 <- load_variables(2000, "sf1")
 df_2010 <- load_variables(2010, "sf1")
 year <- 2010
@@ -81,4 +84,5 @@ pop_2010 <- df[[2]]
 pop_2010$Year <- 2010
 
 #rm(list = ls())
+
 

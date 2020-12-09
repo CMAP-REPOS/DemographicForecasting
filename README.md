@@ -11,4 +11,9 @@ GroupQuarters.R:
      This code codes not contain any analysis for GQ data. Anlysis is found in the markdown file. 
 	
 Population.R:
-     This code extracts 2000 and 2010 data from the Census API. 
+     This code extracts 2000 and 2010 data from the Census API. 1990 data is in .xlsx format stored in the repository with the code. This file comes 
+     from the Berger report. 
+     			1. pop_2000: contains 2000 population data
+			2. pop_2010: contains 2010 population data
+			3. Pop1990: contains 1990 population data
+   

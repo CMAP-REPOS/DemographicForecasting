@@ -83,6 +83,30 @@ pop_2000$Year <- 2000
 pop_2010 <- df[[2]]
 pop_2010$Year <- 2010
 
-#rm(list = ls())
+
+#this isn't pretty, haven't had time to make it more concise
+pop_2000$Region <- NA
+pop_2010$Region <- NA
+Pop1990$Region <- NA
+
+CMAP <- c("Cook County", "DuPage County", "Kane County", "Kendall County", "Lake County", "McHenry County", "Will County")
+OuterCounty <- c("Boone County", "DeKalb County", "Grundy County", "Kankakee County", "LaSalle County", "Lee County", "Ogle County", "Winnebago County")
+
+GQ$Region[GQ$State == ' Wisconsin'] <- 'SE Wisconsin'
+GQ$Region[GQ$State == ' Indiana'] <- 'NW Indiana'
+
+GQ$Region[GQ$State == ' Wisconsin'] <- 'SE Wisconsin'
+GQ$Region[GQ$State == ' Indiana'] <- 'NW Indiana'
+
+GQ$Region[GQ$State == ' Wisconsin'] <- 'SE Wisconsin'
+GQ$Region[GQ$State == ' Indiana'] <- 'NW Indiana'
+
+GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
+GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
+
+
+save(Pop1990, pop_2000, pop_2010, list= c("Pop1990", "pop_2000", "pop_2010"), file="PopData.Rdata")
+load("~/Documents/GitHub/DemographicForecasting/PopData.Rdata")
+load("PopData.Rdata")
 
 

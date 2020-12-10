@@ -5,14 +5,13 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
-
+library(devtools)
+library(kableExtra)
 options(warn=-1)
 
 load("GQData.Rdata")
 
-library(devtools)
-library(kableExtra)
-#source_url("https://github.com/CMAP-REPOS/DemographicForecasting/raw/main/GroupQuarters.R")
+
 #source_url("https://github.com/CMAP-REPOS/DemographicForecasting/raw/main/Population.R")
 #source_url()
 ```
@@ -77,16 +76,7 @@ Aggregate example:
 
 ```{r pressure, echo=FALSE}
 b <- aggregate(GQ_inst$value, by = list(GQ_inst$concept), sum)
-GQ$Region <- NA
 
-CMAP <- c("Cook County", "DuPage County", "Kane County", "Kendall County", "Lake County", "McHenry County", "Will County")
-OuterCounty <- c("Boone County", "DeKalb County", "Grundy County", "Kankakee County", "LaSalle County", "Lee County", "Ogle County", "Winnebago County")
-
-GQ$Region[GQ$State == ' Wisconsin'] <- 'SE Wisconsin'
-GQ$Region[GQ$State == ' Indiana'] <- 'NW Indiana'
-
-GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
-GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
 
 ```
 

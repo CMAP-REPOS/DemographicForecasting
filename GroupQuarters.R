@@ -64,4 +64,11 @@ GQ_inst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN CORRECTIONAL 
 GQ_noninst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE") | 
                        (GQ$concept == "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE") |
                        (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE") |
-                       (GQ$concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE" ))
+                       (GQ$concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE"))
+
+
+#save(GQ, GQ_inst, GQ_noninst, list= c("GQ", "GQ_inst", "GQ_noninst"), file="GQData.Rdata")
+#load("~/Documents/GitHub/DemographicForecasting/GQData.Rdata")
+#load("GQData.Rdata")
+
+

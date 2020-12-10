@@ -105,8 +105,8 @@ GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
 GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
 
 
-save(Pop1990, pop_2000, pop_2010, list= c("Pop1990", "pop_2000", "pop_2010"), file="PopData.Rdata")
-load("~/Documents/GitHub/DemographicForecasting/PopData.Rdata")
-load("PopData.Rdata")
+#save(Pop1990, pop_2000, pop_2010, list= c("Pop1990", "pop_2000", "pop_2010"), file="PopData.Rdata")
+#load("~/Documents/GitHub/DemographicForecasting/PopData.Rdata")
+#load("PopData.Rdata")
 
 

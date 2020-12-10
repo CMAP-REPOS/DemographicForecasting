@@ -10,7 +10,7 @@ library(kableExtra)
 options(warn=-1)
 
 load("GQData.Rdata")
-
+load("PopData.Rdata")
 
 #source_url("https://github.com/CMAP-REPOS/DemographicForecasting/raw/main/Population.R")
 #source_url()

@@ -1,7 +1,7 @@
 # CMAP | Mary Weber | 12/4/2020
 
-#install.packages("tidycensus") 
-#install.packages("tidyverse") 
+#install.packages("tidycensus")
+#install.packages("tidyverse")
 library(tidycensus)
 library(tidyverse)
 library(dplyr)
@@ -9,7 +9,12 @@ library(dplyr)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 year <- 2010
-counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 201), IN=c(89,91,127), WI=c(59, 101, 127)) 
+counties <- list(
+  IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
+         7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
+  IN = c(89, 91, 127),                       # Indiana counties
+  WI = c(59, 101, 127)                       # Wisconsin counties
+)
 df_2010 <- load_variables(year, "sf1")
 tibble(df_2010)
 
@@ -17,7 +22,7 @@ tibble(df_2010)
 #if (tryCatch((exists('df_2010') && is.data.frame(get('df_2010')))) == "FALSE") {
  # df_2010 <- load_variables(year, "sf1")
   #tibble(df_2010)
-#} 
+#}
 
 #returns GQ data for each group as outlined in model
 tables <- c("PCO010","PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
@@ -25,7 +30,7 @@ var_list <- vector()
 for (i in 1:length(tables)){
   x <- grep(tables[i], df_2010$name)
   var_list <- c(var_list, x)
-} 
+}
 test <- df_2010[var_list,]
 
 #cleanup category name formatting
@@ -36,7 +41,7 @@ m <- tibble()
 for (i in 1:length(names(counties))) {
 a <- map_dfr(
       year,
-    ~ get_decennial(geography = "county", variables = test$name, county = counties[[i]], state = names(counties[i]), 
+    ~ get_decennial(geography = "county", variables = test$name, county = counties[[i]], state = names(counties[i]),
                     year = .x, survey = "sf1", cache_table = TRUE),
     .id = "year"
   )
@@ -55,13 +60,13 @@ GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
 
 #rm(list = ls())
 
-#df for institutionalized only 
-GQ_inst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE") | 
+#df for institutionalized only
+GQ_inst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE") |
                     (GQ$concept == "GROUP QUARTERS POPULATION IN JUVENILE FACILITIES BY SEX BY AGE") |
                     (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE"))
 
-#df for non-institutionalized only 
-GQ_noninst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE") | 
+#df for non-institutionalized only
+GQ_noninst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE") |
                        (GQ$concept == "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE") |
                        (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE") |
                        (GQ$concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE" ))

@@ -4,7 +4,6 @@
 #install.packages("tidycensus")
 library(tidyverse)
 library(tidycensus)
-
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 YEAR <- 2010
@@ -14,6 +13,8 @@ COUNTIES <- list(
   IN = c(89, 91, 127),                       # Indiana counties
   WI = c(59, 101, 127)                       # Wisconsin counties
 )
+CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
+
 SF1_VARS <- load_variables(YEAR, "sf1")
 tibble(SF1_VARS)
 
@@ -73,8 +74,8 @@ for (STATE in names(COUNTIES)) {
 # GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
 # GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
 
-CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
-GQ <- left_join(GQ_DATA, GQ_VARS, by = c("variable" = "name")) %>%
+GQ <- GQ_DATA %>%
+  left_join(GQ_VARS, by = c("variable" = "name")) %>%
   select(-label) %>%
   rename(Concept = concept,
          Value = value,
@@ -111,5 +112,4 @@ GQ_NONINST <- GQ %>%
 
 
 #save(GQ, GQ_INST, GQ_NONINST, list= c("GQ", "GQ_INST", "GQ_NONINST"), file="GQData.Rdata")
-#load("~/Documents/GitHub/DemographicForecasting/GQData.Rdata")
 #load("GQData.Rdata")

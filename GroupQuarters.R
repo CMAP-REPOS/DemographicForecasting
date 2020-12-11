@@ -23,19 +23,6 @@ GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO0
 
 # Compile list of variables to download
 SF1_VARS <- load_variables(YEAR, "sf1")
-# tibble(SF1_VARS)
-
-#returns GQ data for each group as outlined in model
-# var_list <- vector()
-# for (i in 1:length(GQ_TABLES)) {
-#   x <- grep(GQ_TABLES[i], SF1_VARS$name)
-#   var_list <- c(var_list, x)
-# }
-# GQ_VARS <- SF1_VARS[var_list,]
-#
-# #cleanup
-# GQ_VARS$Category <- gsub(".*)!!", "", GQ_VARS$label)
-# GQ_VARS$Category <- gsub("!!", " ", GQ_VARS$Category)
 GQ_VARS <- SF1_VARS %>%
   filter(str_starts(name, paste0("^", paste(GQ_TABLES, collapse="|^")))) %>%
   mutate(
@@ -45,40 +32,12 @@ GQ_VARS <- SF1_VARS %>%
 
 # Download data for selected variables in all counties
 GQ_DATA <- tibble()
-# for (i in 1:length(names(COUNTIES))) {
-#   a <- map_dfr(
-#     YEAR,
-#     ~ get_decennial(geography = "county", variables = GQ_VARS$name,
-#                     county = COUNTIES[[i]], state = names(COUNTIES[i]),
-#                     year = .x, survey = "sf1", cache_table = TRUE),
-#     .id = "year"
-#   )
-#   GQ_DATA <- rbind(GQ_DATA, a)
-# }
 for (STATE in names(COUNTIES)) {
   TEMP <- get_decennial(geography = "county", variables = GQ_VARS$name,
                         county = COUNTIES[[STATE]], state = STATE,
                         year = YEAR, survey = "sf1", cache_table = TRUE)
   GQ_DATA <- bind_rows(GQ_DATA, TEMP)
 }
-
-# GQ <- merge(GQ_DATA, GQ_VARS, by.x = "variable", by.y = "name")
-#
-# #cleanup
-# GQ$Category[substr(GQ$Category, 1, 5) == "Total"] <- "County Total"
-# GQ$Category[GQ$Category == "Male"] <- "County Male Total"
-# GQ$Category[GQ$Category == "Female"] <- "County Female Total"
-# GQ$Year = 2010
-# GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
-# GQ <- subset(GQ, select = -c(label, GEOID, variable, year))
-#
-# GQ$Region <- NA
-# CMAP <- c("Cook County", "DuPage County", "Kane County", "Kendall County", "Lake County", "McHenry County", "Will County")
-# OuterCounty <- c("Boone County", "DeKalb County", "Grundy County", "Kankakee County", "LaSalle County", "Lee County", "Ogle County", "Winnebago County")
-# GQ$Region[GQ$State == ' Wisconsin'] <- 'SE Wisconsin'
-# GQ$Region[GQ$State == ' Indiana'] <- 'NW Indiana'
-# GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
-# GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
 
 # Assemble final table
 GQ <- GQ_DATA %>%

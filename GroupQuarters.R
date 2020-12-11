@@ -25,28 +25,34 @@ GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO0
 #   var_list <- c(var_list, x)
 # }
 # GQ_VARS <- SF1_VARS[var_list,]
-GQ_VARS <- SF1_VARS %>%
-  filter(str_starts(name, paste0("^", paste(GQ_TABLES, collapse="|^"))))
+#
+# #cleanup
+# GQ_VARS$Category <- gsub(".*)!!", "", GQ_VARS$label)
+# GQ_VARS$Category <- gsub("!!", " ", GQ_VARS$Category)
 
-#cleanup
-GQ_VARS$Category <- gsub(".*)!!", "", GQ_VARS$label)
-GQ_VARS$Category <- gsub("!!", " ", GQ_VARS$Category)
+GQ_VARS <- SF1_VARS %>%
+  filter(str_starts(name, paste0("^", paste(GQ_TABLES, collapse="|^")))) %>%
+  mutate(
+    Category = str_replace_all(label, ".*\\)!!", ""),
+    Category = str_replace_all(Category, "!!", " ")
+  )
 
 GQ_DATA <- tibble()
-for (i in 1:length(names(COUNTIES))) {
-  # a <- map_dfr(
-  #   YEAR,
-  #   ~ get_decennial(geography = "county", variables = GQ_VARS$name,
-  #                   county = COUNTIES[[i]], state = names(COUNTIES[i]),
-  #                   year = .x, survey = "sf1", cache_table = TRUE),
-  #   .id = "year"
-  # )
-  temp <- get_decennial(geography = "county", variables = GQ_VARS$name,
-                        county = COUNTIES[[i]], state = names(COUNTIES[i]),
-                        year = YEAR, survey = "sf1", cache_table = TRUE) %>%
-    mutate(year = YEAR)
-  #GQ_DATA <- rbind(GQ_DATA, temp)
-  GQ_DATA <- bind_rows(GQ_DATA, temp)
+# for (i in 1:length(names(COUNTIES))) {
+#   a <- map_dfr(
+#     YEAR,
+#     ~ get_decennial(geography = "county", variables = GQ_VARS$name,
+#                     county = COUNTIES[[i]], state = names(COUNTIES[i]),
+#                     year = .x, survey = "sf1", cache_table = TRUE),
+#     .id = "year"
+#   )
+#   GQ_DATA <- rbind(GQ_DATA, a)
+# }
+for (STATE in names(COUNTIES)) {
+  TEMP <- get_decennial(geography = "county", variables = GQ_VARS$name,
+                        county = COUNTIES[[STATE]], state = STATE,
+                        year = YEAR, survey = "sf1", cache_table = TRUE)
+  GQ_DATA <- bind_rows(GQ_DATA, TEMP)
 }
 
 # GQ <- merge(GQ_DATA, GQ_VARS, by.x = "variable", by.y = "name")
@@ -72,10 +78,10 @@ GQ <- left_join(GQ_DATA, GQ_VARS, by = c("variable" = "name")) %>%
   select(-label) %>%
   rename(Concept = concept,
          Value = value,
-         Variable = variable,
-         Year = year) %>%
+         Variable = variable) %>%
   separate(NAME, c("County", "State"), sep = "\\, ") %>%
   mutate(
+    Year = YEAR,
     Category = case_when(str_starts(Category, "^Total") ~ "County Total",
                          Category == "Male" ~ "County Male Total",
                          Category == "Female" ~ "County Female Total",

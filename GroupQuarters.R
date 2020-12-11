@@ -70,9 +70,10 @@ for (i in 1:length(names(COUNTIES))) {
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 GQ <- left_join(GQ_DATA, GQ_VARS, by = c("variable" = "name")) %>%
   select(-label) %>%
-  rename(Year = year,
+  rename(Concept = concept,
+         Value = value,
          Variable = variable,
-         ) %>%
+         Year = year) %>%
   separate(NAME, c("County", "State"), sep = "\\, ") %>%
   mutate(
     Category = case_when(str_starts(Category, "^Total") ~ "County Total",

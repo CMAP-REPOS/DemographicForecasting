@@ -1,6 +1,8 @@
 # CMAP | Mary Weber | 12/8/2020
 
 #look into using get_estimates for 1995, 2005, 2015 populations
+
+#install.packages(c("tidyverse", "tidycensus", "readxl"))
 library(tidyverse)
 library(tidycensus)
 library(readxl)
@@ -105,11 +107,10 @@ library(readxl)
 # GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
 # GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
 
+
+# Set parameters ----------------------------------------------------------
+
 YEARS <- c(2000, 2010)  # 1990 not available via API
-POP_TABLES <- c(
-  `2000` = "PCT0130",
-  `2010` = "P0120"
-)
 COUNTIES <- list(
   IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
          7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
@@ -117,20 +118,27 @@ COUNTIES <- list(
   WI = c(59, 101, 127)                       # Wisconsin counties
 )
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
+POP_TABLES <- c(
+  `2000` = "PCT0130",
+  `2010` = "P0120"
+)
+
+
+# Compile population data from each Census --------------------------------
 
 POP <- list()
-
 for (YEAR in YEARS) {
-  POP_TABLE <- POP_TABLES[[as.character(YEAR)]]
-  SF1_VARS <- load_variables(YEAR, "sf1")
   
+  # Compile list of variables to download
+  SF1_VARS <- load_variables(YEAR, "sf1")
   POP_VARS <- SF1_VARS %>%
-    filter(str_starts(name, paste0("^", POP_TABLE))) %>%
+    filter(str_starts(name, paste0("^", POP_TABLES[[as.character(YEAR)]]))) %>%
     mutate(
       Category = str_replace_all(label, "!!.*?", " "),
       Category = str_replace(Category, ".*? ", "")
     )
   
+  # Download data for selected variables in all counties
   POP_DATA <- tibble()
   for (STATE in names(COUNTIES)) {
     TEMP <- get_decennial(geography = "county", variables = POP_VARS$name,
@@ -139,6 +147,7 @@ for (YEAR in YEARS) {
     POP_DATA <- bind_rows(POP_DATA, TEMP)
   }
   
+  # Assemble final table
   POP[[as.character(YEAR)]] <- POP_DATA %>%
     left_join(POP_VARS, by = c("variable" = "name")) %>%
     select(-label) %>%
@@ -159,8 +168,8 @@ for (YEAR in YEARS) {
     )
 }
 
-POP[["1990"]] <- read_excel("Pop1990.xlsx")
+# Read 1990 data from spreadsheet
+POP[["1990"]] <- read_excel("Pop1990.xlsx")  # Should be adjusted to match 2000/2010 format
 
-
-#save(POP$1990, POP$2000, POP$2010, list= c("POP_1990", "POP_2000", "POP_2010"), file="PopData.Rdata")
+#save(POP, file="PopData.Rdata")
 #load("PopData.Rdata")

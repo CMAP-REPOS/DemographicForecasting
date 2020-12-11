@@ -1,10 +1,12 @@
 # CMAP | Mary Weber | 12/4/2020
 
-#install.packages("tidyverse")
-#install.packages("tidycensus")
+#install.packages(c("tidyverse", "tidycensus"))
 library(tidyverse)
 library(tidycensus)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
+
+
+# Set parameters ----------------------------------------------------------
 
 YEAR <- 2010
 COUNTIES <- list(
@@ -14,12 +16,16 @@ COUNTIES <- list(
   WI = c(59, 101, 127)                       # Wisconsin counties
 )
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
+GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 
+
+# Compile data ------------------------------------------------------------
+
+# Compile list of variables to download
 SF1_VARS <- load_variables(YEAR, "sf1")
-tibble(SF1_VARS)
+# tibble(SF1_VARS)
 
 #returns GQ data for each group as outlined in model
-GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 # var_list <- vector()
 # for (i in 1:length(GQ_TABLES)) {
 #   x <- grep(GQ_TABLES[i], SF1_VARS$name)
@@ -30,7 +36,6 @@ GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO0
 # #cleanup
 # GQ_VARS$Category <- gsub(".*)!!", "", GQ_VARS$label)
 # GQ_VARS$Category <- gsub("!!", " ", GQ_VARS$Category)
-
 GQ_VARS <- SF1_VARS %>%
   filter(str_starts(name, paste0("^", paste(GQ_TABLES, collapse="|^")))) %>%
   mutate(
@@ -38,6 +43,7 @@ GQ_VARS <- SF1_VARS %>%
     Category = str_replace_all(Category, "!!", " ")
   )
 
+# Download data for selected variables in all counties
 GQ_DATA <- tibble()
 # for (i in 1:length(names(COUNTIES))) {
 #   a <- map_dfr(
@@ -74,6 +80,7 @@ for (STATE in names(COUNTIES)) {
 # GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
 # GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
 
+# Assemble final table
 GQ <- GQ_DATA %>%
   left_join(GQ_VARS, by = c("variable" = "name")) %>%
   select(-label) %>%
@@ -93,7 +100,7 @@ GQ <- GQ_DATA %>%
                        State == "Wisconsin" ~ "External WI")
   )
 
-#df for institutionalized only
+# Split out institutionalized and non-institutionalized
 GQ_INST <- GQ %>%
   filter(Concept %in% c(
     "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE",
@@ -101,7 +108,6 @@ GQ_INST <- GQ %>%
     "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE"
   ))
 
-#df for non-institutionalized only
 GQ_NONINST <- GQ %>%
   filter(Concept %in% c(
     "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE",
@@ -110,6 +116,5 @@ GQ_NONINST <- GQ %>%
     "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE"
   ))
 
-
-#save(GQ, GQ_INST, GQ_NONINST, list= c("GQ", "GQ_INST", "GQ_NONINST"), file="GQData.Rdata")
+#save(GQ, GQ_INST, GQ_NONINST, file="GQData.Rdata")
 #load("GQData.Rdata")

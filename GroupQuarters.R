@@ -1,74 +1,79 @@
 # CMAP | Mary Weber | 12/4/2020
 
-#install.packages("tidycensus") 
-#install.packages("tidyverse") 
-library(tidycensus)
+#install.packages(c("tidyverse", "tidycensus"))
 library(tidyverse)
-library(dplyr)
-
+library(tidycensus)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
-year <- 2010
-counties = list(IL=c(31, 43, 89, 93, 97, 111, 197, 7, 37, 63, 91, 99, 103, 141, 201), IN=c(89,91,127), WI=c(59, 101, 127)) 
-df_2010 <- load_variables(year, "sf1")
-tibble(df_2010)
 
-#returns GQ data for each group as outlined in model
-tables <- c("PCO010","PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
-var_list <- vector()
-for (i in 1:length(tables)){
-  x <- grep(tables[i], df_2010$name)
-  var_list <- c(var_list, x)
-} 
-test <- df_2010[var_list,]
+# Set parameters ----------------------------------------------------------
 
-#cleanup
-test$Category <- gsub(".*)!!","",test$label)
-test$Category <- gsub("!!", " ", test$Category)
+YEAR <- 2010
+COUNTIES <- list(
+  IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
+         7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
+  IN = c(89, 91, 127),                       # Indiana counties
+  WI = c(59, 101, 127)                       # Wisconsin counties
+)
+CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
+GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 
-m <- tibble()
-for (i in 1:length(names(counties))) {
-a <- map_dfr(
-      year,
-    ~ get_decennial(geography = "county", variables = test$name, county = counties[[i]], state = names(counties[i]), 
-                    year = .x, survey = "sf1", cache_table = TRUE),
-    .id = "year"
+
+# Compile data ------------------------------------------------------------
+
+# Compile list of variables to download
+SF1_VARS <- load_variables(YEAR, "sf1")
+GQ_VARS <- SF1_VARS %>%
+  filter(str_starts(name, paste0("^", paste(GQ_TABLES, collapse="|^")))) %>%
+  mutate(
+    Category = str_replace_all(label, ".*\\)!!", ""),
+    Category = str_replace_all(Category, "!!", " ")
   )
-  m = rbind(m, a)
+
+# Download data for selected variables in all counties
+GQ_DATA <- tibble()
+for (STATE in names(COUNTIES)) {
+  TEMP <- get_decennial(geography = "county", variables = GQ_VARS$name,
+                        county = COUNTIES[[STATE]], state = STATE,
+                        year = YEAR, survey = "sf1", cache_table = TRUE)
+  GQ_DATA <- bind_rows(GQ_DATA, TEMP)
 }
 
-GQ <- merge(m, test, by.x = "variable", by.y = "name")
+# Assemble final table
+GQ <- GQ_DATA %>%
+  left_join(GQ_VARS, by = c("variable" = "name")) %>%
+  select(-label) %>%
+  rename(Concept = concept,
+         Value = value,
+         Variable = variable) %>%
+  separate(NAME, c("County", "State"), sep = "\\, ") %>%
+  mutate(
+    Year = YEAR,
+    Category = case_when(str_starts(Category, "^Total") ~ "County Total",
+                         Category == "Male" ~ "County Male Total",
+                         Category == "Female" ~ "County Female Total",
+                         TRUE ~ Category),
+    Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+                       State == "Illinois" ~ "External IL",
+                       State == "Indiana" ~ "External IN",
+                       State == "Wisconsin" ~ "External WI")
+  )
 
-#cleanup
-GQ$Category[substr(GQ$Category, 1, 5) == "Total"] <- "County Total"
-GQ$Category[GQ$Category == "Male"] <- "County Male Total"
-GQ$Category[GQ$Category == "Female"] <- "County Female Total"
-GQ$Year = 2010
-GQ <- separate(data = GQ, col = NAME, into = c("County", "State"), sep = "\\,")
-GQ <- subset(GQ, select = -c(label,GEOID, variable, year))
+# Split out institutionalized and non-institutionalized
+GQ_INST <- GQ %>%
+  filter(Concept %in% c(
+    "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE",
+    "GROUP QUARTERS POPULATION IN JUVENILE FACILITIES BY SEX BY AGE",
+    "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE"
+  ))
 
-GQ$Region <- NA
+GQ_NONINST <- GQ %>%
+  filter(Concept %in% c(
+    "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE",
+    "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE",
+    "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE",
+    "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE"
+  ))
 
-CMAP <- c("Cook County", "DuPage County", "Kane County", "Kendall County", "Lake County", "McHenry County", "Will County")
-OuterCounty <- c("Boone County", "DeKalb County", "Grundy County", "Kankakee County", "LaSalle County", "Lee County", "Ogle County", "Winnebago County")
-GQ$Region[GQ$State == ' Wisconsin'] <- 'SE Wisconsin'
-GQ$Region[GQ$State == ' Indiana'] <- 'NW Indiana'
-
-GQ$Region[GQ$County %in% CMAP & GQ$State == " Illinois"] <- "CMAP"
-GQ$Region[GQ$County %in% OuterCounty & GQ$State == " Illinois"] <- "IL Outer County"
-
-GQ_inst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE") | 
-                    (GQ$concept == "GROUP QUARTERS POPULATION IN JUVENILE FACILITIES BY SEX BY AGE") |
-                    (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE"))
-
-GQ_noninst <- filter(GQ, (GQ$concept == "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE") | 
-                       (GQ$concept == "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE") |
-                       (GQ$concept == "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE") |
-                       (GQ$concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE"))
-
-
-#save(GQ, GQ_inst, GQ_noninst, list= c("GQ", "GQ_inst", "GQ_noninst"), file="GQData.Rdata")
-#load("~/Documents/GitHub/DemographicForecasting/GQData.Rdata")
+#save(GQ, GQ_INST, GQ_NONINST, file="GQData.Rdata")
 #load("GQData.Rdata")
-
-

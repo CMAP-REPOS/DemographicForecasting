@@ -19,17 +19,21 @@ load("GQData.Rdata")
 load("PopData.Rdata")
 ```
 
-The Census Bureau defines people living in group quarters (GQ) as anyone who does not live in a housing unit such as a house, apartment, mobile home, or rented room. GQ can be separated into two types: institutional such as correctional facilities, nursing homes, or mental hospitals and non-institutional such as college dormitories, military barracks, group homes, missions, or shelters.^1^  
+The Census Bureau defines people living in group quarters (GQ) as anyone who does not live in a housing unit such as a house, apartment, mobile home, or rented room.^[1] GQ can be separated into two types: institutional such as correctional facilities, nursing homes, or mental hospitals and non-institutional such as college dormitories, military barracks, group homes, missions, or shelters.  
 
-The original report produced by the Louis Berger Group reviewed historic trends and determined that the cohort component model should consider GQ growth as a constant share of the total population.^2^ As stated in the Final Report:  
+The original report produced by the Louis Berger Group reviewed historic trends and determined that the cohort component model should consider GQ growth as a constant share of the total population.^[2] As stated in the Final Report:  
 
-> Although difficult to predict the development and expansion of group quarter facilities, the data suggests that the demand for these facilities grows in some proportion to growth in population.^2^ 
+> Although difficult to predict the development and expansion of group quarter facilities, the data suggests that the demand for these facilities grows in some proportion to growth in population.^[2]
 
 
-During the report update, CMAP staff determined that the count of people living in military barracks will be held constant as there is no known expansion of the Great Lakes Training Center, the only military facility within the forecasted region.  
+During the report update, CMAP staff determined that the count of people living in military barracks will be held constant as there is no known expansion of the Great Lakes Training Center, the only military facility within the forecasted region. 
+
+<br>
 
 ```{r Population Totals, echo=FALSE}
-#GQ$Value <- comma(GQ$Value, decimal.mark = ".", big.mark = ",")
+
+#GQ$Value <- format(round(as.numeric(GQ$Value), 0), nsmall=1, big.mark=",")
+
 
 p <- POP[["2010"]] %>% 
   group_by(Region) %>%
@@ -65,14 +69,10 @@ add_header_above(c(" " = 1, "GROUP QUARTERS POPULATION, 2010-2020" = 5))
 
 
 <br>
-
 Blurb about tables when we have 2020 data
 
 
 ```{r Inst, echo=FALSE}
-
-#GQ_INST$Value <- comma(GQ_INST$Value, decimal.mark = ".", big.mark = ",")
-
 
 I <- GQ_INST %>% 
   group_by(Region) %>%

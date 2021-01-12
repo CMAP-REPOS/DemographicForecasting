@@ -71,6 +71,10 @@ for (YEAR in YEARS) {
 
 # Read 1990 data from spreadsheet
 POP[["1990"]] <- read_excel("Pop1990.xlsx")  # Should be adjusted to match 2000/2010 format
+POP[["1995"]] <- read_excel("Pop1995.xlsx") 
+
+
+
 
 #save(POP, file="PopData.Rdata")
 #load("PopData.Rdata")

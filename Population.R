@@ -1,10 +1,11 @@
-# CMAP | Mary Weber | 12/8/2020
+# CMAP | Noel Peterson, Mary Weber | 1/15/2021
 
-#install.packages(c("tidyverse", "tidycensus", "readxl", "censusapi"))
+#This file contains 1990, 2000 and 2010 Decennial Census data
+
+#install.packages(c("tidyverse", "tidycensus", "readxl"))
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-library(censusapi)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 
@@ -73,6 +74,7 @@ for (YEAR in YEARS) {
 POP[["1990"]] <- read_excel("Pop1990.xlsx")  # Should be adjusted to match 2000/2010 format
 POP[["1995"]] <- read_excel("Pop1995.xlsx")  # Should be adjusted to match 2000/2010 format
 
+View(POP[["1990"]])
 
 #save(POP, file="PopData.Rdata")
 #load("PopData.Rdata")

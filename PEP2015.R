@@ -46,19 +46,11 @@ POP[[as.character(YEAR2)]] <- PEP_DATA %>%
   mutate(AGEGROUP = case_when(AGEGROUP == "All ages" & SEX == 'Male' ~ "County Male Total",
                               AGEGROUP == "All ages" & SEX == 'Female' ~ "County Female Total",
                               TRUE ~ as.character(AGEGROUP)),
-         
-        Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+         Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
               State == "Illinois" ~ "External IL",
               State == "Indiana" ~ "External IN",
               State == "Wisconsin" ~ "External WI"))                               
-                                    
 
-                                         
-
-                                         
-                                         
-                                         
-
-View(POP[["2015"]])
+#View(POP[["2015"]])
 
                                          

@@ -1,4 +1,4 @@
-# CMAP | Mary Weber | 12/8/2020
+# CMAP | Mary Weber | 1/20/2021
 
 #install.packages(c("tidyverse", "tidycensus", "readxl"))
 library(tidyverse)
@@ -27,7 +27,7 @@ remove <- c("Under 18 years", "5 to 13 years", "14 to 17 years", "18 to 64 years
 PEP_DATA <- tibble()
   for (STATE in names(COUNTIES)) {
     
-    TEMP2 <- get_estimates(product="characteristics", geography = "county", 
+    TEMP2 <- get_estimates(product="characteristics", geography = "county", year = YEAR2,
                         county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"), 
                         breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
                         filter(DATE == 8, SEX %in% c("Male", "Female")) %>%

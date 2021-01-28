@@ -53,6 +53,10 @@ POP[[as.character(YEAR2)]] <- PEP_DATA %>%
               State == "Indiana" ~ "External IN",
               State == "Wisconsin" ~ "External WI"))                               
 
-#View(POP[["2015"]])
+
+POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 
+#POP[["2005"]] <- read_excel("Input/Pop1995.xlsx") 
+
+View(POP[["2015"]])
 
                                          

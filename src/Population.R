@@ -72,7 +72,7 @@ for (YEAR in YEARS) {
 
 # Read 1990 and 1995 data from spreadsheets
 POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")  # Should be adjusted to match 2000/2010 format
-POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")  
+ 
 
 View(POP[["1990"]])
 

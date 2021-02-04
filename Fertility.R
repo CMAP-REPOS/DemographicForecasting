@@ -1,3 +1,15 @@
+# CMAP | Mary Weber | 2/4/2021
+
+library(tidyverse)
+library(tidycensus)
+library(readxl)
+load("Output/PopData.Rdata")
+
+#Rename AGEGROUP column to be Category for 2015 data
+POP[['2015']] %>% rename(Category= AGEGROUP)
+View(POP[["2015"]])
+
+
 #pull in IN births
 
 #IN population for 2010-most recent (David ER said to shorten base period)

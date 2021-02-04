@@ -1,6 +1,7 @@
 # CMAP | Mary Weber | 1/20/2021
 
-#This file contains 2015 Population Estimates Program (PEP) data
+#This file contains 1995, 2005 and 2015 Population Estimates Program (PEP) data
+
 
 #install.packages(c("tidyverse", "tidycensus", "readxl"))
 library(tidyverse)

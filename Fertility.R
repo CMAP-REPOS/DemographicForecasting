@@ -5,12 +5,35 @@ library(tidycensus)
 library(readxl)
 load("Output/PopData.Rdata")
 
-#Rename AGEGROUP column to be Category for 2015 data
-POP[['2015']] %>% rename(Category= AGEGROUP)
-View(POP[["2015"]])
+# Set parameters ----------------------------------------------------------
+
+F_YEARS <- c(2010:2018) 
+
+POP[['2010']][,"Sex"] <- NA
+POP[['2010']][,"Category2"] <- NA
+
+# Data Cleanup ----------------------------------------------------------
+
+#renaming column for consistency 
+POP[['2015']] <- POP[['2015']] %>% rename(Category = AGEGROUP)
+
+#Fill in Sex column where sex is Female; get women in child-bearing years only (15-44)
+F_DATA <- tibble()
+F_DATA <- POP[['2010']] %>%
+    mutate(Sex = replace(Sex, str_starts(Category, 'Female'), 'Female')) %>%
+    filter(Sex == 'Female' & State == 'Indiana') %>%
+    mutate(Category2 = case_when(Category %in% c("Female 15 to 17 years", "Female 18 and 19 years") ~ "Female 15 to 19 years",
+                                 Category %in% c("Female 20 years", "Female 21 years", "Female 22 to 24 years") ~ "Female 20 to 24 years",
+                                 TRUE ~ Category))
+
+#drop category
+#filter to age groups 15-44
 
 
-#pull in IN births
+                                 
+# Starting with IN Data as practice ------------------
+
+
 
 #IN population for 2010-most recent (David ER said to shorten base period)
 #filter population to just female, then create a named list with the age groupings and the values 
@@ -36,11 +59,9 @@ F <- list()
 
 for (YEAR in F_Years) {
 temp <- POP[[as.character(YEAR)]] %>%
-  filter(State == 'Indiana' & SEX == 'Female')
+  filter(State == 'Indiana' & SEX == 'Female') 
+
   #left join on certain columns since columns don't all match (GEOID, County, State, Value, AGEGROUP/Category, Sex, Year, Region)
 }
-
-
-
 
 

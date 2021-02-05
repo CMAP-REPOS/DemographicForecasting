@@ -56,10 +56,10 @@ POP[[as.character(YEAR2)]] <- PEP_DATA %>%
 
 
 POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 
-#POP[["2005"]] <- read_excel("Input/Pop2005.xlsx") 
+POP[["2005"]] <- read_excel("Input/Pop2005.xlsx") 
 
 View(POP[["1995"]])
-View(POP[["2015"]])
+View(POP[["2005"]])
 
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

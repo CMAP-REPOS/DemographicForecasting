@@ -9,18 +9,24 @@ load("Output/PopData.Rdata")
 
 F_YEARS <- c(2010, 2015) 
 
-
-
-# Data Cleanup ----------------------------------------------------------
-
 POP[['2010']][,"Sex"] <- NA
 POP[['2010']][,"Category2"] <- NA
 
-#renaming column for consistency 
+
+# Changes needed to PEP format to match Decennial Census format --------------------------------
+
 POP[['2015']] <- POP[['2015']] %>% rename(Category = AGEGROUP)
 POP[['2015']][,"Category2"] <- NA
 
-
+POP[["2015"]] <- POP[["2015"]] %>%
+  filter(Sex == 'Female') %>%
+  mutate(Category = case_when(Category %in% c("Age 15 to 19 years") ~ "Female 15 to 19 years",
+                               Category %in% c("Age 20 to 24 years") ~ "Female 20 to 24 years",
+                               Category %in% c("Age 25 to 29 years") ~ "Female 25 to 29 years",
+                               Category %in% c("Age 30 to 34 years") ~ "Female 30 to 34 years",
+                               Category %in% c("Age 35 to 39 years") ~ "Female 35 to 39 years",
+                               Category %in% c("Age 40 to 44 years") ~ "Female 40 to 44 years",
+                               TRUE ~ Category))
 
 
 # Starting with IN Data as practice ------------------
@@ -28,14 +34,16 @@ POP[['2015']][,"Category2"] <- NA
 #Fill in Sex column where sex is Female; filter for women in child-bearing years only (15-44)
 F_DATA <- tibble()
 
-F_DATA <- POP[['2010']] %>%
-  mutate(Sex = replace(Sex, str_starts(Category, 'Female'), 'Female')) %>%
-  filter(Sex == 'Female' & State == 'Indiana') %>%
-  mutate(Category2 = case_when(Category %in% c("Female 15 to 17 years", "Female 18 and 19 years") ~ "Female 15 to 19 years",
-                               Category %in% c("Female 20 years", "Female 21 years", "Female 22 to 24 years") ~ "Female 20 to 24 years",
-                               TRUE ~ Category))  %>%
-  filter(Category2 %in% c("Female 15 to 19 years", "Female 20 to 24 years", "Female 25 to 29 years", "Female 30 to 34 years", "Female 35 to 39 years", "Female 40 to 44 years"))
-
+for (YEAR in F_YEARS){
+  
+  F_DATA <- POP[[as.character(YEAR)]] %>%
+    mutate(Sex = replace(Sex, str_starts(Category, 'Female'), 'Female')) %>%
+    filter(Sex == 'Female' & State == 'Indiana') %>%
+    mutate(Category2 = case_when(Category %in% c("Female 15 to 17 years", "Female 18 and 19 years") ~ "Female 15 to 19 years",
+                                 Category %in% c("Female 20 years", "Female 21 years", "Female 22 to 24 years") ~ "Female 20 to 24 years",
+                                 TRUE ~ Category))  %>%
+    filter(Category2 %in% c("Female 15 to 19 years", "Female 20 to 24 years", "Female 25 to 29 years", "Female 30 to 34 years", "Female 35 to 39 years", "Female 40 to 44 years"))
+}
 
 
 
@@ -76,19 +84,6 @@ temp <- POP[[as.character(YEAR)]] %>%
 
 
 
-
-F_DATA <- tibble()
-
-for (YEAR in F_YEARS){
-  
-F_DATA <- POP[[as.character(2010)]] %>%
-  mutate(Sex = replace(Sex, str_starts(Category, 'Female'), 'Female')) %>%
-  filter(Sex == 'Female' & State == 'Indiana') %>%
-  mutate(Category2 = case_when(Category %in% c("Female 15 to 17 years", "Female 18 and 19 years") ~ "Female 15 to 19 years",
-                               Category %in% c("Female 20 years", "Female 21 years", "Female 22 to 24 years") ~ "Female 20 to 24 years",
-                               TRUE ~ Category))  %>%
-  filter(Category2 %in% c("Female 15 to 19 years", "Female 20 to 24 years", "Female 25 to 29 years", "Female 30 to 34 years", "Female 35 to 39 years", "Female 40 to 44 years"))
-}
 
 
 

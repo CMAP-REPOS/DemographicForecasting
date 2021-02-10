@@ -15,7 +15,7 @@ POP[['2010']][,"Category2"] <- NA
 
 # Changes needed to PEP format to match Decennial Census format --------------------------------
 
-POP[['2015']] <- POP[['2015']] %>% rename(Category = AGEGROUP)
+POP[['2015']] <- POP[['2015']] %>% rename(Category = AGEGROUP, Value = value)
 POP[['2015']][,"Category2"] <- NA
 
 POP[["2015"]] <- POP[["2015"]] %>%
@@ -31,21 +31,21 @@ POP[["2015"]] <- POP[["2015"]] %>%
 
 # Starting with IN Data as practice ------------------
 
-#Fill in Sex column where sex is Female; filter for women in child-bearing years only (15-44)
 F_DATA <- tibble()
 
 for (YEAR in F_YEARS){
   
-  F_DATA <- POP[[as.character(YEAR)]] %>%
+  TEMP_DATA <- POP[[as.character(YEAR)]] %>%
     mutate(Sex = replace(Sex, str_starts(Category, 'Female'), 'Female')) %>%
     filter(Sex == 'Female' & State == 'Indiana') %>%
     mutate(Category2 = case_when(Category %in% c("Female 15 to 17 years", "Female 18 and 19 years") ~ "Female 15 to 19 years",
                                  Category %in% c("Female 20 years", "Female 21 years", "Female 22 to 24 years") ~ "Female 20 to 24 years",
                                  TRUE ~ Category))  %>%
     filter(Category2 %in% c("Female 15 to 19 years", "Female 20 to 24 years", "Female 25 to 29 years", "Female 30 to 34 years", "Female 35 to 39 years", "Female 40 to 44 years"))
-}
+    F_DATA <- bind_rows(F_DATA, TEMP_DATA)
+  }
 
-
+View(F_DATA)
 
 #need to remove the GQ???
 #QUESTION: add 10-14 births to 15-19, add 45 & over births to 40-44 OR reduce fertile female range to 15-4 - David ER

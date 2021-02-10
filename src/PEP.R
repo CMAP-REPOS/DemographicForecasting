@@ -41,18 +41,21 @@ PEP_DATA <- tibble()
 
 # Create final table --------------------------------
 
+colnames(PEP_DATA)[5] <- "Sex"
 PEP_DATA$Year <- 2015
 PEP_DATA$Region <- ''
 PEP_DATA <- PEP_DATA[-which(PEP_DATA$AGEGROUP %in% remove), ]
   
 POP[[as.character(YEAR2)]] <- PEP_DATA %>%
-  mutate(AGEGROUP = case_when(AGEGROUP == "All ages" & SEX == 'Male' ~ "County Male Total",
-                              AGEGROUP == "All ages" & SEX == 'Female' ~ "County Female Total",
+  mutate(AGEGROUP = case_when(AGEGROUP == "All ages" & Sex == 'Male' ~ "County Male Total",
+                              AGEGROUP == "All ages" & Sex == 'Female' ~ "County Female Total",
                               TRUE ~ as.character(AGEGROUP)),
          Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
               State == "Illinois" ~ "External IL",
               State == "Indiana" ~ "External IN",
               State == "Wisconsin" ~ "External WI"))                               
+
+
 
 
 POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 

@@ -1,4 +1,4 @@
-# CMAP | Mary Weber | 2/4/2021
+# CMAP | Mary Weber | 2/10/2021
 
 library(tidyverse)
 library(tidycensus)
@@ -13,7 +13,7 @@ POP[['2010']][,"Sex"] <- NA
 POP[['2010']][,"Category2"] <- NA
 
 
-# Changes needed to PEP format to match Decennial Census format --------------------------------
+# Changes to match PEP format with Decennial Census format --------------------------------
 
 POP[['2015']] <- POP[['2015']] %>% rename(Category = AGEGROUP, Value = value)
 POP[['2015']][,"Category2"] <- NA
@@ -29,7 +29,7 @@ POP[["2015"]] <- POP[["2015"]] %>%
                                TRUE ~ Category))
 
 
-# Starting with IN Data as practice ------------------
+# Female Population within child-bearing years (15-44) ----------------------
 
 F_DATA <- tibble()
 
@@ -45,37 +45,36 @@ for (YEAR in F_YEARS){
     F_DATA <- bind_rows(F_DATA, TEMP_DATA)
   }
 
+F_DATA <- select(F_DATA, -c("DATE", "Concept", "Variable", "Category"))
+
 View(F_DATA)
 
-#need to remove the GQ???
-#QUESTION: add 10-14 births to 15-19, add 45 & over births to 40-44 OR reduce fertile female range to 15-4 - David ER
+# Birth per age cohort of females inn child-bearing years ------------------
+
+
+
+
+
+
+
+
+
+
 
 
 
 # ASFR Calculation ------------------
 
-
+#need to remove the GQ???
 
 #for each year in list (i to ?) where year starts at i and increases i+1 each time, calculate per each item in the
 #named list (number of births in cohort / number of females in household population in that age group)
 
-#graph to make sure things look like they're on track
 
 #talk to David ER about projection
 
 
 
-F_Years <- c(2015) #add in 2010 later
-F <- list()
-
-for (YEAR in F_Years) {
-temp <- POP[[as.character(YEAR)]] %>%
-  filter(State == 'Indiana' & SEX == 'Female') 
-
-  
-}
-
-#County, state, value, year, region, category2
 
 
 

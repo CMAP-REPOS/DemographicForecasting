@@ -64,14 +64,15 @@ for (YEAR in YEARS) {
                          State == "Wisconsin" ~ "External WI"),
       Sex = str_extract(Age, "^[^\\s]+"),
       Age = str_extract(Age, "\\s.+"),
-      Age = case_when(Age %in% c("15 to 17 years", "18 and 19 years") ~ "15 to 19 years",
-                  Age %in% c("20 years", "21 years", "22 to 24 years") ~ "20 to 24 years",
-                  TRUE ~ Age)) %>%
+      Age = case_when(Age %in% c("Under 5 years") ~ "0 to 4 years",
+                      Age %in% c("15 to 17 years", "18 and 19 years") ~ "15 to 19 years",
+                      Age %in% c("20 years", "21 years", "22 to 24 years") ~ "20 to 24 years",
+                      TRUE ~ Age)) %>%
       drop_na()
 }
 
 
-View(POP[["2000"]])
+View(POP[["2010"]])
 
 # Read 1990 data from spreadsheets
 #POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")

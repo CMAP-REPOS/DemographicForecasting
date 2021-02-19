@@ -53,22 +53,21 @@ for (YEAR in YEARS) {
   POP[[as.character(YEAR)]] <- POP_DATA %>%
     left_join(POP_VARS, by = c("variable" = "name")) %>%
     select(-label, -concept, -variable) %>%
-    rename(Population = value,
-          Age = Category) %>%
+    rename(Population = value) %>%
     separate(NAME, c("County", "State"), sep = "\\, ") %>%
+    separate(Category, c("Sex", "Age"), sep = " ", extra = "merge") %>%
     mutate(
       Year = YEAR,
       Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
                          State == "Illinois" ~ "External IL",
                          State == "Indiana" ~ "External IN",
                          State == "Wisconsin" ~ "External WI"),
-      Sex = str_extract(Age, "^[^\\s]+"),
-      Age = str_extract(Age, "\\s.+"),
       Age = case_when(Age %in% c("Under 5 years") ~ "0 to 4 years",
                       Age %in% c("15 to 17 years", "18 and 19 years") ~ "15 to 19 years",
                       Age %in% c("20 years", "21 years", "22 to 24 years") ~ "20 to 24 years",
-                      TRUE ~ Age)) %>%
-      drop_na()
+                      TRUE ~ Age)
+    ) %>%
+    drop_na()
 }
 
 

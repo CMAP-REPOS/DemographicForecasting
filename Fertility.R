@@ -29,7 +29,7 @@ POP[["2015"]] <- POP[["2015"]] %>%
                                TRUE ~ Category))
 
 
-# Female Population within child-bearing years (15-44) ----------------------
+# Filter data to only include female population within child-bearing years (15-44) ----------------------
 
 F_DATA <- tibble()
 
@@ -45,7 +45,7 @@ for (YEAR in F_YEARS){
     F_DATA <- bind_rows(F_DATA, TEMP_DATA)
   }
 
-F_DATA <- select(F_DATA, -c("DATE", "Concept", "Variable", "Category"))
+F_DATA <- select(F_DATA, -c("Concept", "Variable", "Category"))
 
 View(F_DATA)
 
@@ -62,13 +62,14 @@ View(F_DATA)
 
 
 
+# ASFR Calculation (IN and 2005 as starting point) ------------------
 
-# ASFR Calculation ------------------
 
 #need to remove the GQ???
 
-#for each year in list (i to ?) where year starts at i and increases i+1 each time, calculate per each item in the
-#named list (number of births in cohort / number of females in household population in that age group)
+#for each year in list (i to ?) where year starts at i and increases i+1 each time, check that pop year matched birth year
+#then calculate for each cohort the (number of births in cohort / number of females in household population in that age group)
+#add to new tibble called ASFR()
 
 
 #talk to David ER about projection

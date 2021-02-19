@@ -66,14 +66,13 @@ for(YEAR in YEAR2) {
 }
 
 
-# Upload Excel files and save Output file (only necessary if changes to code/data are made) -------------------------------
+# Upload Excel files and save Output file (only necessary if changes to code/Excel data are made) -------------------------------
 
+POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 
+POP[["2005"]] <- read_excel("Input/Pop2005.xlsx") 
 
-#POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 
-#POP[["2005"]] <- read_excel("Input/Pop2005.xlsx") 
-
-#save(POP, file="Output/PopData.Rdata")
-#load("Output/PopData.Rdata")
+save(POP, file="Output/PopData.Rdata")
+load("Output/PopData.Rdata")
                                          
 
 

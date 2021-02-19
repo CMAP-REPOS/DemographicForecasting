@@ -6,7 +6,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-load("Output/PopData.Rdata")
+#load("Output/PopData.Rdata")
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 
@@ -74,7 +74,7 @@ for (YEAR in YEARS) {
 View(POP[["2010"]])
 
 # Read 1990 data from spreadsheets
-#POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
+POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
  
 
 #save(POP, file="Output/PopData.Rdata")

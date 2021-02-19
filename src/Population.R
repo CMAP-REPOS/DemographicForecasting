@@ -51,30 +51,28 @@ for (YEAR in YEARS) {
   # Assemble final table
   POP[[as.character(YEAR)]] <- POP_DATA %>%
     left_join(POP_VARS, by = c("variable" = "name")) %>%
-    select(-label) %>%
-    rename(Concept = concept,
-           Value = value,
-           Variable = variable) %>%
+    select(-label, -concept, -variable) %>%
+    rename(Population = value,
+          Age = Category) %>%
     separate(NAME, c("County", "State"), sep = "\\, ") %>%
     mutate(
       Year = YEAR,
-      Category = case_when(str_starts(Category, "^Total") ~ "County Total",
-                           Category == "Male" ~ "County Male Total",
-                           Category == "Female" ~ "County Female Total",
-                           TRUE ~ Category),
       Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
                          State == "Illinois" ~ "External IL",
                          State == "Indiana" ~ "External IN",
-                         State == "Wisconsin" ~ "External WI")
-    )
+                         State == "Wisconsin" ~ "External WI"),
+      Sex = str_extract(Age, "^[^\\s]+"),
+      Age = str_extract(Age, "\\s.+")) %>%
+      drop_na()
 }
 
+
+
+View(POP[["2000"]])
 
 # Read 1990 data from spreadsheets
 #POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
  
-
-View(POP[["1990"]])
 
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

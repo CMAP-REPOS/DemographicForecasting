@@ -50,8 +50,8 @@ F_DATA <- select(F_DATA, -c("Concept", "Variable", "Category"))
 View(F_DATA)
 
 # Birth per age cohort of females inn child-bearing years ------------------
-
-
+Births <- tibble()
+Births <- read_excel("Input/Vital Stats IN.xlsx")
 
 
 

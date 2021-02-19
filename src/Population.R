@@ -6,6 +6,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
+load("Output/PopData.Rdata")
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 
@@ -62,10 +63,12 @@ for (YEAR in YEARS) {
                          State == "Indiana" ~ "External IN",
                          State == "Wisconsin" ~ "External WI"),
       Sex = str_extract(Age, "^[^\\s]+"),
-      Age = str_extract(Age, "\\s.+")) %>%
+      Age = str_extract(Age, "\\s.+"),
+      Age = case_when(Age %in% c("15 to 17 years", "18 and 19 years") ~ "15 to 19 years",
+                  Age %in% c("20 years", "21 years", "22 to 24 years") ~ "20 to 24 years",
+                  TRUE ~ Age)) %>%
       drop_na()
 }
-
 
 
 View(POP[["2000"]])

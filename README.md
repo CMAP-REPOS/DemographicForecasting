@@ -25,11 +25,15 @@ This code extracts 2000 and 2010 data from the Census API. 1990 data, not availa
 
 ### PEP.R
 
-This code extracts 2015 population estimates data from the Census Bureau's Population Estimates Program (PEP). 1995 and 2005 data is not available via the API. Instead, this data is stored in **Pop1995.xlsx** and **Pop2005.xlsx**, respectively (included in this repository). These files come from the Berger report. This data is also stored in the named list 'POP' along with the decenial census data. 
+This code extracts 2015-2019 population estimates data from the Census Bureau's Population Estimates Program (PEP). 1995 and 2005 data is not available via the API. Instead, this data is stored in **Pop1995.xlsx** and **Pop2005.xlsx**, respectively (included in this repository). These files come from the Berger report. This data is also stored in the named list 'POP' along with the decenial census data. 
 
   - `POP[["1995"]]` contains 1990 population data
   - `POP[["2005"]]` contains 2000 population data
-  - `POP[["2015"]]` contains 2010 population data
+  - `POP[["2015"]]` contains 2015 population data
+  - `POP[["2016"]]` contains 2016 population data
+  - `POP[["2017"]]` contains 2017 population data
+  - `POP[["2018"]]` contains 2018 population data
+  - `POP[["2019"]]` contains 2019 population data
   
   
   

@@ -6,7 +6,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-load("Output/PopData.Rdata") #must load, dependent on the POP[[]] named list
+load("Output/PopData.Rdata") #must load, following code dependent on the POP[[]] 
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 

@@ -74,7 +74,7 @@ for (YEAR in YEARS) {
 View(POP[["2010"]])
 
 # Read 1990 data from spreadsheets
-POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
+#POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
  
 
 #save(POP, file="Output/PopData.Rdata")

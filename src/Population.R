@@ -6,7 +6,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-#load("Output/PopData.Rdata")
+load("Output/PopData.Rdata")
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 
@@ -65,6 +65,8 @@ for (YEAR in YEARS) {
       Age = case_when(Age %in% c("Under 5 years") ~ "0 to 4 years",
                       Age %in% c("15 to 17 years", "18 and 19 years") ~ "15 to 19 years",
                       Age %in% c("20 years", "21 years", "22 to 24 years") ~ "20 to 24 years",
+                      Age %in% c("60 and 61 years", "62 to 64 years") ~ "60 and 64 years",
+                      Age %in% c("65 and 66 years", "67 to 69 years") ~ "65 and 69 years",
                       TRUE ~ Age)
     ) %>%
     drop_na()
@@ -73,9 +75,9 @@ for (YEAR in YEARS) {
 
 View(POP[["2010"]])
 
-# Read 1990 data from spreadsheets
+#Read 1990 data from spreadsheets
 #POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
  
 
-#save(POP, file="Output/PopData.Rdata")
-#load("Output/PopData.Rdata")
+save(POP, file="Output/PopData.Rdata")
+load("Output/PopData.Rdata")

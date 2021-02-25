@@ -69,6 +69,8 @@ for (YEAR in YEARS) {
                       Age %in% c("65 and 66 years", "67 to 69 years") ~ "65 and 69 years",
                       TRUE ~ Age)
     ) %>%
+    group_by(GEOID, County, State, Sex, Age, Year, Region) %>%
+    summarize(Population = sum(Population)) %>%
     drop_na()
 }
 

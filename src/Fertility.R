@@ -44,7 +44,7 @@ ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate
 View(ASFR)
 
 
-#looks likes issues in 2010 Decennial population numbers....filter ASFR for each age group and look at how small pop values are
+#looks likes issues in 2010 Decennial population numbers....filter F_DATA and look at difference between 2010 and 2015
 
 ASFR %>% 
   filter(Year %in% c(2010, 2015:2019)) %>%
@@ -54,12 +54,13 @@ ASFR %>%
   geom_point()
 
 
-date > as.Date("2006-1-1")
+
+b <- POP[["2010"]] %>% 
+  filter(State %in% c('Indiana')) %>%
+  group_by(County)
 
 
-
-
-
+View(b)
 
 
 

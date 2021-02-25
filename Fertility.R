@@ -8,6 +8,7 @@ load("Output/PopData.Rdata")
 # Set parameters ----------------------------------------------------------
 
 F_YEARS <- c(2010, 2015:2019) #will eventually include all years 2010 through 2020
+F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
 # Filter data to only include female population within child-bearing years (15-44) ----------------------
 
@@ -17,31 +18,45 @@ for (YEAR in F_YEARS){
   
   TEMP_DATA <- POP[[as.character(YEAR)]] %>%
     filter(Sex == 'Female' & State == 'Indiana') %>%
-    filter(Age %in% c("15 to 19 years", "20 to 24 years", "F25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years"))
+    filter(Age %in% F_Groups) #may see instances where age groups appear twice due to data grouping in Population.R code
     F_DATA <- bind_rows(F_DATA, TEMP_DATA)
-  }
+}
 
+# Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
+
+Births <- tibble() 
+Births <- read_excel("Input/Vital Stats IN.xlsx") %>% 
+          mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years",
+                                 Age %in% c("45 to 49 years") ~ "40 to 44 years",
+                                 TRUE ~ Age))
+
+# ASFR Calculation - # of live births per 1,000 women ------------------
+
+#STILL NEED TO REMOVE GQ 
+
+F_DATA <- F_DATA %>% group_by(State, Age, Year)  %>% summarise(Population = sum(Population))
 View(F_DATA)
 
-# Birth per age cohort (add pre-age-15 births to the 15-19 group, add 45+ age births to 40-44 group) ------------------
-Births <- tibble() 
-Births <- read_excel("Input/Vital Stats IN.xlsx")
+Births <- Births %>% group_by(State, Age, Year)  %>% summarise(Births = sum(Population))
+View(Births)
+
+ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = round((Births/Population)*1000, 0))
+View(ASFR)
 
 
+#looks likes issues in 2010 Decennial population numbers....filter ASFR for each age group and look at how small pop values are
+
+ASFR %>% 
+  filter(Year %in% c(2010, 2015:2019)) %>%
+  ggplot(aes(x=Year, y=ASFR, group=Age, color=Age)) + 
+  scale_x_continuous(breaks = c(2010, 2015:2019)) +
+  geom_line() + 
+  geom_point()
 
 
+date > as.Date("2006-1-1")
 
 
-
-
-# ASFR Calculation (IN and 2005 as starting point) ------------------
-
-
-#need to remove the GQ???
-
-#for each year in list (i to ?) where year starts at i and increases i+1 each time, check that pop year matched birth year
-#then calculate for each cohort the (number of births in cohort / number of females in household population in that age group)
-#add to new tibble called ASFR()
 
 
 

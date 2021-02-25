@@ -55,13 +55,14 @@ PEP_DATA <- PEP_DATA[-which(PEP_DATA$AGEGROUP %in% remove), ] #removes additiona
 for(YEAR in YEAR2) { 
   
     POP[[as.character(YEAR)]] <- PEP_DATA %>%
-    rename(Population = value, Age = AGEGROUP) %>%
-    mutate(Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
-                              State == "Illinois" ~ "External IL",
-                              State == "Indiana" ~ "External IN",
-                              State == "Wisconsin" ~ "External WI"),
-           Age = str_replace_all(Age, "Age ", ""))
-  
+      filter(Year == YEAR) %>%
+      rename(Population = value, Age = AGEGROUP) %>%
+      mutate(Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+                                State == "Illinois" ~ "External IL",
+                                State == "Indiana" ~ "External IN",
+                                State == "Wisconsin" ~ "External WI"),
+             Age = str_replace_all(Age, "Age ", ""))
+    
 }
 
 
@@ -72,31 +73,3 @@ for(YEAR in YEAR2) {
 
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")
-                                         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

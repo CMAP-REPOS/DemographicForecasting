@@ -76,13 +76,7 @@ lca(m, names(ASFR)[6], max.age = 45, adjust="dt", restype = 'logrates')
 
 
 T <- ASFR %>%
-    mutate(Year10 = '2010') %>% 
-    mutate(Year15 = '2015') %>% 
-    mutate(Year16 = '2016') %>% 
-    mutate(Year17 = '2017') %>% 
-    mutate(Year18 = '2018') %>% 
-    mutate(Year19 = '2019') %>% 
-    select(ASFR, Age, State, Population, Year10, Year15, Year16, Year17, Year18, Year19)
+  filter(Year == 2010)
 
 
 

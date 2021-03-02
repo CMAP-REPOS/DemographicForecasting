@@ -12,20 +12,15 @@ F_YEARS <- c(2010, 2015:2019) #will eventually include all years 2010 through 20
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
 # Filter data to only include female population within child-bearing years (15-44) ----------------------
-
 F_DATA <- tibble()
-
-for (YEAR in F_YEARS){
-  
+for (YEAR in F_YEARS) {
   TEMP_DATA <- POP[[as.character(YEAR)]] %>%
     filter(Sex == 'Female' & State == 'Indiana') %>%
     filter(Age %in% F_Groups) #may see instances where age groups appear twice due to data grouping in Population.R code
-    F_DATA <- bind_rows(F_DATA, TEMP_DATA)
+  F_DATA <- bind_rows(F_DATA, TEMP_DATA)
 }
 
 # Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
-
-Births <- tibble() 
 Births <- read_excel("Input/Vital Stats IN.xlsx") %>% 
           mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years",
                                  Age %in% c("45 to 49 years") ~ "40 to 44 years",
@@ -35,10 +30,10 @@ Births <- read_excel("Input/Vital Stats IN.xlsx") %>%
 
 #STILL NEED TO REMOVE GQ 
 
-F_DATA <- F_DATA %>% group_by(State, Age, Year)  %>% summarise(Population = sum(Population))
+F_DATA <- F_DATA %>% group_by(State, Age, Year) %>% summarise(Population = sum(Population), .groups="drop")
 View(F_DATA)
 
-Births <- Births %>% group_by(State, Age, Year)  %>% summarise(Births = sum(Births))
+Births <- Births %>% group_by(State, Age, Year) %>% summarise(Births = sum(Births), .groups="drop")
 View(Births)
 
 ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = round((Births/Population)*1000, 0))
@@ -59,17 +54,43 @@ ASFR %>%
 install.packages("demography")
 library(demography)
 
-ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = (Births/Population))
+ASFR <- F_DATA %>%
+  inner_join(Births, by = c("State", "Age", "Year")) %>%
+  mutate(
+    ASFR = (Births/Population),
+    AgeMid = case_when(Age == "15 to 19 years" ~ 17,
+                       Age == "20 to 24 years" ~ 22,
+                       Age == "25 to 29 years" ~ 27,
+                       Age == "30 to 34 years" ~ 32,
+                       Age == "35 to 39 years" ~ 37,
+                       Age == "40 to 44 years" ~ 42)
+  ) %>%
+  select(AgeMid, Year, Population, ASFR)
 
+birthrate_df <- ASFR %>%
+  select(AgeMid, Year, ASFR) %>%
+  pivot_wider(names_from = Year, values_from = ASFR)
 
-a <- as.matrix(ASFR$ASFR)
-b <- as.matrix(ASFR$Population)
-c <- as_vector(ASFR$Age)
-d <- c(2015)
+birthrate_matrix <- birthrate_df %>%
+  select(-AgeMid) %>%
+  as.matrix()
 
-demogdata(a, b, c, d, type = "fertility", label="IN", name="total")
+population_df <- ASFR %>%
+  select(AgeMid, Year, Population) %>%
+  pivot_wider(names_from = Year, values_from = Population)
+
+population_matrix <- population_df %>%
+  select(-AgeMid) %>%
+  as.matrix()
+
+a <- birthrate_matrix
+b <- population_matrix
+c <- birthrate_df$AgeMid
+d <- colnames(birthrate_matrix)
 
 m <- demogdata(a, b, c, d, type = "fertility", label="IN", name="total")
+
+plot(m)
 
 lca(m, names(ASFR)[6], max.age = 45, adjust="dt", restype = 'logrates')
 

@@ -3,6 +3,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
+
 load("Output/PopData.Rdata")
 
 # Set parameters ----------------------------------------------------------
@@ -37,41 +38,51 @@ Births <- read_excel("Input/Vital Stats IN.xlsx") %>%
 F_DATA <- F_DATA %>% group_by(State, Age, Year)  %>% summarise(Population = sum(Population))
 View(F_DATA)
 
-Births <- Births %>% group_by(State, Age, Year)  %>% summarise(Births = sum(Population))
+Births <- Births %>% group_by(State, Age, Year)  %>% summarise(Births = sum(Births))
 View(Births)
 
 ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = round((Births/Population)*1000, 0))
 View(ASFR)
 
-
-#looks likes issues in 2010 Decennial population numbers....filter F_DATA and look at difference between 2010 and 2015
+# sample plots ---------
 
 ASFR %>% 
   filter(Year %in% c(2010, 2015:2019)) %>%
-  ggplot(aes(x=Year, y=ASFR, group=Age, color=Age)) + 
+  ggplot(aes(x=Year, y=ASFR, group=Age, color=Age)) +  
   scale_x_continuous(breaks = c(2010, 2015:2019)) +
   geom_line() + 
   geom_point()
 
 
+#demography package
 
-b <- POP[["2010"]] %>% 
-  filter(State %in% c('Indiana')) %>%
-  group_by(County)
+install.packages("demography")
+library(demography)
 
-
-View(b)
-
+ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = (Births/Population))
 
 
+a <- as.matrix(ASFR$ASFR)
+b <- as.matrix(ASFR$Population)
+c <- as_vector(ASFR$Age)
+d <- c(2015)
+
+demogdata(a, b, c, d, type = "fertility", label="IN", name="total")
+
+m <- demogdata(a, b, c, d, type = "fertility", label="IN", name="total")
+
+lca(m, names(ASFR)[6], max.age = 45, adjust="dt", restype = 'logrates')
 
 
 
-
-
-
-
-
+T <- ASFR %>%
+    mutate(Year10 = '2010') %>% 
+    mutate(Year15 = '2015') %>% 
+    mutate(Year16 = '2016') %>% 
+    mutate(Year17 = '2017') %>% 
+    mutate(Year18 = '2018') %>% 
+    mutate(Year19 = '2019') %>% 
+    select(ASFR, Age, State, Population, Year10, Year15, Year16, Year17, Year18, Year19)
 
 
 

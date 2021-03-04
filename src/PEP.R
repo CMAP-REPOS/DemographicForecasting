@@ -71,5 +71,12 @@ for(YEAR in YEAR2) {
 #POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 
 #POP[["2005"]] <- read_excel("Input/Pop2005.xlsx") 
 
+#d <- read_excel("Input/PEP2011-2014.xlsx")
+
+#POP[["2011"]] <- filter(d, Year == 2011)
+#POP[["2012"]] <- filter(d, Year == 2012)
+#POP[["2013"]] <- filter(d, Year == 2013)
+#POP[["2014"]] <- filter(d, Year == 2014)
+
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

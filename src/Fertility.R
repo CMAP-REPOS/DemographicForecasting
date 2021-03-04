@@ -36,6 +36,8 @@ View(F_DATA)
 Births <- Births %>% group_by(State, Age, Year) %>% summarise(Births = sum(Births), .groups="drop")
 View(Births)
 
+ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = (Births/Population))
+
 ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = round((Births/Population)*1000, 0))
 View(ASFR)
 
@@ -49,10 +51,13 @@ ASFR %>%
   geom_point()
 
 
-#demography package
+# install demography package -------------------------------------
 
 install.packages("demography")
 library(demography)
+
+
+# Create demogdata object and plot ----------------------------------------
 
 ASFR <- F_DATA %>%
   inner_join(Births, by = c("State", "Age", "Year")) %>%
@@ -90,14 +95,29 @@ d <- colnames(birthrate_matrix)
 
 m <- demogdata(a, b, c, d, type = "fertility", label="IN", name="total")
 
-plot(m)
+col_set = c("red", "black", "orange", "blue", "purple", "green")
+plot(m, col=col_set)
+legend("topright", legend = d, text.col = col_set)
 
-lca(m, names(ASFR)[6], max.age = 45, adjust="dt", restype = 'logrates')
+# create Lee Carter model 
+
+m$year <- as.numeric(m$year)
+a <- lca(m, series = names(m$rate)[1], years = m$year, ages= m$age, max.age = 45,interpolate = TRUE, restype = 'logrates', scale=TRUE) 
+a <- lca(m, series = names(m$rate)[1], years = m$year, ages= m$age, max.age = 45) 
+
+plot(a)
 
 
+t <- forecast(a, method = "ets", h = 6, level = 80, se = c("innovdrift"), jumpchoice = "actual", ylim=c(0,1)) 
+#number of lines is # of forecast horizons (5 year)
 
-T <- ASFR %>%
-  filter(Year == 2010)
+plot(t)
+t$rate[[1]]
+
+
+#add total to birthrate_df and graph 
+
+
 
 
 

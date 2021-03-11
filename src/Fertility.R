@@ -11,14 +11,38 @@ load("Output/PopData.Rdata")
 F_YEARS <- c(2010:2019) #will eventually include all years 2010 through 2020
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
+
 # Filter data to only include female population within child-bearing years (15-44) ----------------------
 F_DATA <- tibble()
 for (YEAR in F_YEARS) {
   TEMP_DATA <- POP[[as.character(YEAR)]] %>%
     filter(Sex == 'Female' & State == 'Indiana') %>%
-    filter(Age %in% F_Groups) #may see instances where age groups appear twice due to data grouping in Population.R code
+    filter(Age %in% F_Groups)
   F_DATA <- bind_rows(F_DATA, TEMP_DATA)
 }
+
+# Remove estimate of females in GQ from each year 
+
+# GQ totals by county for 2010, excluding military
+
+GQ_2010 <- GQ %>%  
+  filter(Category == 'County Total')  %>% 
+  filter(Concept != 'GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE') %>% 
+  group_by(GEOID, County, State, Year, Region) %>%
+  summarise(total_GQ = sum(Value)) 
+
+
+# for each county, find the proportion of females in each age group using 2010 data
+
+
+
+
+
+
+
+
+
+
 
 # Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
 Births <- read_excel("Input/Vital Stats IN.xlsx") %>% 
@@ -28,96 +52,22 @@ Births <- read_excel("Input/Vital Stats IN.xlsx") %>%
 
 # ASFR Calculation - # of live births per 1,000 women ------------------
 
-#STILL NEED TO REMOVE GQ 
-
 F_DATA <- F_DATA %>% group_by(State, Age, Year) %>% summarise(Population = sum(Population), .groups="drop")
-View(F_DATA)
 
 Births <- Births %>% group_by(State, Age, Year) %>% summarise(Births = sum(Births), .groups="drop")
-View(Births)
-
-ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = (Births/Population))
 
 ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = round((Births/Population)*1000, 0))
-View(ASFR)
+
 
 # sample plots ---------
 
 ASFR %>% 
-  filter(Year %in% c(2010, 2015:2019)) %>%
+  filter(Year %in% c(2010:2019)) %>%
   ggplot(aes(x=Year, y=ASFR, group=Age, color=Age)) +  
-  scale_x_continuous(breaks = c(2010, 2015:2019)) +
+  scale_x_continuous(breaks = c(2010:2019)) +
+  ggtitle("2010-2019 ASFRs") + 
   geom_line() + 
   geom_point()
-
-
-# install demography package -------------------------------------
-
-install.packages("demography")
-library(demography)
-
-
-# Create demogdata object and plot ----------------------------------------
-
-ASFR <- F_DATA %>%
-  inner_join(Births, by = c("State", "Age", "Year")) %>%
-  mutate(
-    ASFR = (Births/Population),
-    AgeMid = case_when(Age == "15 to 19 years" ~ 17,
-                       Age == "20 to 24 years" ~ 22,
-                       Age == "25 to 29 years" ~ 27,
-                       Age == "30 to 34 years" ~ 32,
-                       Age == "35 to 39 years" ~ 37,
-                       Age == "40 to 44 years" ~ 42)
-  ) %>%
-  select(AgeMid, Year, Population, ASFR)
-
-birthrate_df <- ASFR %>%
-  select(AgeMid, Year, ASFR) %>%
-  pivot_wider(names_from = Year, values_from = ASFR)
-
-birthrate_matrix <- birthrate_df %>%
-  select(-AgeMid) %>%
-  as.matrix()
-
-population_df <- ASFR %>%
-  select(AgeMid, Year, Population) %>%
-  pivot_wider(names_from = Year, values_from = Population)
-
-population_matrix <- population_df %>%
-  select(-AgeMid) %>%
-  as.matrix()
-
-a <- birthrate_matrix
-b <- population_matrix
-c <- birthrate_df$AgeMid
-d <- colnames(birthrate_matrix)
-
-m <- demogdata(a, b, c, d, type = "fertility", label="IN", name="total")
-
-col_set = c("red", "black", "orange", "blue", "purple", "green")
-plot(m, col=col_set)
-legend("topright", legend = d, text.col = col_set)
-
-# create Lee Carter model 
-
-m$year <- as.numeric(m$year)
-a <- lca(m, series = names(m$rate)[1], years = m$year, ages= m$age, max.age = 45,interpolate = TRUE, restype = 'logrates', scale=TRUE) 
-a <- lca(m, series = names(m$rate)[1], years = m$year, ages= m$age, max.age = 45) 
-
-plot(a)
-
-
-t <- forecast(a, method = "ets", h = 6, level = 80, se = c("innovdrift"), jumpchoice = "actual", ylim=c(0,1)) 
-#number of lines is # of forecast horizons (5 year)
-
-plot(t)
-t$rate[[1]]
-
-
-#add total to birthrate_df and graph 
-
-
 
 
 

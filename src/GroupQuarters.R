@@ -59,6 +59,15 @@ GQ <- GQ_DATA %>%
                        State == "Wisconsin" ~ "External WI")
   )
 
+
+# Adds columns for Sex and Age, but retains Category column 
+GQ <- GQ %>% mutate(
+            Sex = case_when(str_starts(Category, "Male") ~ "Male",
+                            str_starts(Category, "Female") ~ "Female",
+                            TRUE ~ Category)) %>%
+            separate(Category, into=c("Sex", "Age"), sep = " ", extra = "merge", remove = FALSE)
+
+
 # Split out institutionalized and non-institutionalized
 GQ_INST <- GQ %>%
   filter(Concept %in% c(

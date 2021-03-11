@@ -23,19 +23,24 @@ for (YEAR in F_YEARS) {
 
 # Remove estimate of females in GQ from each year 
 
-# GQ totals by county for 2010, excluding military
+# GQ totals by county for 2010, excluding military (Great Lake Naval Station in Lake County)
 
-GQ_2010 <- GQ %>%  # Lake, IL #s are funky
+GQ_2010 <- GQ %>% 
   filter(Category == 'County Total')  %>% 
   filter(Concept != 'GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE') %>% 
   group_by(GEOID, County, State, Year, Region) %>%
   summarise(total_GQ = sum(Value)) 
+#split out by gender - for each age group proportion that's female
+
+#apply proportions to census estimates 
 
 
 # for each county, find the proportion of females in each age group using 2010 data
 Female_2010 <- POP[["2010"]] %>%
-  filter(Sex == 'Female') %>%
-  filter(Age %in% F_Groups)
+  #filter(Sex == 'Female') %>%
+  filter(Age %in% F_Groups) %>%
+  group_by(GEOID, County, State, Sex, Year, Region) %>%
+  summarise(Females15to44 = sum(Population)) 
 
 
 

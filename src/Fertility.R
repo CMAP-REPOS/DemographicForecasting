@@ -16,7 +16,7 @@ F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 ye
 F_DATA <- tibble()
 for (YEAR in F_YEARS) {
   TEMP_DATA <- POP[[as.character(YEAR)]] %>%
-    filter(Sex == 'Female' & State == 'Indiana') %>%
+    filter(Sex == 'Female') %>%
     filter(Age %in% F_Groups)
   F_DATA <- bind_rows(F_DATA, TEMP_DATA)
 }

@@ -84,6 +84,6 @@ GQ_NONINST <- GQ %>%
     "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE"
   ))
 
-#save(GQ, GQ_INST, GQ_NONINST, file="Output/GQData.Rdata")
+#save(GQ, GQ_INST, GQ_NONINST, file="Output/GQData.Rdata") #add GQE, too
 #load("Output/GQData.Rdata")
 

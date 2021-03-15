@@ -46,8 +46,9 @@ GQ_totals <- GQ %>%
 # Percent of total GQ population in 2010 that are females in fertile age range
 GQ2010 <- left_join(FGQ_2010, GQ_totals) %>% mutate(Percent_Female = (Female_GQ/County_GQtotal)*100)
 
-# Read in GQ estimates by State, County for 2011-2019
 
+# Read in GQ estimates by State, County for 2011-2019
+GQE <- read_excel("Input/Pop1990.xlsx")
 
 
 

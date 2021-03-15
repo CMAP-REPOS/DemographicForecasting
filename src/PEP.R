@@ -83,5 +83,5 @@ for(YEAR in YEAR2) {
 #POP[["2013"]]$GEOID <- as.character(POP[["2013"]]$GEOID)
 #POP[["2014"]]$GEOID <- as.character(POP[["2014"]]$GEOID)
 
-#save(POP, file="Output/PopData.Rdata")
+#save(POP, GQ, GQ_INST, GQ_NONINST, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

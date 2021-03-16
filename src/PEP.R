@@ -1,6 +1,6 @@
-# CMAP | Mary Weber | 1/20/2021
+# CMAP | Mary Weber | 3/16/2021
 
-#This file contains 1995, 2005 and 2015 - 2019 Population Estimates Program (PEP) data
+#This file contains 1995, 2005 and 2011 - 2019 Population Estimates Program (PEP) data
 
 #install.packages(c("tidyverse", "tidycensus", "readxl"))
 library(tidyverse)
@@ -11,7 +11,11 @@ load("Output/PopData.Rdata") #must load, following code dependent on the POP[[]]
 
 
 # Set parameters ----------------------------------------------------------
-YEAR2 <- c(2015:2019)
+
+PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019)
+## PEP DATE_CODE documentation: https://www.census.gov/data/developers/data-sets/popest-popproj/popest/popest-vars/2019.html
+
+
 COUNTIES <- list(
   IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
          7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
@@ -20,49 +24,45 @@ COUNTIES <- list(
 )
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 
-#extra age groupings to remove
-remove <- c("Under 18 years", "5 to 13 years", "14 to 17 years", "18 to 64 years", "18 to 24 years", "25 to 44 years", 
-            "45 to 64 years", "65 years and over", "85 years and over", "16 years and over", "18 years and over", 
-            "15 to 44 years", "Median age", "All ages")
+#extra age groupings to remove (PEP includes some overlapping categories)
+remove <- c("Under 18 years", "16 years and over", "18 years and over", "65 years and over",
+            "85 years and older", "5 to 13 years", "14 to 17 years", "15 to 44 years",
+            "18 to 24 years", "18 to 64 years", "25 to 44 years", "45 to 64 years",
+            "Median age", "All ages")
 
 # Compile population data from each Census. Always confirm that get_estimates() is pulling from latest vintage. 
 # Use ?get_estimates to see what the default vintage year is. If it's not the most recent year, update version of tidycensus (if a more recent version is available) ---------------
 
 PEP_DATA <- tibble()
-for(YEAR in YEAR2){
+
+for (STATE in names(COUNTIES)) {
   
-  for (STATE in names(COUNTIES)) {
-    
-    TEMP2 <- get_estimates(product="characteristics", geography = "county", year = YEAR,
-                           county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"), 
-                           breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
-      filter(DATE == 8, SEX %in% c("Male", "Female")) %>%
-      separate(NAME, c("County", "State"), sep = "\\, ")
-    
-    TEMP2$Year <- YEAR
-    
-    PEP_DATA <- bind_rows(PEP_DATA, TEMP2)
-  }
+  PEP_TEMP <- get_estimates(product="characteristics", geography = "county", #year = max(PEP_YEARS),
+                            county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"), 
+                            breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
+    filter(DATE %in% names(PEP_YEARS),
+           SEX %in% c("Male", "Female")) %>%
+    rename(Population = value, Age = AGEGROUP, Sex = SEX) %>%
+    separate(NAME, c("County", "State"), sep = "\\, ") %>%
+    mutate(DATE = as.character(DATE),
+           Year = PEP_YEARS[DATE],
+           Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+                              State == "Illinois" ~ "External IL",
+                              State == "Indiana" ~ "External IN",
+                              State == "Wisconsin" ~ "External WI"),
+           Age = str_replace_all(Age, "Age ", "")) %>%
+    select(-DATE)
+  
+  PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
 }
 
 # Create final table --------------------------------
 
-colnames(PEP_DATA)[5] <- "Sex"
-PEP_DATA <- select(PEP_DATA, -c(7))
-PEP_DATA$Region <- ''
-PEP_DATA <- PEP_DATA[-which(PEP_DATA$AGEGROUP %in% remove), ] #removes additional, unwanted age groupings
-
-for(YEAR in YEAR2) { 
+for(YEAR in PEP_YEARS) { 
   
     POP[[as.character(YEAR)]] <- PEP_DATA %>%
-      filter(Year == YEAR) %>%
-      rename(Population = value, Age = AGEGROUP) %>%
-      mutate(Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
-                                State == "Illinois" ~ "External IL",
-                                State == "Indiana" ~ "External IN",
-                                State == "Wisconsin" ~ "External WI"),
-             Age = str_replace_all(Age, "Age ", ""))
-    
+      filter(Year == YEAR, !(Age %in% remove)) %>% # Restrict to specific year and age groupings
+      arrange(GEOID)
 }
 
 
@@ -70,18 +70,6 @@ for(YEAR in YEAR2) {
 
 #POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 
 #POP[["2005"]] <- read_excel("Input/Pop2005.xlsx") 
-
-#d <- read_excel("Input/PEP2011-2014.xlsx")
-
-#POP[["2011"]] <- filter(d, Year == 2011)
-#POP[["2012"]] <- filter(d, Year == 2012)
-#POP[["2013"]] <- filter(d, Year == 2013)
-#POP[["2014"]] <- filter(d, Year == 2014)
-
-#POP[["2011"]]$GEOID <- as.character(POP[["2011"]]$GEOID)
-#POP[["2012"]]$GEOID <- as.character(POP[["2012"]]$GEOID)
-#POP[["2013"]]$GEOID <- as.character(POP[["2013"]]$GEOID)
-#POP[["2014"]]$GEOID <- as.character(POP[["2014"]]$GEOID)
 
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

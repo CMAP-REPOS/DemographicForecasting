@@ -39,30 +39,35 @@ This code extracts 2011-2019 population estimates data from the Census Bureau's 
  
  A key part of this code is the removal of GQ female estimates from the 2011-2019 population estimates data. Population estimates data, unlike Decennial Census
  data, includes Group Quarters populations. We are working under the assumption that females in group quarters will not be pregnant, therefore we want to remove
- GQ estimates from the population estimates data. The analysis is done in the followingn steps: 
+ GQ estimates from the population estimates data. The analysis is done in the following steps: 
  
  
  Step 1: 
-  - Calculate 2010 GQ totals by County (2010 GQ data is the only GQ data with Age/Sex details) 
+  - Calculate 2010 GQ totals by County, excluding military 
 
 Step 2: 
-  - Calculate 2010 Female GQ totals by County, by age groups (15-44)
+  - Calculate 2010 Female GQ totals by County, Sex, Age (2010 GQ data is the only GQ data with Age/Sex details) 
 
 Step 3: 
-  - Calculate proportions of total 2010 GQ population that are female (15-44)
+  - For each GQ female age group of interest, calculate what proportion of each county's total 2010 GQ population they represent
 
 Step 4: 
   - Read in GQ Census estimates by State, County for 2011-2019 (data stored in **GQE.xlsx**)
 
 Step 5: 
-  - For each year of GQ Census estimates (2011-2019), multiply County totals by the above proportions for each female age group (15-44)
+  - For each year of GQ Census estimates (2011-2019), multiply County totals by the above proportions for each female age group (15-44) to estimate the number
+    of women by county, by age group
 
 Step 6: 
-  - Filter ffemale Household population estimates for 2011-2019 for females, 15-44 years
+  - Filter female Household population estimates for 2011-2019 for females
 
 Step 7:
   - For 2011-2019 population estimate data, subtract expected GQ values from county total for each age group to estimate County Household populations
 
+Step 8: 
+- Filter 2010 Decencial Census HH Data for females 15-44
 
+Step 9:
+- Merge 2010 Census HH Population data and 2011-2019 HH Population Estimates to form a complete table of Household Population data
  
   

@@ -12,11 +12,11 @@ load("Output/GQData.Rdata")
 # Set parameters ----------------------------------------------------------
 
   GQE_YEARS <- c(2011:2019) #GQ estimate year range
-  F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
+  F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years") 
   
 # Remove estimates of females in GQ from each year ----------------------------
 
-  # Step 1: 2010 GQ population by county
+  # Step 1: Calculate 2010 GQ totals by County, excluding military
   GQ_totals_2010 <- GQ %>% 
     filter(Category == 'County Total')  %>% 
     filter(Concept != 'GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE') %>% 
@@ -25,7 +25,7 @@ load("Output/GQData.Rdata")
     ungroup() %>%
     select(GEOID, County, County_GQtotal)
   
-  # Step 2: 2010 female GQ population by county, age
+  # Step 2: Calculate 2010 Female GQ totals by County, Sex, Age, excluding military
     FGQ_2010 <- GQ %>% 
       filter(Sex == 'Female')  %>% 
       filter(Concept != 'GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE') %>% 
@@ -62,32 +62,44 @@ load("Output/GQData.Rdata")
       mutate(Population = County_Total - GQE_pred) %>%
       select(GEOID, County, State, Sex, Year, Age, Population, Year,Region)
 
-  # Step 8: Filter 2010 Decencial Census HH Data for females 15-44
+  # Step 8: Filter 2010 Decennial Census HH Data for females 15-44
     Female_HH_2010 <- POP[["2010"]]  %>%
         filter(Sex == 'Female') %>%
         filter(Age %in% F_Groups)
  
   # Step 9: Merge 2010 Census HH Population data and 2011-2019 HH Population Estimates to form a complete table of Household Population data
-    F_Data <- bind_rows(Female_HH_2010, HH_Pop)
+    F_HH_Data <- bind_rows(Female_HH_2010, HH_Pop)
  
 
 # Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
-  
+    
   Births <- read_excel("Input/CMAPBirths_1990-2019.xlsx") %>% 
-            mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years",
+            filter(Year %in% (2010:2020)) %>% 
+            mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years", 
                                    Age %in% c("45 to 49 years") ~ "40 to 44 years",
-                                   TRUE ~ Age))
-
+                                   TRUE ~ Age)) %>%
+            group_by(GEOID, County, State, Age, Year, Region) %>%
+            summarize(Births = sum(Births)) %>%
+            drop_na()
+    
+  Births$GEOID <- as.character(Births$GEOID)  #check IL births, only showing until 2014 
+    
 # ASFR Calculation - # of live births per 1,000 women ------------------
 
-  Births <- Births %>% group_by(State, Age, Year) %>% summarise(Births = sum(Births), .groups="drop")
-  
-  ASFR <- F_DATA %>% inner_join(Births, by = c("State", "Age", "Year")) %>% mutate(ASFR = round((Births/Population)*1000, 0))
+   ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")) %>% 
+            mutate(ASFR = round((Births/Population)*1000, 0)) %>% 
+            select(GEOID, County.x, State, Sex, Year, Age, Region.x, Births, Population, ASFR)
+            
 
+  
+  
+  
+   
 # sample plots ---------
 
   ASFR %>% 
     filter(Year %in% c(2010:2019)) %>%
+    filter(County == 'Cook County') %>%
     ggplot(aes(x=Year, y=ASFR, group=Age, color=Age)) +  
     scale_x_continuous(breaks = c(2010:2019)) +
     ggtitle("2010-2019 ASFRs") + 

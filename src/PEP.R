@@ -1,4 +1,4 @@
-# CMAP | Mary Weber | 3/16/2021
+# CMAP | Noel Peterson, Mary Weber | 3/16/2021
 
 #This file contains 1995, 2005 and 2011 - 2019 Population Estimates Program (PEP) data
 
@@ -6,9 +6,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-load("Output/PopData.Rdata") #must load, following code dependent on the POP[[]] 
-#census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
-
+load("Output/PopData.Rdata") #must load, following code dependent on POP[[]] 
 
 # Set parameters ----------------------------------------------------------
 
@@ -30,14 +28,11 @@ remove <- c("Under 18 years", "16 years and over", "18 years and over", "65 year
             "18 to 24 years", "18 to 64 years", "25 to 44 years", "45 to 64 years",
             "Median age", "All ages")
 
-# Compile population data from each Census. Always confirm that get_estimates() is pulling from latest vintage. 
-# Use ?get_estimates to see what the default vintage year is. If it's not the most recent year, update version of tidycensus (if a more recent version is available) ---------------
-
 PEP_DATA <- tibble()
 
 for (STATE in names(COUNTIES)) {
   
-  PEP_TEMP <- get_estimates(product="characteristics", geography = "county", #year = max(PEP_YEARS),
+  PEP_TEMP <- get_estimates(product="characteristics", geography = "county", year = max(PEP_YEARS),
                             county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"), 
                             breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
     filter(DATE %in% names(PEP_YEARS),

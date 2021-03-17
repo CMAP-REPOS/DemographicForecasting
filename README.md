@@ -35,5 +35,34 @@ This code extracts 2015-2019 population estimates data from the Census Bureau's 
   - `POP[["2018"]]` contains 2018 population data
   - `POP[["2019"]]` contains 2019 population data
   
-  
+ ### Fertility.R
+ 
+ This code calculates the ASFRs for women between the ages of 15-44 for years 2010-2019. It then caculates projections out to 2050.
+ 
+ A key part of this code is the removal of GQ female estimates from the 2011-2019 population estimates data. Population estimates data, unlike Decennial Census data, includes Group Quarters populations. We are working under the assumption that females in group quarters will not be pregnant, therefore we want to remove GQ estimates from the population estimates data. The analysis is done in the followingn steps: 
+ 
+ 
+ Step 1: 
+  - Calculate 2010 GQ totals by County (2010 GQ data is the only GQ data with Age/Sex details) 
+
+Step 2: 
+  - Calculate 2010 Female GQ totals by County, by age groups (15-44)
+
+Step 3: 
+  - Calculate proportions of total 2010 GQ population that are female (15-44)
+
+Step 4: 
+  - Read in GQ Census estimates by State, County for 2011-2019 (data stored in **GQE.xlsx**)
+
+Step 5: 
+  - For each year of GQ Census estimates (2011-2019), multiply County totals by the above proportions for each female age group (15-44)
+
+Step 6: 
+  - Filter ffemale Household population estimates for 2011-2019 for females, 15-44 years
+
+Step 7:
+  - For 2011-2019 population estimate data, subtract expected GQ values from county total for each age group to get County Household populations
+
+
+ 
   

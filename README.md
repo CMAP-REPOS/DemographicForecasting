@@ -37,6 +37,11 @@ This code extracts 2011-2019 population estimates data from the Census Bureau's 
  This code calculates the Age Specific Fertility Rates (ASFRs) for women between the ages of 15-44 for years 2010-2019. ASFR projections are then calculated 
  out to 2050.
  
+ Existing data from Berger provided birth statistics from 1990-2014. More recent vital stats were requested from the Illinois, Wisconsin and Indiana health 
+ departments. Depending on department, birth data was received through 2018 or 2020. Birth data for the youngest female group (10-14) was combined with the
+ 15-19 group and the oldest female group (45-49) were combined with 40-44 group. Note: IL provided birth data for females 50+. For consistency across states, 
+ that data was not included. 
+ 
  A key part of this code is the removal of GQ female estimates from the 2011-2019 population estimates data. Population estimates data, unlike Decennial Census
  data, includes Group Quarters populations. We are working under the assumption that females in group quarters will not be pregnant, therefore we want to remove
  GQ estimates from the population estimates data. The analysis is done in the following steps:

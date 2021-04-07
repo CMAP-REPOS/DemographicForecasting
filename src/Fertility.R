@@ -84,23 +84,20 @@ load("Output/GQData.Rdata")
   
 # ASFR Calculation - # of live births per 1,000 women ------------------
 
+   
    ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")) %>% 
            mutate(ASFR = round((Births/Population)*1000, 2)) %>% 
            select(GEOID, State, Sex, Year, Age, Region.x, Births, Population, ASFR)
-  
-  
-          
-  
  
-    d <- ASFR %>% filter(State == 'Wisconsin' && Year == "2010" && Age == "15 to 19 years") %>%
-            group_by(Age, State, Year) %>%
+   #Adding in weighted ASFRs by state, year and age group 
+   ASFR <- ASFR %>% group_by(Age, State, Year) %>%
             mutate(sum = sum(Population)) %>%
             mutate(weight = Population/sum) %>%
             mutate(Weighted_Avg = sum(ASFR*weight)) %>%
             select(-sum, -weight)
  
     
-write.csv(ASFR, "/Users/maryweber/Desktop/ASFR.csv")
+#write.csv(ASFR, "/Users/maryweber/Desktop/ASFR.csv")
   
    
 #save(ASFR, file="Output/ASFR.Rdata") 
@@ -111,21 +108,14 @@ write.csv(ASFR, "/Users/maryweber/Desktop/ASFR.csv")
 
   ASFR %>% 
     filter(Year %in% c(2010:2019)) %>%
-    filter(County == 'Cook County') %>%
-    ggplot(aes(x=Year, y=ASFR, group=Age, color=Age)) +  
+    filter(State == "Illinois") %>%
+    ggplot(aes(x=Year, y=Weighted_Avg, group=Age, color=Age)) +  
     scale_x_continuous(breaks = c(2010:2019)) +
-    ggtitle("2010-2019 ASFRs") + 
-    geom_line() + 
+    ggtitle("2010-2019 IL Weighted ASFRs") +
+    geom_line() +
     geom_point()
   
 
 
-  F15to19 <- POP[["2014"]] %>%
-    filter(Sex == 'Female' & State == 'Indiana') %>%
-    group_by(Age) %>%
-    mutate(Total = sum(Population))
-
-  View(F15to19)  
-  
 
 

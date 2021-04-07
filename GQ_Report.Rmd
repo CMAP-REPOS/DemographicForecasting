@@ -15,8 +15,8 @@ library(dplyr)
 library(scales) #for percent symbol
 
  
-load("GQData.Rdata")
-load("PopData.Rdata")
+load("Output/GQData.Rdata")
+load("Output/PopData.Rdata")
 
 comma <- function(x) format(x, digits = 2, big.mark = ",")
 ```

@@ -7,8 +7,6 @@ library(readxl)
 load("Output/PopData.Rdata")
 load("Output/GQData.Rdata")
 
-# For ASFR calculations, years of interest are 2010-2019
-
 # Set parameters ----------------------------------------------------------
 
   GQE_YEARS <- c(2011:2019) #GQ estimate year range
@@ -73,7 +71,7 @@ load("Output/GQData.Rdata")
 
 # Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
     
-  Births <- read_excel("Input/CMAPBirths_1990-2019.xlsx") %>% 
+   Births <- read_excel("Input/CMAPBirths_1990-2019.xlsx") %>% 
             filter(Year %in% (2010:2020)) %>% 
             mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years", 
                                    Age %in% c("45 to 49 years") ~ "40 to 44 years",
@@ -82,17 +80,31 @@ load("Output/GQData.Rdata")
             summarize(Births = sum(Births)) %>%
             drop_na()
     
-  Births$GEOID <- as.character(Births$GEOID)  #check IL births, only showing until 2014 
-    
+  Births$GEOID <- as.character(Births$GEOID) 
+  
 # ASFR Calculation - # of live births per 1,000 women ------------------
 
    ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")) %>% 
-            mutate(ASFR = round((Births/Population)*1000, 0)) %>% 
-            select(GEOID, County.x, State, Sex, Year, Age, Region.x, Births, Population, ASFR)
-            
-
+           mutate(ASFR = round((Births/Population)*1000, 2)) %>% 
+           select(GEOID, State, Sex, Year, Age, Region.x, Births, Population, ASFR)
   
   
+          
+  
+ 
+    d <- ASFR %>% filter(State == 'Wisconsin' && Year == "2010" && Age == "15 to 19 years") %>%
+            group_by(Age, State, Year) %>%
+            mutate(sum = sum(Population)) %>%
+            mutate(weight = Population/sum) %>%
+            mutate(Weighted_Avg = sum(ASFR*weight)) %>%
+            select(-sum, -weight)
+ 
+    
+write.csv(ASFR, "/Users/maryweber/Desktop/ASFR.csv")
+  
+   
+#save(ASFR, file="Output/ASFR.Rdata") 
+#load("Output/ASFR.Rdata")  
   
    
 # sample plots ---------
@@ -105,6 +117,15 @@ load("Output/GQData.Rdata")
     ggtitle("2010-2019 ASFRs") + 
     geom_line() + 
     geom_point()
+  
+
+
+  F15to19 <- POP[["2014"]] %>%
+    filter(Sex == 'Female' & State == 'Indiana') %>%
+    group_by(Age) %>%
+    mutate(Total = sum(Population))
+
+  View(F15to19)  
   
 
 

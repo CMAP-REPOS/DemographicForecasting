@@ -5,6 +5,7 @@ library(tidyverse)
 library(tidycensus)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
+#16 to 64 and a 65+ category
 
 # Set parameters ----------------------------------------------------------
 
@@ -17,6 +18,9 @@ COUNTIES <- list(
 )
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
+
+
+
 
 
 # Compile data ------------------------------------------------------------
@@ -81,7 +85,7 @@ GQ_NONINST <- GQ %>%
   filter(Concept %in% c(
     "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE",
     "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE"
+    "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE" #hold constant in projections
   ))
 
 #save(GQ, GQ_INST, GQ_NONINST, file="Output/GQData.Rdata") #add GQE, too

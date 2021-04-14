@@ -61,6 +61,10 @@ for(YEAR in PEP_YEARS) {
 }
 
 
+d <- POP[["2014"]] %>% filter(State == "Illinois") %>% filter(Sex == "Female") %>% filter(Region == "External IL") %>%
+  filter(Age == '45 to 49 years') %>% mutate(sum = sum(Population))
+
+
 # Upload Excel files and save Output file (only necessary if changes to code/Excel data are made) -------------------------------
 
 #POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 

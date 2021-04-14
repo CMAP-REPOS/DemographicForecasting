@@ -87,17 +87,32 @@ load("Output/GQData.Rdata")
    
    ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")) %>% 
            mutate(ASFR = round((Births/Population)*1000, 2)) %>% 
-           select(GEOID, State, Sex, Year, Age, Region.x, Births, Population, ASFR)
+           select(State, GEOID, County.x, Sex, Year, Age, Region.x, Births, Population, ASFR) %>%
+           rename(County = County.x) %>%
+           rename(Region = Region.x)
  
    #Adding in weighted ASFRs by state, year and age group 
-   ASFR <- ASFR %>% group_by(Age, State, Year) %>%
+   ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
             mutate(sum = sum(Population)) %>%
             mutate(weight = Population/sum) %>%
             mutate(Weighted_Avg = sum(ASFR*weight)) %>%
             select(-sum, -weight)
- 
-    
-#write.csv(ASFR, "/Users/maryweber/Desktop/ASFR.csv")
+   
+Projections <- read.csv(file = "ASFR_Projections.csv")
+
+
+
+#multiple by 1000 
+
+
+Final <- bind_rows(ASFR, Projections) %>%
+  mutate(Projected_ASFR = round(Projected_ASFR*1000, 2)) %>%
+  mutate(ASFRs = coalesce(Weighted_Avg, Projected_ASFR)) %>%
+  select(-GEOID, -County, -Births, -Population, -ASFR, -Weighted_Avg, -Projected_ASFR)
+
+Final <- distinct(Final)
+      
+write.csv(Final, "/Users/maryweber/Desktop/ASFR2010-2060.csv")
   
    
 #save(ASFR, file="Output/ASFR.Rdata") 
@@ -108,13 +123,30 @@ load("Output/GQData.Rdata")
 
   ASFR %>% 
     filter(Year %in% c(2010:2019)) %>%
-    filter(State == "Illinois") %>%
+    filter(State == "Indiana") %>%
+    filter(Region == 'External IN') %>% #only use for IL, change accordingly
     ggplot(aes(x=Year, y=Weighted_Avg, group=Age, color=Age)) +  
+    labs(y = 'Weighted ASFRs') +
     scale_x_continuous(breaks = c(2010:2019)) +
-    ggtitle("2010-2019 IL Weighted ASFRs") +
+    scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
+    ggtitle("2010-2018 External IN Weighted ASFRs") +
     geom_line() +
     geom_point()
   
+
+Final %>% 
+  filter(Year %in% c(2010:2060)) %>%
+  filter(State == "Illinois") %>%
+  filter(Region == 'CMAP Region') %>% #only use for IL, change accordingly
+  ggplot(aes(x=Year, y=ASFRs, group=Age, color=Age)) +  
+  labs(y = 'ASFRs') +
+  scale_x_continuous(breaks = c(2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)) +
+  scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150)) +
+  ggtitle("2010-2060 IL CMAP Region ASFR Projections") +
+  geom_line() +
+  geom_point()
+
+
 
 
 

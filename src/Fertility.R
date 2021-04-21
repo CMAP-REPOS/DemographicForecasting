@@ -99,7 +99,7 @@ ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   mutate(Weighted_Avg = sum(ASFR*weight)) %>%
   select(-sum, -weight)
 
-Projections <- read.csv(file = "ASFR_Projections.csv")
+Projections <- read.csv(file = "Input/ASFR_Projections.csv")
 
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%

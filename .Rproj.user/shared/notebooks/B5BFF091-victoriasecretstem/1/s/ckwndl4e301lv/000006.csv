@@ -1,5 +1,0 @@
-"0","write.csv(dtm,""/Users/maryweber/Desktop/victoriassecret.csv"")
-"
-"2","Error in as.data.frame.default(x[[i]], optional = TRUE, stringsAsFactors = stringsAsFactors) : 
-  cannot coerce class ‘c(""TermDocumentMatrix"", ""simple_triplet_matrix"")’ to a data.frame
-"

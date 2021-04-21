@@ -1,4 +1,0 @@
-"0","as.data.frame(mycorpus)
-"
-"2","Error in as.data.frame(mycorpus) : object 'mycorpus' not found
-"

@@ -1,1 +1,0 @@
-{"frames":[{"func":"as.data.frame(mycorpus)","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in as.data.frame(mycorpus) : object 'mycorpus' not found\n"}

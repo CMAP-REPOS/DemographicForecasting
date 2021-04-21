@@ -1,4 +1,0 @@
-"0","# Remove english common stopwords
-docs <- tm_map(docs, removeWords, stopwords(""english""))
-"
-"2","transformation drops documents"

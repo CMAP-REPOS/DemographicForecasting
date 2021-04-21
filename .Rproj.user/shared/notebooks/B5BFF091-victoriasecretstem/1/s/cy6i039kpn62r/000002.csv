@@ -1,3 +1,0 @@
-"0","docs <- tm_map(docs, toSpace, ""/"")
-"
-"2","transformation drops documents"

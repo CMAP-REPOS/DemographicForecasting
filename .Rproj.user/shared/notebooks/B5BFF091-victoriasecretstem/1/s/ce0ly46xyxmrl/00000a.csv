@@ -1,4 +1,0 @@
-"0","text <- read_file(""victoriassecret.txt"")
-"
-"2","Error: 'victoriassecret.txt' does not exist in current working directory ('/Users/maryweber/Library/Containers/com.apple.mail/Data/Library/Mail Downloads/2966783E-4CA5-40C3-9434-36424CA5F8F3').
-"

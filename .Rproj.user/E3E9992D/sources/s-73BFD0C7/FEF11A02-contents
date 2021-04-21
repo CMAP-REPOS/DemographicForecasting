@@ -112,10 +112,10 @@ Final <- bind_rows(ASFR, Projections) %>%
 
 Final <- distinct(Final)
       
-write.csv(Final, "/Users/maryweber/Desktop/ASFR2010-2060.csv")
-write.csv(ASFR, "/Users/maryweber/Desktop/ASFR_HealthDep.csv")
+#write.csv(Final, "/Users/maryweber/Desktop/ASFR2010-2060.csv")
+#write.csv(ASFR, "/Users/maryweber/Desktop/ASFR_HealthDep.csv")
    
-save(ASFR, file="Output/ASFR.Rdata") 
+#save(ASFR, file="Output/ASFR.Rdata") 
 #load("Output/ASFR.Rdata")  
   
    

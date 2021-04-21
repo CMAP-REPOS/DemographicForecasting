@@ -1,0 +1,10 @@
+"0","p <- POP[[""2010""]] %>% 
+  group_by(Region) %>%
+  filter(Category == ""County Total"") %>% 
+  summarise(Count = sum(Value))
+"
+"2","Error: Problem with `filter()` input `..1`.
+[31mx[39m object 'Category' not found
+[34mℹ[39m Input `..1` is `Category == ""County Total""`.
+[34mℹ[39m The error occurred in group 1: Region = ""CMAP Region"".
+"

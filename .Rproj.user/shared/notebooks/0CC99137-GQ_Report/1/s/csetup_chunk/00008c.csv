@@ -1,0 +1,5 @@
+"0","load(""PopData.Rdata"")
+"
+"2","cannot open compressed file 'PopData.Rdata', probable reason 'No such file or directory'"
+"2","Error in readChar(con, 5L, useBytes = TRUE) : cannot open the connection
+"

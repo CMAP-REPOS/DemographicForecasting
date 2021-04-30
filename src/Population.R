@@ -30,7 +30,7 @@ POP_TABLES <- c(
 
 POP <- list()
 for (YEAR in YEARS) {
-  
+
   # Compile list of variables to download
   SF1_VARS <- load_variables(YEAR, "sf1")
   POP_VARS <- SF1_VARS %>%
@@ -39,7 +39,7 @@ for (YEAR in YEARS) {
       Category = str_replace_all(label, "!!.*?", " "),
       Category = str_replace(Category, ".*? ", "")
     )
-  
+
   # Download data for selected variables in all counties
   POP_DATA <- tibble()
   for (STATE in names(COUNTIES)) {
@@ -48,7 +48,7 @@ for (YEAR in YEARS) {
                           year = YEAR, survey = "sf1", cache_table = TRUE)
     POP_DATA <- bind_rows(POP_DATA, TEMP)
   }
-  
+
   # Assemble final table
   POP[[as.character(YEAR)]] <- POP_DATA %>%
     left_join(POP_VARS, by = c("variable" = "name")) %>%
@@ -75,12 +75,29 @@ for (YEAR in YEARS) {
 }
 
 
+# Download full population data set  --------------------------------
+
+a <- tibble()
+b <- tibble()
+Year2 <- c(2014:2019)
+
+for (YEAR in Year2) {
+  a <- as_tibble(POP[[as.character(YEAR)]])
+  b <- rbind(a, b)
+}
+
+b <- b %>% filter(State == "Indiana")
+write.csv(b, "/Users/mweber/Desktop/IN_POP.csv")
+
+
+# Upload full dataset to GitHub/R  --------------------------------
+
 #View(POP[["2010"]])
 #View(POP[["2000"]])
 
 #Read 1990 data from spreadsheets
 #POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
- 
+
 
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

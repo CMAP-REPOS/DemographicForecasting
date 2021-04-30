@@ -99,7 +99,9 @@ ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   mutate(Weighted_Avg = sum(ASFR*weight)) %>%
   select(-sum, -weight)
 
-Projections <- read.csv(file = "Input/ASFR_Projections.csv")
+Projections <- read_xlsx("Input/ASFR_Projections.xlsx")
+Projections <- Projections %>% as.numeric(Projected_ASFR) %>% round(Projected_ASFR, 6)
+
 
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%
@@ -112,8 +114,10 @@ Final <- distinct(Final)
 #write.csv(Final, "/Users/maryweber/Desktop/ASFR2010-2060.csv")
 #write.csv(ASFR, "/Users/maryweber/Desktop/ASFR_HealthDep.csv")
 
+
+
 #save(ASFR, file="Output/ASFR.Rdata")
-#load("Output/ASFR.Rdata")
+#load("Output/ASFR.Rdata", "/Users/maryweber/Desktop/ASFR_HealthDep.csv")
 
 
 # sample plots ---------

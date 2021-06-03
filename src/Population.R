@@ -6,7 +6,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-#load("Output/PopData.Rdata")
+load("Output/PopData.Rdata")
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 
@@ -79,15 +79,15 @@ for (YEAR in YEARS) {
 
 a <- tibble()
 b <- tibble()
-Year2 <- c(2014:2019)
+Year2 <- c(2014:2018)
 
 for (YEAR in Year2) {
   a <- as_tibble(POP[[as.character(YEAR)]])
   b <- rbind(a, b)
 }
 
-b <- b %>% filter(State == "Indiana")
-write.csv(b, "/Users/mweber/Desktop/IN_POP.csv")
+b <- b %>% filter(State == "Wisconsin")
+write.csv(b, "/Users/mweber/Desktop/WI_POP.csv")
 
 
 # Upload full dataset to GitHub/R  --------------------------------

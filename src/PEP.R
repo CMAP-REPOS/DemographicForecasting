@@ -6,11 +6,11 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-load("Output/PopData.Rdata") #must load, following code dependent on POP[[]] 
+load("Output/PopData.Rdata") #must load, following code dependent on POP[[]]
 
 # Set parameters ----------------------------------------------------------
 
-PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019)
+PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019) # add in 2020 estimates
 ## PEP DATE_CODE documentation: https://www.census.gov/data/developers/data-sets/popest-popproj/popest/popest-vars/2019.html
 
 
@@ -31,9 +31,9 @@ remove <- c("Under 18 years", "16 years and over", "18 years and over", "65 year
 PEP_DATA <- tibble()
 
 for (STATE in names(COUNTIES)) {
-  
+
   PEP_TEMP <- get_estimates(product="characteristics", geography = "county", year = max(PEP_YEARS),
-                            county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"), 
+                            county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"),
                             breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
     filter(DATE %in% names(PEP_YEARS),
            SEX %in% c("Male", "Female")) %>%
@@ -47,14 +47,14 @@ for (STATE in names(COUNTIES)) {
                               State == "Wisconsin" ~ "External WI"),
            Age = str_replace_all(Age, "Age ", "")) %>%
     select(-DATE)
-  
+
   PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
 }
 
 # Create final table --------------------------------
 
-for(YEAR in PEP_YEARS) { 
-  
+for(YEAR in PEP_YEARS) {
+
     POP[[as.character(YEAR)]] <- PEP_DATA %>%
       filter(Year == YEAR, !(Age %in% remove)) %>% # Restrict to specific year and age groupings
       arrange(GEOID)
@@ -67,8 +67,8 @@ d <- POP[["2014"]] %>% filter(State == "Illinois") %>% filter(Sex == "Female") %
 
 # Upload Excel files and save Output file (only necessary if changes to code/Excel data are made) -------------------------------
 
-#POP[["1995"]] <- read_excel("Input/Pop1995.xlsx") 
-#POP[["2005"]] <- read_excel("Input/Pop2005.xlsx") 
+#POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")
+#POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
 
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

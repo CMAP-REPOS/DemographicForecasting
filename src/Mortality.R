@@ -29,7 +29,7 @@ Deaths <- Deaths %>% filter(Year > 2013 & Year < 2019)
 #i need to keep in the 0-4 age group to calculate population counts for 0-1 and 1-4
 
 m <- full_join(Deaths, select(MORT_DATA, c(GEOID, Year, Age, Population)), by=c('GEOID', 'Age', 'Year')) %>%
-      mutate(Population2 = case_when(Age == '0 to 1 years' ~ Population*(1/5),
+      mutate(Population2 = case_when(Age == '0 to 1 years' ~ Population*(1/5), #age.x is 0-1 and age.y is 1-4 then multiple population by 1/5
                                    Age == '1 to 4 years' ~ Population*(4/5),
                                     TRUE ~ Population))
 

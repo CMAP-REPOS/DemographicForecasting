@@ -24,13 +24,13 @@ Deaths <- rename(Deaths, DeathCount=Value)
 Deaths <- Deaths %>% filter(Year > 2013 & Year < 2019)
 
 
-m <- left_join(Deaths, select(Mort_Pop, c(GEOID, Age, Population, Year)), by=c('GEOID', 'Year', 'Age'))
+m <- left_join(Deaths, Mort_Pop) %>% #i need population in here
+      mutate(Population = case_when(Age == '0 to 1 years' ~ DeathCount*(1/5), #this should be population
+                                   Age == '1 to 4 years' ~ DeathCount*(4/5),
+                                    TRUE ~ DeathCount))
+
 
 View(m)
-
-
-#0-1 is 1/5 population of 0-4
-#1-4 is 4/5 population of 0-4
 
 
 

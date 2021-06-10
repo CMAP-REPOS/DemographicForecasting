@@ -27,10 +27,10 @@ This code extracts 2000 and 2010 data from the Census API. 1990 data, not availa
 
 This code extracts 2011-2019 population estimates data from the Census Bureau's Population Estimates Program (PEP). 1995 and 2005 data is not available via the API. Instead, this data is stored in **Pop1995.xlsx** and **Pop2005.xlsx**, respectively (included in this repository). These files come from the Berger report. This data is also stored in the named list 'POP' along with the decenial census data. 
 
-  - `POP[["1995"]]` contains 1990 population data
-  - `POP[["2005"]]` contains 2000 population data
-  - `POP[["2011"]]` contains 2015 population data
-  - `POP[["2012"]]` contains 2016 population data....and so on through 2019
+  - `POP[["1995"]]` contains 1995 population data
+  - `POP[["2005"]]` contains 2005 population data
+  - `POP[["2011"]]` contains 2011 population data
+  - `POP[["2012"]]` contains 2012 population data....and so on through 2019
   
  ### Fertility.R
  
@@ -38,8 +38,8 @@ This code extracts 2011-2019 population estimates data from the Census Bureau's 
  out to 2050.
  
  Existing data from Berger provided birth statistics from 1990-2014. More recent vital stats were requested from the Illinois, Wisconsin and Indiana health 
- departments. Depending on department, birth data was received through 2018 or 2020. Birth data for the youngest female group (10-14) was combined with the
- 15-19 group and the oldest female group (45-49) were combined with 40-44 group. Note: IL provided birth data for females 50+. For consistency across states, 
+ departments. Depending on department, birth data was received through 2018 or 2020. Birth data for the youngest female group (10-14) were combined with the
+ 15-19 group and data for the oldest female group (45-49) were combined with 40-44 group. Note: IL provided birth data for females 50+. For consistency across states, 
  that data was not included. 
  
  A key part of this code is the removal of GQ female estimates from the 2011-2019 population estimates data. Population estimates data, unlike Decennial Census
@@ -58,7 +58,7 @@ Step 3:
     represent (data from Step 1)
 
 Step 4: 
-  - Read in GQ Census estimates by State, County for 2011-2019 (data stored in **GQE.xlsx**) (not available broken down by sex, age)
+  - Read in GQ Census estimates by State, County for 2011-2019 (data stored in **GQE.xlsx**) (not available by sex, age)
 
 Step 5: 
   - For each year of GQ Census estimates (2011-2019), multiply County totals by the above proportions for each female age group (15-44) to estimate the number

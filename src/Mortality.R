@@ -65,12 +65,14 @@ LT <- LT %>% add_column(x = c(0,1,5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
   add_column(Ax = c(0.1,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
 
 a <- left_join(MORT_DATA, LT, by=c("Age" = "Age")) %>% select(Age, x, n, Ax, Sex, Region, Mortality, Population)
+
+
+a <- a %>% mutate(Mx = round(Mortality/Population, digits = 6)) %>%
+           mutate(Qx = ifelse(Age == '85 years and over', 1, (round((n*Mx)/(1+n*(1-Ax)*Mx), digits=6)))) %>% #85+ should always be 1
+           mutate(Px = round(1-Qx, digits = 6)) %>%
+           mutate(Ix = ifelse(Age == '0 to 1 years', 100000, (round((lag(Px)*lag(Lx)), digits=6)))) #<1 should always be 100,000
+
+
 View(a)
-
-a <- a %>% add_column(Mx = Deaths/Population)
-
-%>%
-  add_column(n = c(1,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,12)) %>%
-  add_column(Ax = c(0.1,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
 
 

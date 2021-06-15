@@ -64,7 +64,7 @@ GQ <- GQ_DATA %>%
   )
 
 
-# Adds columns for Sex and Age, but retains Category column 
+# Adds columns for Sex and Age, but retains Category column
 GQ <- GQ %>% mutate(
             Sex = case_when(str_starts(Category, "Male") ~ "Male",
                             str_starts(Category, "Female") ~ "Female",
@@ -80,6 +80,8 @@ GQ_INST <- GQ %>%
     "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE",
     "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE"
   ))
+
+#test change!
 
 GQ_NONINST <- GQ %>%
   filter(Concept %in% c(

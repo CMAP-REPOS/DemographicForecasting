@@ -65,11 +65,13 @@ GQ <- GQ_DATA %>%
 
 
 # Adds columns for Sex and Age, but retains Category column
-GQ <- GQ %>% mutate(
-            Sex = case_when(str_starts(Category, "Male") ~ "Male",
-                            str_starts(Category, "Female") ~ "Female",
-                            TRUE ~ Category)) %>%
-            separate(Category, into=c("Sex", "Age"), sep = " ", extra = "merge", remove = FALSE)
+GQ <- GQ %>%
+  separate(Category, into=c("Sex", "Age"), sep = " ", extra = "merge", remove = FALSE) %>%
+  mutate(
+    Sex = case_when(Sex == "County" & str_starts(Category, "County Male") ~ "Male",
+                    Sex == "County" & str_starts(Category, "County Female") ~ "Female",
+                    Sex =="County" ~ "All",
+                    TRUE ~ Sex))
 
 
 # Split out institutionalized and non-institutionalized
@@ -80,8 +82,6 @@ GQ_INST <- GQ %>%
     "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE",
     "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE"
   ))
-
-#test change!
 
 GQ_NONINST <- GQ %>%
   filter(Concept %in% c(

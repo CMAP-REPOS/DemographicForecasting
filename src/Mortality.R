@@ -64,7 +64,6 @@ MORT_DATA <- Deaths %>%
 # Life Tables Calculations ---------------------------------------------------------
 
 LT <- tibble(Age = unique(Deaths$Age)) %>%
-  #add_column(x = c(0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85)) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>%
   add_column(n = c(1,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,12)) %>%
@@ -80,7 +79,9 @@ a <- MORT_DATA %>%
     Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
                 round(n*Mx/(1+n*(1-Ax)*Mx), digits=6)),
     Px = round(1-Qx, digits = 6),
-    Ix = head(accumulate(Px, `*`, .init=100000), -1)   # 0-1 should always be 100000
+    Ix = round(head(accumulate(Px, `*`, .init=100000), -1),0), # 0-1 should always be 100000
+    Dx = (Ix -lead(Ix)),
+    Lx = round((n*(lead(Ix)+(Ax*Dx))),0)
   ) %>%
   ungroup()
 

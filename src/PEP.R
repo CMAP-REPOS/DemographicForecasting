@@ -59,6 +59,7 @@ for(YEAR in PEP_YEARS) {
       arrange(GEOID)
 }
 
+POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
 d <- POP[["2014"]] %>% filter(State == "Illinois") %>% filter(Sex == "Female") %>% filter(Region == "External IL") %>%
   filter(Age == '45 to 49 years') %>% mutate(sum = sum(Population))

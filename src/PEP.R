@@ -59,7 +59,6 @@ for(YEAR in PEP_YEARS) {
       arrange(GEOID)
 }
 
-POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
 d <- POP[["2014"]] %>% filter(State == "Illinois") %>% filter(Sex == "Female") %>% filter(Region == "External IL") %>%
   filter(Age == '45 to 49 years') %>% mutate(sum = sum(Population))
@@ -69,6 +68,8 @@ d <- POP[["2014"]] %>% filter(State == "Illinois") %>% filter(Sex == "Female") %
 
 #POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")
 #POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
+
+#POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
 #save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

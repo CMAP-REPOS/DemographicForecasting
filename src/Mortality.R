@@ -75,14 +75,20 @@ a <- MORT_DATA %>%
   arrange(Region, desc(Sex), x) %>%
   group_by(Region, Sex) %>%
   mutate(
-    Mx = round(Mortality/Population, digits = 6),
+    Mx = (Mortality/Population),
     Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
-                round(n*Mx/(1+n*(1-Ax)*Mx), digits=6)),
-    Px = round(1-Qx, digits = 6),
-    Ix = round(head(accumulate(Px, `*`, .init=100000), -1),0), # 0-1 should always be 100000
-    Dx = (Ix -lead(Ix)),
-    Lx = round((n*(lead(Ix)+(Ax*Dx))),0)
+                (n*Mx/(1+n*(1-Ax)*Mx))),
+    Px = (1-Qx),
+    Ix = head(accumulate(Px, `*`, .init=100000), -1), # 0-1 should always be 100000
+    Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
+    Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))),
+    temp = ifelse(Age == '85 years and over', Lx, 0),
+    Tx = (accumulate(Lx, `+`, .dir = "backward"))
+
   ) %>%
+  select(-temp) %>%
   ungroup()
 
 View(a)
+
+

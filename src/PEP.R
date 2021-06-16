@@ -39,8 +39,7 @@ for (STATE in names(COUNTIES)) {
            SEX %in% c("Male", "Female")) %>%
     rename(Population = value, Age = AGEGROUP, Sex = SEX) %>%
     separate(NAME, c("County", "State"), sep = "\\, ") %>%
-    mutate(DATE = as.character(DATE),
-           Year = PEP_YEARS[DATE],
+    mutate(Year = PEP_YEARS[as.character(DATE)],
            Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
                               State == "Illinois" ~ "External IL",
                               State == "Indiana" ~ "External IN",

@@ -83,8 +83,13 @@ a <- MORT_DATA %>%
     Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
     Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))),
     temp = ifelse(Age == '85 years and over', Lx, 0),
-    Tx = (accumulate(Lx, `+`, .dir = "backward"))
-
+    Tx = (accumulate(Lx, `+`, .dir = "backward")),
+    Ex = (Tx/Ix),
+    Sx = round(case_when(Age == '0 to 1 years' ~ Lx/Ix,
+                   Age == '1 to 4 years' ~ Lx/(lag(Lx)*4),
+                   Age == '5 to 9 years' ~ Lx/(lag(Lx) + lag(Lx, n = 2)),
+                   Age == '85 years and over' ~ Lx/(Lx +lag(Lx)),
+                   TRUE ~ Lx/lag(Lx)),6)
   ) %>%
   select(-temp) %>%
   ungroup()

@@ -11,7 +11,7 @@ load("Output/PopData.Rdata") #must load, following code dependent on POP[[]]
 # Set parameters ----------------------------------------------------------
 
 PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019, `13`=2019) # add in 2020 estimates
-## PEP DATE_CODE documentation: https://www.census.gov/data/developers/data-sets/popest-popproj/popest/popest-vars/2019.html
+## PEP DATE_CODE documentation: https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-county-detail.html
 
 
 COUNTIES <- list(

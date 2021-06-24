@@ -1,4 +1,4 @@
-# CMAP | Mary Weber | 6/3/2021
+# CMAP | Noel Peterson, Mary Weber | 6/3/2021
 
 library(dplyr)
 library(tidyverse)
@@ -101,6 +101,8 @@ a <- MORT_DATA %>%
 
 
 View(a)
+
+save(a, file="Output/LifeTables.Rdata")
 write.csv(a, "/Users/mweber/Desktop/mort.csv")
 
 

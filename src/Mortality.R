@@ -14,7 +14,6 @@ DEATHS_XLSX <- "Input/CMAPMortality1990-2019.xlsx"
 
 # Create mortality age groups ---------------------------------------------------------
 
-# Load population data
 MORT_POP <- tibble()
 
 for (YEAR in MORT_YEARS) {
@@ -47,18 +46,21 @@ Deaths <- read_excel(DEATHS_XLSX) %>%
   group_by(GEOID, Sex, Age, Year, Region) %>%
   summarize(Mortality = sum(Mortality), .groups = "drop")
 
+#problem here
+
 # Join pop to deaths
-MORT_DATA <- Deaths %>%
-  left_join(MORT_POP, by=c('GEOID', 'Age', 'Year', 'Sex', 'Region')) %>%
+MORT_DATA <- MORT_POP %>%
+  full_join(Deaths, by=c('GEOID', 'Age', 'Sex', 'Year', 'Region')) %>%
   group_by(Age, Sex, Region) %>%
-  summarise(Mortality = sum(Mortality),
-            Population = sum(Population),
+  summarise(Population = sum(Population),
+            Mortality = sum(Mortality),
             .groups = "drop") %>%
   arrange(Region, desc(Sex))
 
+
+
 #View(MORT_DATA)
-#a <- MORT_DATA %>% filter(State == 'Wisconsin' & Sex == 'Female' & Age == '85 years and over') %>%
-#  mutate(Population = sum(Population))
+#a <- MORT_DATA %>% filter( Region == 'External IL')  %>% group_by(Age, Sex)  %>% mutate(Population = sum(Population))
 #View(a)
 
 # Life Tables Calculations ---------------------------------------------------------
@@ -95,5 +97,10 @@ a <- MORT_DATA %>%
   ungroup()
 
 View(a)
+write.csv(a, "/Users/mweber/Desktop/mort.csv")
 
+
+# Read in SSA tables -----------------------------------------------------------
+
+#Multiply a and SSA tables together
 

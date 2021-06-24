@@ -107,6 +107,16 @@ write.csv(a, "/Users/mweber/Desktop/mort.csv")
 
 
 # Read in SSA tables -----------------------------------------------------------
+SSA <- read_excel("/Users/mweber/Desktop/SSA.xlsx", col_names = T)
 
-#Multiply a and SSA tables together
+
+#multiply SSA tables by the life tables to create the final projections for each region
+Mort_Proj <- a %>%
+  select(Region, Sex, Age, Sx) %>%
+  left_join(SSA, by= c("Sex", "Age")) %>%
+  mutate(across(c(3:11), .fns = ~.*Sx)) %>%
+  select(-Sx)
+
+View(Mort_Proj)
+
 

@@ -68,16 +68,18 @@ MORT_DATA <- MORT_POP %>%
 LT <- tibble(Age = unique(Deaths$Age)) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>%
-  add_column(n = c(1,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,12)) %>%
   add_column(Ax = c(0.1,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
 
 a <- MORT_DATA %>%
   left_join(LT, by="Age") %>%
-  select(Region, Sex, Age, Mortality, Population, x, n, Ax) %>%
+  select(Region, Sex, Age, Mortality, Population, x, Ax) %>%
   arrange(Region, desc(Sex), x) %>%
   group_by(Region, Sex) %>%
-  mutate(
-    Mx = (Mortality/Population),
+  mutate(Mx = (Mortality/Population),
+    n = round(case_when(Age == '0 to 1 years' ~ 1,
+                  Age == '1 to 4 years' ~ 4,
+                  Age == '85 years and over' ~ 2/Mx,
+                  TRUE ~ 5), 0),
     Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
                 (n*Mx/(1+n*(1-Ax)*Mx))),
     Px = (1-Qx),
@@ -94,7 +96,9 @@ a <- MORT_DATA %>%
                    TRUE ~ Lx/lag(Lx)),6)
   ) %>%
   select(-temp) %>%
+  relocate(n, .after = x)
   ungroup()
+
 
 View(a)
 write.csv(a, "/Users/mweber/Desktop/mort.csv")

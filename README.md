@@ -84,4 +84,9 @@ Step 9:
 
 The steps for projections mortality are: 
 
-1. 
+1. For years 2014-2018, split population age group 0-4 into 0-1 and 1-4 in order to match mortality age groups. This is done by assigning 1/5 of the original group to the 0-1 category and 4/5 of the original group to the 1-4 category. 
+2. Join mortality data with the updated population data from the above step. This data is stored in 'MORT_DATA' 
+3. Perform life table calculations as outlined in the each region's projections spreadsheet, saved on OneDrive (definitions and logic provided detailed here)
+4. Join life tables with SSA tables 
+5. Perform final projection calculation, which is multiplying each value in the SSA table with the corresponding values in the Sx column
+6. CHECK IF ANY VALUES GO OVER 1 - if they do, must adjust these rates based on rules provided by Daivd E-R (NEED TO REQUEST HE WRITE THESE)

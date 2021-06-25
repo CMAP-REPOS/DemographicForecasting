@@ -82,7 +82,7 @@ Step 9:
  - CMAPMortality1990-2019.xlsx: This data was received from each state's health department and the file is stored in the 'Input' folder 
  -  SSA.xlsx: This file utilizes SSA data, which provides historical and projected period life tables by single year of age, gender, and calendar year for years 1900 through 2095. This files is stored in the 'Input' folder. The calculations were done by David Egan-Roberston and the spreadsheet detailing his work is saved on OneDrive.
 
-The steps for projections mortality are: 
+The steps for projecting mortality are: 
 
 1. For years 2014-2018, split population age group 0-4 into 0-1 and 1-4 in order to match mortality age groups. This is done by assigning 1/5 of the original group to the 0-1 category and 4/5 of the original group to the 1-4 category. 
 2. Join mortality data with the updated population data from the above step. This data is stored in 'MORT_DATA' 

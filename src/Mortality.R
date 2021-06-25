@@ -46,8 +46,6 @@ Deaths <- read_excel(DEATHS_XLSX) %>%
   group_by(GEOID, Sex, Age, Year, Region) %>%
   summarize(Mortality = sum(Mortality), .groups = "drop")
 
-#problem here
-
 # Join pop to deaths
 MORT_DATA <- MORT_POP %>%
   full_join(Deaths, by=c('GEOID', 'Age', 'Sex', 'Year', 'Region')) %>%
@@ -56,7 +54,6 @@ MORT_DATA <- MORT_POP %>%
             Mortality = sum(Mortality),
             .groups = "drop") %>%
   arrange(Region, desc(Sex))
-
 
 
 #View(MORT_DATA)
@@ -76,10 +73,10 @@ a <- MORT_DATA %>%
   arrange(Region, desc(Sex), x) %>%
   group_by(Region, Sex) %>%
   mutate(Mx = (Mortality/Population),
-    n = round(case_when(Age == '0 to 1 years' ~ 1,
+    n = case_when(Age == '0 to 1 years' ~ 1,
                   Age == '1 to 4 years' ~ 4,
                   Age == '85 years and over' ~ 2/Mx,
-                  TRUE ~ 5), 0),
+                  TRUE ~ 5),
     Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
                 (n*Mx/(1+n*(1-Ax)*Mx))),
     Px = (1-Qx),
@@ -89,32 +86,32 @@ a <- MORT_DATA %>%
     temp = ifelse(Age == '85 years and over', Lx, 0),
     Tx = (accumulate(Lx, `+`, .dir = "backward")),
     Ex = (Tx/Ix),
-    Sx = round(case_when(Age == '0 to 1 years' ~ Lx/Ix,
+    Sx = case_when(Age == '0 to 1 years' ~ Lx/Ix,
                    Age == '1 to 4 years' ~ Lx/(lag(Lx)*4),
                    Age == '5 to 9 years' ~ Lx/(lag(Lx) + lag(Lx, n = 2)),
                    Age == '85 years and over' ~ Lx/(Lx +lag(Lx)),
-                   TRUE ~ Lx/lag(Lx)),6)
+                   TRUE ~ Lx/lag(Lx))
   ) %>%
   select(-temp) %>%
-  relocate(n, .after = x)
+  relocate(n, .after = x) %>%
   ungroup()
 
 
-View(a)
+#View(a)
 
-save(a, file="Output/LifeTables.Rdata")
-write.csv(a, "/Users/mweber/Desktop/mort.csv")
+#save(a, file="Output/LifeTables.Rdata")
+#write.csv(a, "/Users/mweber/Desktop/mort.csv")
 
 
 # Read in SSA tables -----------------------------------------------------------
 SSA <- read_excel("/Users/mweber/Desktop/SSA.xlsx", col_names = T)
 
 
-#multiply SSA tables by the life tables to create the final projections for each region
+# Multiply SSA tables by the life tables to create the final projections for each region
 Mort_Proj <- a %>%
   select(Region, Sex, Age, Sx) %>%
   left_join(SSA, by= c("Sex", "Age")) %>%
-  mutate(across(c(3:11), .fns = ~.*Sx)) %>%
+  mutate(across(c(5:13), .fns = ~.*Sx)) %>%
   select(-Sx)
 
 View(Mort_Proj)

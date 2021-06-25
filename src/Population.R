@@ -77,17 +77,22 @@ for (YEAR in YEARS) {
 
 # Download full population data set  --------------------------------
 
-a <- tibble()
+c <- tibble()
 b <- tibble()
 Year2 <- c(2014:2018)
 
 for (YEAR in Year2) {
-  a <- as_tibble(POP[[as.character(YEAR)]])
-  b <- rbind(a, b)
+  c <- as_tibble(POP[[as.character(YEAR)]])
+  b <- rbind(c, b)
 }
 
-b <- b %>% filter(State == "Wisconsin")
-write.csv(b, "/Users/mweber/Desktop/WI_POP.csv")
+
+
+b <- b %>% filter(State == "Illinois" & Region == 'External IL') %>%  select(-Year, -County, -State, -GEOID) %>%
+  group_by(Age, Sex) %>% mutate(Population = sum(Population)) %>% ungroup()
+View(b)
+
+write.csv(b, "/Users/mweber/Desktop/IL_External.csv")
 
 
 # Upload full dataset to GitHub/R  --------------------------------

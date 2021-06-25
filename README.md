@@ -76,4 +76,10 @@ Step 8:
 Step 9:
 - Merge 2010 Census HH Population data and 2011-2019 HH Population Estimates to form a complete table of Household Population data
  
-  
+ ### Mortality.R
+ This code projects utilized mortality data from 2014-2018 as well as Social Security Adminitration (SSA) data to project mortality rates out to 2060. The data inputs are: 
+ 
+ - CMAPMortality1990-2019.xlsx: This data was received from each state's health department and the file is stored in the 'Input' folder 
+ -  SSA.xlsx: This final dataset utilizes SSA data, which provides historical and projected period life tables by single year of age, gender, and calendar year for years 1900 through 2095. The calculations were done by David Egan-Roberston and the spreadsheet detailing his work is saved on OneDrive. 
+
+The steps for projections mortality are: 

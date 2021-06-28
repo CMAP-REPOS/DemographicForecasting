@@ -80,7 +80,8 @@ Step 9:
  
 ** ASFR Projections**
  
-** Sheet 1**
+**Sheet 1**
+
 Step 1:
 - Calculate a table of births by age of mother for years 2010-2018
 
@@ -96,11 +97,13 @@ Step 4:
 - Re-Calculate ASFRs to combine 10-14 and 15-19: Total births for both groups from 2010-2018 / 2014 Population Estimate for 15-19 age group / 9
 - Re-Calculate ASFRs to combine 40-44 and 45-49: Total births for both groups from 2010-2018 / 2014 Population Estimate for 40-44 age group / 9  
 
-** Sheet 2**
+**Sheet 2**
+
 Step 5: 
 - Pull in projected Age-Specific Fertility Rates (ASFRs), U.S. Census Bureau National Projections, vintage 2014 
 
 **Sheet 3**
+
 Step 6: 
   
  

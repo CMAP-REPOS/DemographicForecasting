@@ -80,25 +80,25 @@ Step 9:
  
 ** ASFR Projections**
  
-  	Sheet 1
-	Step 1:
-	 - Calculate a table of births by age of mother for years 2010-2018
+** Sheet 1**
+Step 1:
+- Calculate a table of births by age of mother for years 2010-2018
 
-	Step 2: 
-	- For 2014, pull Census PEP data from the API (note: 2014 is the base year as it's the halfway point between 2010 and 2018)
+Step 2: 
+- For 2014, pull Census PEP data from the API (note: 2014 is the base year as it's the halfway point between 2010 and 2018)
 
-	Step 3: 
-	- Calculate Age-Specific Fertility Rates, Centered at 2014
-	- Calculation: Total births per age group from 2010-2018 / 2014 Population Estimate for age group /  9 (number of years in 2010-2018) 
+Step 3: 
+- Calculate Age-Specific Fertility Rates, Centered at 2014
+- Calculation: Total births per age group from 2010-2018 / 2014 Population Estimate for age group /  9 (number of years in 2010-2018) 
 
-	Step 4: 
-	- Limit age groups to 15-44 (Remember, in analysis 10-14 births are combined with 15-19 and 45-49 births are combined with 40-44) 
-	- Re-Calculate ASFRs to combine 10-14 and 15-19: Total births for both groups from 2010-2018 / 2014 Population Estimate for 15-19 age group / 9
-	- Re-Calculate ASFRs to combine 40-44 and 45-49: Total births for both groups from 2010-2018 / 2014 Population Estimate for 40-44 age group / 9  
+Step 4: 
+- Limit age groups to 15-44 (Remember, in analysis 10-14 births are combined with 15-19 and 45-49 births are combined with 40-44) 
+- Re-Calculate ASFRs to combine 10-14 and 15-19: Total births for both groups from 2010-2018 / 2014 Population Estimate for 15-19 age group / 9
+- Re-Calculate ASFRs to combine 40-44 and 45-49: Total births for both groups from 2010-2018 / 2014 Population Estimate for 40-44 age group / 9  
 
-	Sheet 2
-	 Step 5: 
-	 - Pull in projected Age-Specific Fertility Rates (ASFRs), U.S. Census Bureau National Projections, vintage 2014 
+** Sheet 2**
+Step 5: 
+- Pull in projected Age-Specific Fertility Rates (ASFRs), U.S. Census Bureau National Projections, vintage 2014 
 
 **Sheet 3**
 Step 6: 

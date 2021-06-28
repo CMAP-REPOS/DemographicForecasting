@@ -80,6 +80,7 @@ Step 9:
 - Merge 2010 Census HH Population data and 2011-2019 HH Population Estimates to form a complete table of Household Population data
  
 **ASFR Projections**
+Note: Following along with Excel workbook version may be useful here
  
 **Sheet 1**
 
@@ -106,13 +107,16 @@ Step 5:
 **Sheet 3**
 
 Step 6: 
-- Create a table with years as columns. The first year is 2014, the second year (aka start year) is the most recent year that fertility data was received from the respective region and the following years progress in 1-year increments up to 2060. 
-- The age groups are the rows and are limited to age groups within 15-45
-- The calculations are the sum of the 2014 Vintage projection (sheet 2) for each age in the group, for each year, divded by 5 (number of ages in each interval). There are two exceptions:
-- 	15-19: sum of 2014 vintage projections for ages 14-19 but still divide by 5 as projections for 14 year olds is miniscule
-- 	40-44: sum of 2014 vintage projections for ages 40-54 but still divde by 5 as projections over 44 are miniscule 
-  
- 
+- By year, for each age in a given age group, sum Census Bureau's Projected 1-Year ASFRs (sheet 2); divide this value by 5, which is the number of ages in (most) age groups.    This calculates and average ASFR for each age group at the national level. There are two exceptions: 
+
+For 15-19:  Since the Census Bureau's Projected 1-Year ASFRs start at 14, age 14 is included in the 15-19 age group calculation. Their sum is still divided by 5 (even though it includes 6 ages) because the ASFRs for 14 are so insignificant.  	
+
+For 40-44: Since the Census Bureau's Projected 1-Year ASFRs end at age 54, ages 45-54 are included in the 40-44 age group calculation. Their sum is still divided by 5 (even though it includes 15 ages) because the ASFRs for 45+ are so insignificant.  
+
+Step 7: 
+- Calculate the ratios of the above calculated ASFRs to the launch year of calculated ASFRs 2014. Using the national projections from the Census, the ratios are between each of our projected years and our base year (2014). (divide each summed value in step 6 by the 2014 value for that age group)
+
+Step 8:
  
  ### Mortality.R
  This code utilizes mortality data from 2014-2018 as well as Social Security Administration (SSA) data to project mortality rates out to 2060. The data inputs are: 

@@ -80,43 +80,44 @@ Step 9:
 - Merge 2010 Census HH Population data and 2011-2019 HH Population Estimates to form a complete table of Household Population data
  
 **ASFR Projections**
-Note: Following along with Excel workbook version may be useful here
+	Note: Following along with Excel workbook version may be useful here
  
 **Sheet 1**
 
-Step 1:
-- Calculate a table of births by age of mother for years 2010-2018
+	Step 1:
+	- Calculate a table of births by age of mother for years 2010-2018
 
-Step 2: 
-- For 2014, pull Census PEP data from the API (note: 2014 is the base year as it's the halfway point between 2010 and 2018)
+	Step 2: 
+	- For 2014, pull Census PEP data from the API (note: 2014 is the base year as it's the halfway point between 2010 and 2018)
 
-Step 3: 
-- Calculate Age-Specific Fertility Rates, Centered at 2014
-- Calculation: Total births per age group from 2010-2018 / 2014 Population Estimate for age group /  9 (number of years in 2010-2018) 
+	Step 3: 
+	- Calculate Age-Specific Fertility Rates, Centered at 2014
+	- Calculation: Total births per age group from 2010-2018 / 2014 Population Estimate for age group /  9 (number of years in 2010-2018) 
 
-Step 4: 
-- Limit age groups to 15-44 (Remember, in analysis 10-14 births are combined with 15-19 and 45-49 births are combined with 40-44) 
-- Re-Calculate ASFRs to combine 10-14 and 15-19: Total births for both groups from 2010-2018 / 2014 Population Estimate for 15-19 age group / 9
-- Re-Calculate ASFRs to combine 40-44 and 45-49: Total births for both groups from 2010-2018 / 2014 Population Estimate for 40-44 age group / 9  
+	Step 4: 
+	- Limit age groups to 15-44 (Remember, in analysis 10-14 births are combined with 15-19 and 45-49 births are combined with 40-44) 
+	- Re-Calculate ASFRs to combine 10-14 and 15-19: Total births for both groups from 2010-2018 / 2014 Population Estimate for 15-19 age group / 9
+	- Re-Calculate ASFRs to combine 40-44 and 45-49: Total births for both groups from 2010-2018 / 2014 Population Estimate for 40-44 age group / 9  
 
 **Sheet 2**
 
-Step 5: 
-- Pull in projected Age-Specific Fertility Rates (ASFRs), U.S. Census Bureau National Projections, vintage 2014 
+	Step 5: 
+	- Pull in projected Age-Specific Fertility Rates (ASFRs), U.S. Census Bureau National Projections, vintage 2014 
 
 **Sheet 3**
 
-Step 6: 
-- By year, for each age in a given age group, sum Census Bureau's Projected 1-Year ASFRs (sheet 2); divide this value by 5, which is the number of ages in (most) age groups.    This calculates and average ASFR for each age group at the national level. There are two exceptions: 
+	Step 6: 
+	- By year, for each age in a given age group, sum Census Bureau's Projected 1-Year ASFRs (sheet 2); divide this value by 5, which is the number of ages in (most) age 	groups. This calculates and average ASFR for each age group at the national level. There are two exceptions: 
 
-For 15-19:  Since the Census Bureau's Projected 1-Year ASFRs start at 14, age 14 is included in the 15-19 age group calculation. Their sum is still divided by 5 (even though it includes 6 ages) because the ASFRs for 14 are so insignificant.  	
+	For 15-19:  Since the Census Bureau's Projected 1-Year ASFRs start at 14, age 14 is included in the 15-19 age group calculation. Their sum is still divided by 5 (even though it includes 6 ages) because the ASFRs for 14 are so insignificant.  	
 
-For 40-44: Since the Census Bureau's Projected 1-Year ASFRs end at age 54, ages 45-54 are included in the 40-44 age group calculation. Their sum is still divided by 5 (even though it includes 15 ages) because the ASFRs for 45+ are so insignificant.  
+	For 40-44: Since the Census Bureau's Projected 1-Year ASFRs end at age 54, ages 45-54 are included in the 40-44 age group calculation. Their sum is still divided by 5 (even though it includes 15 ages) because the ASFRs for 45+ are so insignificant.  
 
-Step 7: 
-- Calculate the ratios of the above calculated ASFRs to the launch year of calculated ASFRs 2014. Using the national projections from the Census, the ratios are between each of our projected years and our base year (2014). (divide each summed value in step 6 by the 2014 value for that age group)
-
-Step 8:
+	Step 7: 
+	- Calculate the ratios of the above calculated ASFRs to the launch year of calculated ASFRs 2014. Using the national projections from the Census, the ratios are between each of our projected years and our base year (2014). (divide each summed value in step 6 by the 2014 value for that age group)
+ 
+	Step 8:
+	- Multiply each of the corresponding ratios from the previous step by the 2014 base year ASFRs calculated in the first sheet. (We are essentially applying the trends in ASFRs projected by the Census for the entire U.S. for each region).
  
  ### Mortality.R
  This code utilizes mortality data from 2014-2018 as well as Social Security Administration (SSA) data to project mortality rates out to 2060. The data inputs are: 

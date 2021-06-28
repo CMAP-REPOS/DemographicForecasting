@@ -107,17 +107,24 @@ Step 9:
 **Sheet 3**
 
 	Step 6: 
-	- By year, for each age in a given age group, sum Census Bureau's Projected 1-Year ASFRs (sheet 2); divide this value by 5, which is the number of ages in (most) age 	groups. This calculates and average ASFR for each age group at the national level. There are two exceptions: 
+	- By year, for each age in a given age group, sum Census Bureau's Projected 1-Year ASFRs (sheet 2); 
+	divide this value by 5, which is the number of ages in (most) age groups. 
+	This calculates and average ASFR for each age group at the national level. There are two exceptions: 
 
-	For 15-19:  Since the Census Bureau's Projected 1-Year ASFRs start at 14, age 14 is included in the 15-19 age group calculation. Their sum is still divided by 5 (even though it includes 6 ages) because the ASFRs for 14 are so insignificant.  	
+	For 15-19:  Since the Census Bureau's Projected 1-Year ASFRs start at 14, age 14 is included in the 15-19 age group calculation. 
+	Their sum is still divided by 5 (even though it includes 6 ages) because the ASFRs for 14 are so insignificant.  	
 
-	For 40-44: Since the Census Bureau's Projected 1-Year ASFRs end at age 54, ages 45-54 are included in the 40-44 age group calculation. Their sum is still divided by 5 (even though it includes 15 ages) because the ASFRs for 45+ are so insignificant.  
+	For 40-44: Since the Census Bureau's Projected 1-Year ASFRs end at age 54, ages 45-54 are included in the 40-44 age group calculation. 
+	Their sum is still divided by 5 (even though it includes 15 ages) because the ASFRs for 45+ are so insignificant.  
 
 	Step 7: 
-	- Calculate the ratios of the above calculated ASFRs to the launch year of calculated ASFRs 2014. Using the national projections from the Census, the ratios are between each of our projected years and our base year (2014). (divide each summed value in step 6 by the 2014 value for that age group)
+	- Calculate the ratios of the above calculated ASFRs to the launch year of calculated ASFRs 2014. 
+	  Using the national projections from the Census, the ratios are between each of our projected years and our base year (2014).
+	 (divide each summed value in step 6 by the 2014 value for that age group)
  
 	Step 8:
-	- Multiply each of the corresponding ratios from the previous step by the 2014 base year ASFRs calculated in the first sheet. (We are essentially applying the trends in ASFRs projected by the Census for the entire U.S. for each region).
+	- Multiply each of the corresponding ratios from the previous step by the 2014 base year ASFRs calculated in the first sheet. 
+	  (We are essentially applying the trends in ASFRs projected by the Census for the entire U.S. for each region).
  
  ### Mortality.R
  This code utilizes mortality data from 2014-2018 as well as Social Security Administration (SSA) data to project mortality rates out to 2060. The data inputs are: 

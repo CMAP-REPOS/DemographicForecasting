@@ -34,6 +34,8 @@ This code extracts 2011-2019 population estimates data from the Census Bureau's 
   
  ### Fertility.R
  
+ ASFR Calculations:
+ 
  This code calculates the Age Specific Fertility Rates (ASFRs) for women between the ages of 15-44 for years 2010-2019. ASFR projections are then calculated 
  out to 2050.
  
@@ -75,6 +77,30 @@ Step 8:
 
 Step 9:
 - Merge 2010 Census HH Population data and 2011-2019 HH Population Estimates to form a complete table of Household Population data
+ 
+ ASFR Projections
+ 
+ Step 1:
+ - Calculate a table of births by age of mother for years 2010-2018
+
+Step 2: 
+- For 2014, pull Census PEP data from the API (note: 2014 is the base year as it's the halfway point between 2010 and 2018)
+
+Step 3: 
+- Calculate Age-Specific Fertility Rates, Centered at 2014
+- Calculation: Total births per age group from 2010-2018 / 2014 Population Estimate for age group /  9 (number of years in 2010-2018) 
+
+Step 4: 
+- Limit age groups to 15-44 (Remember, in analysis 10-14 births are combined with 15-19 and 45-49 births are combined with 40-44) 
+- Re-Calculate ASFRs to combine 10-14 and 15-19: Total births for both groups from 2010-2018 / 2014 Population Estimate for 15-19 age group / 9
+- Re-Calculate ASFRs to combine 40-44 and 45-49: Total births for both groups from 2010-2018 / 2014 Population Estimate for 40-44 age group / 9  
+
+ Step 5: 
+ - Pull in projected Age-Specific Fertility Rates (ASFRs), U.S. Census Bureau National Projections, vintage 2014 
+
+Step 6: 
+  
+ 
  
  ### Mortality.R
  This code utilizes mortality data from 2014-2018 as well as Social Security Administration (SSA) data to project mortality rates out to 2060. The data inputs are: 

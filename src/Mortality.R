@@ -104,10 +104,11 @@ a <- MORT_DATA %>%
 
 
 # Read in SSA tables -----------------------------------------------------------
-SSA <- read_excel("/Users/mweber/Desktop/SSA.xlsx", col_names = T)
 
+SSA <- "Input/SSA.xlsx"
 
-# Multiply SSA tables by the life tables to create the final projections for each region
+# Create final projections for each region  ------------------------------------
+
 Mort_Proj <- a %>%
   select(Region, Sex, Age, Sx) %>%
   left_join(SSA, by= c("Sex", "Age")) %>%
@@ -116,4 +117,5 @@ Mort_Proj <- a %>%
 
 View(Mort_Proj)
 
+#need to check if values go over 1 - if they do....ask David E-R to set up a how to approach difference scenarios document
 

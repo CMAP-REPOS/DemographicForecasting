@@ -34,7 +34,8 @@ This code extracts 2011-2019 population estimates data from the Census Bureau's 
   
  ### Fertility.R
  
- **ASFR Calculations:**
+ **ASFR Calculations:** 
+ Note: these steps are detailed in Excel spreadsheets for each region
  
  This code calculates the Age Specific Fertility Rates (ASFRs) for women between the ages of 15-44 for years 2010-2019. ASFR projections are then calculated 
  out to 2050.
@@ -105,6 +106,11 @@ Step 5:
 **Sheet 3**
 
 Step 6: 
+- Create a table with years as columns. The first year is 2014, the second year (aka start year) is the most recent year that fertility data was received from the respective region and the following years progress in 1-year increments up to 2060. 
+- The age groups are the rows and are limited to age groups within 15-45
+- The calculations are the sum of the 2014 Vintage projection (sheet 2) for each age in the group, for each year, divded by 5 (number of ages in each interval). There are two exceptions:
+- 	15-19: sum of 2014 vintage projections for ages 14-19 but still divide by 5 as projections for 14 year olds is miniscule
+- 	40-44: sum of 2014 vintage projections for ages 40-54 but still divde by 5 as projections over 44 are miniscule 
   
  
  

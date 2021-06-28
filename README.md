@@ -78,7 +78,7 @@ Step 8:
 Step 9:
 - Merge 2010 Census HH Population data and 2011-2019 HH Population Estimates to form a complete table of Household Population data
  
-** ASFR Projections**
+**ASFR Projections**
  
 **Sheet 1**
 

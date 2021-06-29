@@ -92,7 +92,7 @@ ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")
   rename(County = County.x) %>%
   rename(Region = Region.x)
 
-# Combine base year population and summed 2010-2019 birth data to generate base year ASFR
+# Combine base year population and summed 2010-2019 birth data to generate base year ASFRs by region
 BaseYearPop <- F_HH_Data %>%
   filter(Year == BASE_YEAR) %>%
   group_by(Age,Region)%>%
@@ -108,6 +108,12 @@ BaseYearASFR <- Births %>%
 
 #check TFR
 #BaseYearASFR %>% group_by(Region)%>% summarise(TFR = sum(baseASFR)*5)
+
+# Import 2014 ASFR projections data from Census Bureau
+#   Note: could try using the package censusapi to import directly
+
+ProjectedASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) %>%
+  filter(group == "0")
 
 
 #Adding in weighted ASFRs by state, year and age group

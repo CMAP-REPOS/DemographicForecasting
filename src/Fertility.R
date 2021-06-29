@@ -73,7 +73,7 @@ F_HH_Data <- bind_rows(Female_HH_2010, HH_Pop)
 # Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
 
 Births <- read_excel("Input/CMAPBirths_1990-2019.xlsx") %>%
-  filter(Year %in% (2010:2020)) %>%
+  filter(Year %in% (2010:2018)) %>% # filtered out incomplete years data (2019 and 2020)
   mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years",
                          Age %in% c("45 to 49 years") ~ "40 to 44 years",
                          TRUE ~ Age)) %>%

@@ -113,7 +113,10 @@ BaseYearASFR <- Births %>%
 #   Note: could try using the package censusapi to import directly
 
 ProjectedASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) %>%
-  filter(group == "0")
+  filter(group == "0") %>% #keep only the total ASFRs (otherwise divvied by race + ethnicity)
+  select(!group) %>%
+  pivot_longer(!year, names_to = "age", values_to="ASFR") %>%
+  mutate(age = str_sub(age, -2))
 
 
 #Adding in weighted ASFRs by state, year and age group

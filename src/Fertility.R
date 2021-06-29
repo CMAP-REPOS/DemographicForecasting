@@ -92,9 +92,23 @@ ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")
   rename(County = County.x) %>%
   rename(Region = Region.x)
 
-# Grab Base Year female population data from F_HH_Data
+# Combine base year population and summed 2010-2019 birth data to generate base year ASFR
 BaseYearPop <- F_HH_Data %>%
-  filter(Year== BASE_YEAR)
+  filter(Year == BASE_YEAR) %>%
+  group_by(Age,Region)%>%
+  summarise(Population = sum(Population),
+            .groups="drop")
+
+BaseYearASFR <- Births %>%
+  group_by(Age,Region)%>%
+  summarise(Births=sum(Births),
+            .groups="drop") %>%
+  left_join(BaseYearPop, by=c("Age","Region")) %>%
+  mutate(baseASFR = Births/Population/9)
+
+#check TFR
+#BaseYearASFR %>% group_by(Region)%>% summarise(TFR = sum(baseASFR)*5)
+
 
 #Adding in weighted ASFRs by state, year and age group
 ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%

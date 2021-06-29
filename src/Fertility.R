@@ -12,7 +12,7 @@ load("Output/GQData.Rdata")
 
 GQE_YEARS <- c(2011:2019) #GQ estimate year range
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
-
+BASE_YEAR <- 2014 #Base year population, ASFR projections are built off of this year
 
 # Remove estimates of females in GQ from each year ----------------------------
 
@@ -91,6 +91,10 @@ ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")
   select(State, GEOID, County.x, Sex, Year, Age, Region.x, Births, Population, ASFR) %>%
   rename(County = County.x) %>%
   rename(Region = Region.x)
+
+# Grab Base Year female population data from F_HH_Data
+BaseYearPop <- F_HH_Data %>%
+  filter(Year== BASE_YEAR)
 
 #Adding in weighted ASFRs by state, year and age group
 ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%

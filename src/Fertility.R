@@ -104,7 +104,7 @@ BaseYearASFR <- Births %>%
   summarise(Births=sum(Births),
             .groups="drop") %>%
   left_join(BaseYearPop, by=c("Age","Region")) %>%
-  mutate(baseASFR = Births/Population/9)
+  mutate(baseASFR = Births/Population/9) #9 is the number of years of data we have (2010-2018)
 
 #check TFR
 #BaseYearASFR %>% group_by(Region)%>% summarise(TFR = sum(baseASFR)*5)

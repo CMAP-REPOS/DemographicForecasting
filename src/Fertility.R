@@ -117,7 +117,8 @@ ProjectedASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) 
   select(!group) %>%
   pivot_longer(!year, names_to = "age", values_to="ASFR")
 
-# Average ASFRs for each age group
+# Calculate average ASFRs for each age group
+#  Exceptions: 14 included in 15-19, and 45 included in 40-44
 ProjectedASFRs <- ProjectedASFRs %>%
   mutate(age = as.integer(str_sub(age, -2))) %>%
   mutate(agegroup = case_when(age %in% 14:19 ~ "15 to 19 years",
@@ -126,7 +127,7 @@ ProjectedASFRs <- ProjectedASFRs %>%
                              age %in% 30:34 ~ "30 to 34 years",
                              age %in% 35:39 ~ "35 to 39 years",
                              age %in% 40:45 ~ "40 to 44 years")) %>%
-  drop_na() %>%
+  drop_na() %>% #remove the projections for >45
   group_by(year, agegroup) %>%
   summarise(groupASFR = sum(ASFR)/5)
 

@@ -115,8 +115,23 @@ BaseYearASFR <- Births %>%
 ProjectedASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) %>%
   filter(group == "0") %>% #keep only the total ASFRs (otherwise divvied by race + ethnicity)
   select(!group) %>%
-  pivot_longer(!year, names_to = "age", values_to="ASFR") %>%
-  mutate(age = str_sub(age, -2))
+  pivot_longer(!year, names_to = "age", values_to="ASFR")
+
+# Average ASFRs for each age group
+ProjectedASFRs <- ProjectedASFRs %>%
+  mutate(age = as.integer(str_sub(age, -2))) %>%
+  mutate(agegroup = case_when(age %in% 14:19 ~ "15 to 19 years",
+                             age %in% 20:24 ~ "20 to 24 years",
+                             age %in% 25:29 ~ "25 to 29 years",
+                             age %in% 30:34 ~ "30 to 34 years",
+                             age %in% 35:39 ~ "35 to 39 years",
+                             age %in% 40:45 ~ "40 to 44 years")) %>%
+  drop_na() %>%
+  group_by(year, agegroup) %>%
+  summarise(groupASFR = sum(ASFR)/5)
+
+
+
 
 
 #Adding in weighted ASFRs by state, year and age group

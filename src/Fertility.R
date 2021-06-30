@@ -129,7 +129,8 @@ ProjectedASFRs <- ProjectedASFRs %>%
                              age %in% 40:45 ~ "40 to 44 years")) %>%
   drop_na() %>% #remove the projections for >45
   group_by(year, agegroup) %>%
-  summarise(groupASFR = sum(ASFR)/5)
+  summarise(groupASFR = sum(ASFR)/5) %>%
+  filter(year >= 2019) #filter out projections from 2014-2018
 
 
 

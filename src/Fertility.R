@@ -144,6 +144,9 @@ for(REGION in unique(BaseYearASFR$Region)){
     mutate(ProjectedASFR = ASFRratio * baseASFR)
 }
 
+
+#----------------------------------
+
 #Adding in weighted ASFRs by state, year and age group
 ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   mutate(sum = sum(Population)) %>%

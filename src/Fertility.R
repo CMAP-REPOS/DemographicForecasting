@@ -136,17 +136,13 @@ CensusASFRs <- CensusASFRs %>%
 #  Broken out by Region (?)
 Fertility <- list()
 for(REGION in unique(BaseYearASFR$Region)){
-  temp2 <- BaseYearASFR %>%
+  Fertility[[REGION]] <- BaseYearASFR %>%
     filter(Region == REGION) %>%
     select(-Births, -Population, -Region) %>%
     left_join(x=CensusASFRs, by=c("agegroup" = "Age")) %>%
     mutate(ASFRratio = natlASFR / baseASFR) %>%
-
-  Fertility[[REGION]] <- temp2
+    mutate(ProjectedASFR = ASFRratio * baseASFR)
 }
-
-
-
 
 #Adding in weighted ASFRs by state, year and age group
 ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%

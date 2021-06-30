@@ -221,3 +221,9 @@ Fertility[[1]] %>%
   geom_line() +
   geom_point()
 
+Fertility[[1]] %>%
+  filter(year %% 5 == 0 ) %>%
+  ggplot(aes(x=agegroup, y=ProjectedASFR, color=as.factor(year), group=year)) +
+  geom_point()+
+  geom_line()
+

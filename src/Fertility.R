@@ -141,7 +141,8 @@ for(REGION in unique(BaseYearASFR$Region)){
     select(-Births, -Population, -Region) %>%
     left_join(x=CensusASFRs, by=c("agegroup" = "Age")) %>%
     mutate(ASFRratio = natlASFR / baseASFR) %>%
-    mutate(ProjectedASFR = ASFRratio * baseASFR)
+    mutate(ProjectedASFR = ASFRratio * baseASFR)%>%
+    mutate(ProjectedASFRper1000 = round(ProjectedASFR*1000, 2))
 }
 
 
@@ -199,3 +200,25 @@ Final %>%
   ggtitle("2010-2060 IL CMAP Region ASFR Projections") +
   geom_line() +
   geom_point()
+
+
+
+#Graphs to compare imported ASFRs (Final) and calculated ASFRs (Fertility)
+  # WI region only. Calculated ASFRs removed GQ from total population
+
+Final %>%
+  filter(Year %in% c(2019:2060)) %>%
+  filter(State == "Wisconsin") %>%
+  ggplot(aes(x=Year, y=ASFRs, group=Age, color=Age)) +
+  scale_x_continuous(breaks = c(2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)) +
+  scale_y_continuous(breaks = c(0, 15, 25, 50, 75, 100, 125, 150), limits=c(0,130)) +
+  geom_line() +
+  geom_point()
+
+Fertility[[1]] %>%
+  ggplot(aes(x=year, y=ProjectedASFRper1000, group=agegroup, color=agegroup)) +
+  scale_x_continuous(breaks = c(2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)) +
+  scale_y_continuous(breaks = c(0, 15, 25, 50, 75, 100, 125, 150), limits=c(0,130)) +
+  geom_line() +
+  geom_point()
+

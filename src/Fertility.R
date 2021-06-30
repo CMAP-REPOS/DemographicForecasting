@@ -111,7 +111,6 @@ BaseYearASFR <- Births %>%
 
 # Import 2014 ASFR projections data from Census Bureau
 #   Note: could try using the package censusapi to import directly
-
 CensusASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) %>%
   filter(group == "0") %>% #keep only the total ASFRs (otherwise divvied by race + ethnicity)
   select(!group) %>%

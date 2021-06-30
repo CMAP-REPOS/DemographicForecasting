@@ -117,7 +117,7 @@ ProjectedASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) 
   select(!group) %>%
   pivot_longer(!year, names_to = "age", values_to="ASFR")
 
-# Calculate average ASFRs for each age group
+# Calculate national projected ASFRs for each age group and each year
 #  Exceptions: 14 included in 15-19, and 45 included in 40-44
 ProjectedASFRs <- ProjectedASFRs %>%
   mutate(age = as.integer(str_sub(age, -2))) %>%
@@ -129,9 +129,22 @@ ProjectedASFRs <- ProjectedASFRs %>%
                              age %in% 40:45 ~ "40 to 44 years")) %>%
   drop_na() %>% #remove the projections for >45
   group_by(year, agegroup) %>%
-  summarise(groupASFR = sum(ASFR)/5) %>%
+  summarise(natlASFR = sum(ASFR)/5) %>%
   filter(year >= 2019) #filter out projections from 2014-2018
 
+# Calculate ratio of BaseYearASFR to each year's projected ASFR by age group
+#  Broken out by Region (?)
+REGIONS <- unique(BaseYearASFR$Region)
+Fertility <- list()
+for(REGION in REGIONS){
+  temp2 <- BaseYearASFR %>%
+    filter(Region == REGION) %>%
+    select(-Births, -Population, -Region) %>%
+    left_join(x=ProjectedASFRs, by=c("agegroup" = "Age")) %>%
+    mutate(ASFRratio = natlASFR / baseASFR)
+
+  Fertility[[REGION]] <- temp2
+}
 
 
 

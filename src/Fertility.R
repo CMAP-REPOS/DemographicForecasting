@@ -112,14 +112,14 @@ BaseYearASFR <- Births %>%
 # Import 2014 ASFR projections data from Census Bureau
 #   Note: could try using the package censusapi to import directly
 
-ProjectedASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) %>%
+CensusASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) %>%
   filter(group == "0") %>% #keep only the total ASFRs (otherwise divvied by race + ethnicity)
   select(!group) %>%
   pivot_longer(!year, names_to = "age", values_to="ASFR")
 
 # Calculate national projected ASFRs for each age group and each year
 #  Exceptions: 14 included in 15-19, and 45 included in 40-44
-ProjectedASFRs <- ProjectedASFRs %>%
+CensusASFRs <- CensusASFRs %>%
   mutate(age = as.integer(str_sub(age, -2))) %>%
   mutate(agegroup = case_when(age %in% 14:19 ~ "15 to 19 years",
                              age %in% 20:24 ~ "20 to 24 years",
@@ -134,14 +134,13 @@ ProjectedASFRs <- ProjectedASFRs %>%
 
 # Calculate ratio of BaseYearASFR to each year's projected ASFR by age group
 #  Broken out by Region (?)
-REGIONS <- unique(BaseYearASFR$Region)
 Fertility <- list()
-for(REGION in REGIONS){
+for(REGION in unique(BaseYearASFR$Region)){
   temp2 <- BaseYearASFR %>%
     filter(Region == REGION) %>%
     select(-Births, -Population, -Region) %>%
-    left_join(x=ProjectedASFRs, by=c("agegroup" = "Age")) %>%
-    mutate(ASFRratio = natlASFR / baseASFR)
+    left_join(x=CensusASFRs, by=c("agegroup" = "Age")) %>%
+    mutate(ASFRratio = natlASFR / baseASFR) %>%
 
   Fertility[[REGION]] <- temp2
 }

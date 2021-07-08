@@ -20,7 +20,7 @@ for (YEAR in MORT_YEARS) {
    MORT_POP <- bind_rows(MORT_POP, POP[[as.character(YEAR)]])
 }
 
-# Split age 0-4 into 0-1 & 1-4
+# Split age 0-4 into 0-1 & 1-4 - Noel to update this code
 temp1 <- MORT_POP %>%
   filter(Age == '0 to 4 years') %>%
   mutate(Age = '0 to 1 years',
@@ -105,7 +105,7 @@ a <- MORT_DATA %>%
 
 # Read in SSA tables -----------------------------------------------------------
 
-SSA <- "Input/SSA.xlsx"
+SSA <- read_excel("Input/SSA.xlsx")
 
 # Create final projections for each region  ------------------------------------
 
@@ -116,6 +116,17 @@ Mort_Proj <- a %>%
   select(-Sx)
 
 View(Mort_Proj)
+
+# Clean-up to values >= 1  ------------------------------------
+
+# Look for any values >= 1
+
+D <- Mort_Proj  %>% select(-c(Region, Sex, Age)) %>% filter_all(any_vars(. > 1))
+View(D)
+
+# Replace values with suggestions from David E-R
+temp <- D$'2035'
+D[5:9] <- temp
 
 #need to check if values go over 1 - if they do....ask David E-R to set up a how to approach difference scenarios document
 

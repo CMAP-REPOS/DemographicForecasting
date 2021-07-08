@@ -19,10 +19,6 @@ COUNTIES <- list(
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 
-
-
-
-
 # Compile data ------------------------------------------------------------
 
 # Compile list of variables to download

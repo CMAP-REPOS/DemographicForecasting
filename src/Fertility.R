@@ -1,4 +1,4 @@
-# CMAP | Mary Weber, Alexis McAdams | 3/17/2021
+# CMAP | Alexis McAdams, Mary Weber | 7/7/2021
 
 library(tidyverse)
 library(tidycensus)
@@ -71,7 +71,6 @@ F_HH_Data <- bind_rows(Female_HH_2010, HH_Pop)
 
 
 # Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
-
 Births <- read_excel("Input/CMAPBirths_1990-2019.xlsx") %>%
   filter(Year %in% (2010:2018)) %>% # filtered out incomplete years data (2019 and 2020)
   mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years",
@@ -112,7 +111,7 @@ BaseYearASFR <- Births %>%
 # Import 2014 ASFR projections data from Census Bureau
 #   Note: could try using the package censusapi to import directly
 CensusASFRs <- read.csv("Input/projectedbirths_Census2014.csv", header=TRUE) %>%
-  filter(group == "0") %>% #keep only the total ASFRs (otherwise divvied by race + ethnicity)
+  filter(group == "0") %>% #keep only the total ASFRs (otherwise divided by race + ethnicity)
   select(!group) %>%
   pivot_longer(!year, names_to = "age", values_to="ASFR")
 

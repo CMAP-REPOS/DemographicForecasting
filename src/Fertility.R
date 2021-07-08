@@ -124,7 +124,7 @@ CensusASFRs <- CensusASFRs %>%
                              age %in% 25:29 ~ "25 to 29 years",
                              age %in% 30:34 ~ "30 to 34 years",
                              age %in% 35:39 ~ "35 to 39 years",
-                             age %in% 40:45 ~ "40 to 44 years")) %>%
+                             age %in% 40:54 ~ "40 to 44 years")) %>%
   drop_na() %>% #remove the projections for >45
   group_by(year, agegroup) %>%
   summarise(natlASFR = sum(ASFR)/5) %>%

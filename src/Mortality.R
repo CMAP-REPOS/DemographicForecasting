@@ -121,12 +121,13 @@ View(Mort_Proj)
 
 # Look for any values >= 1
 
-D <- Mort_Proj  %>% select(-c(Region, Sex, Age)) %>% filter_all(any_vars(. > 1))
-View(D)
+temp <- Mort_Proj %>% select(-c(Region, Sex, Age)) %>% filter_all(any_vars(. > 1))
+View(temp)
 
 # Replace values with suggestions from David E-R
-temp <- D$'2035'
-D[5:9] <- temp
+temp <- Mort_Proj$'2035'
+Mort_Proj[5:9] <- temp
 
-#need to check if values go over 1 - if they do....ask David E-R to set up a how to approach difference scenarios document
+#save(Mort_Proj, file="Output/Mort_Proj.Rdata")
+#save(a, file="Output/LifeTables.Rdata")
 

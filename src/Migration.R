@@ -25,7 +25,7 @@ MIG_POP <- MIG_POP %>% select(-County, -GEOID, -State) %>% group_by(Region, Year
 
 MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, Group) %>% mutate(Pop_Avg = case_when(Group == 1 ~ round(mean(Population),0),
                                                                                        Group == 2 ~ round(mean(Population),0))) %>%
-                                ungroup() %>% select(Region, Age, Sex, Pop_Avg)
+                                ungroup() %>% select(Region, Age, Sex, Pop_Avg) %>% distinct()
 View(MIG_POP)
 
 

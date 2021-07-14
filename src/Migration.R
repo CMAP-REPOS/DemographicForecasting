@@ -5,7 +5,11 @@ library(tidyverse)
 library(tidycensus)
 library(readxl)
 
+source("src/Mortality.R")
+
 # Parameters ---------------------------------------------------------
+
+
 
 load("Output/PopData.Rdata")
 load("Output/ASFR.Rdata")
@@ -34,7 +38,6 @@ View(MIG_POP)
 
 # Births by Region 2014-2018 ---------------------------------------------------------
 
-# Did not request sex of baby, potential improvement for next iteration
 
 MIG_Births <- ASFR %>% filter(Year %in% 2014:2018) %>% distinct(State, Year, Age, Region, Births) %>% group_by(Sex, Region) %>% mutate(Births = sum(Births))
 
@@ -43,8 +46,38 @@ MIG_Births <- ASFR %>% filter(Year %in% 2014:2018) %>% distinct(State, Year, Age
 View(MIG_Births)
 
 
-# Abridged Life Tables (group 0-4 back together) ---------------------------------------------------------
+# Abridged Life Tables (do not separate 0-4 age group) ---------------------------------------------------------
 
+
+LT_Abg <- tibble(Age = unique(Deaths$Age)) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  arrange(x) %>%
+  add_column(Ax = c(0.34,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
+
+a_abg <- MORT_DATA %>%
+  left_join(LT, by="Age") %>%
+  select(Region, Sex, Age, Mortality, Population, x, Ax) %>%
+  arrange(Region, desc(Sex), x) %>%
+  group_by(Region, Sex) %>%
+  mutate(Mx = (Mortality/Population),
+         n = case_when(Age == '85 years and over' ~ 2/Mx,
+                       TRUE ~ 5),
+         Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
+                     (n*Mx/(1+n*(1-Ax)*Mx))),
+         Px = (1-Qx),
+         Ix = head(accumulate(Px, `*`, .init=500000), -1), # 0-1 should always be 100000
+         Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
+         Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))),
+         temp = ifelse(Age == '85 years and over', Lx, 0),
+         Tx = (accumulate(Lx, `+`, .dir = "backward")),
+         Ex = (Tx/Ix),
+         Sx = case_when(Age == '0 to 4 years' ~ Lx/Ix,
+                        Age == '85 years and over' ~ Lx/(Lx +lag(Lx)),
+                        TRUE ~ Lx/lag(Lx))
+  ) %>%
+  select(-temp) %>%
+  relocate(n, .after = x) %>%
+  ungroup()
 
 
 

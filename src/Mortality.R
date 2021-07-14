@@ -8,6 +8,7 @@ library(readxl)
 # Parameters ---------------------------------------------------------
 
 load("Output/PopData.Rdata")
+load("Output/Age_0_4_Freq.Rdata")
 MORT_YEARS <- c(2014:2018)
 DEATHS_XLSX <- "Input/CMAPMortality1990-2019.xlsx"
 
@@ -20,22 +21,8 @@ for (YEAR in MORT_YEARS) {
    MORT_POP <- bind_rows(MORT_POP, POP[[as.character(YEAR)]])
 }
 
-# Split age 0-4 into 0-1 & 1-4 - Noel to update this code
-temp1 <- MORT_POP %>%
-  filter(Age == '0 to 4 years') %>%
-  mutate(Age = '0 to 1 years',
-         Population = Population * 1/5)
+# Split age 0-4 into 0-1 & 1-4 - need to pull in code from Noel here
 
-MORT_POP <- MORT_POP %>%
-  mutate(Age = case_when(Age == '0 to 4 years' ~ '1 to 4 years',
-                         TRUE ~ Age),
-         Population = case_when(Age == '1 to 4 years' ~ Population * (4/5),
-                                TRUE ~ Population)) %>%
-  bind_rows(temp1) %>%
-  arrange(GEOID, Sex, Age, Year) %>%
-  select (-County, -State)
-
-rm(temp1)
 
 # Load deaths data
 Deaths <- read_excel(DEATHS_XLSX) %>%
@@ -127,6 +114,8 @@ View(temp)
 # Replace values with suggestions from David E-R
 temp <- Mort_Proj$'2035'
 Mort_Proj[5:9] <- temp
+
+remove(temp)
 
 #save(Mort_Proj, file="Output/Mort_Proj.Rdata")
 #save(a, file="Output/LifeTables.Rdata")

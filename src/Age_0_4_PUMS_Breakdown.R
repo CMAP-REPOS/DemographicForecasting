@@ -1,8 +1,14 @@
+#install.packages("devtools")
+
+library(devtools)
 library(tidyverse)
 library(tidycensus)
 library(tigris)
 library(sf)
+
+#install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
 library(cmapgeo)
+
 
 # Get 21-county boundaries
 cmap_21co_sf <- filter(county_sf, travel_model)

@@ -9,8 +9,6 @@ source("src/Mortality.R")
 
 # Parameters ---------------------------------------------------------
 
-
-
 load("Output/PopData.Rdata")
 load("Output/ASFR.Rdata")
 load("Output/LifeTables.Rdata")
@@ -39,14 +37,16 @@ View(MIG_POP)
 # Births by Region 2014-2018 ---------------------------------------------------------
 
 
-MIG_Births <- ASFR %>% filter(Year %in% 2014:2018) %>% distinct(State, Year, Age, Region, Births) %>% group_by(Sex, Region) %>% mutate(Births = sum(Births))
-
-# filter(Region == 'External WI') #remember to remove this filter
-
-View(MIG_Births)
-
 
 # Abridged Life Tables (do not separate 0-4 age group) ---------------------------------------------------------
+
+Deaths_Abg <- Deaths %>% mutate(Age =  case_when(Age %in% c('0 to 1 years', '1 to 4 years') ~ '0 to 4 years',
+                                                  TRUE ~ Age)) %>%
+              group_by(GEOID, Sex, Age, Year, Region) %>%
+              summarize(Mortality = sum(Mortality), .groups = "drop") %>%
+              drop_na()
+
+#View(Deaths_Abg)
 
 
 LT_Abg <- tibble(Age = unique(Deaths$Age)) %>%
@@ -65,7 +65,7 @@ a_abg <- MORT_DATA %>%
          Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
                      (n*Mx/(1+n*(1-Ax)*Mx))),
          Px = (1-Qx),
-         Ix = head(accumulate(Px, `*`, .init=500000), -1), # 0-1 should always be 100000
+         Ix = head(accumulate(Px, `*`, .init=500000), -1), # 0-4 should always be 100000
          Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
          Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))),
          temp = ifelse(Age == '85 years and over', Lx, 0),
@@ -79,6 +79,7 @@ a_abg <- MORT_DATA %>%
   relocate(n, .after = x) %>%
   ungroup()
 
+#View(a_abg)
 
 
 

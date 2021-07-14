@@ -12,7 +12,6 @@ load("Output/Age_0_4_Freq.Rdata")
 MORT_YEARS <- c(2014:2018)
 DEATHS_XLSX <- "Input/CMAPMortality1990-2019.xlsx"
 
-
 # Create mortality age groups ---------------------------------------------------------
 
 MORT_POP <- tibble()
@@ -21,7 +20,7 @@ for (YEAR in MORT_YEARS) {
    MORT_POP <- bind_rows(MORT_POP, POP[[as.character(YEAR)]])
 }
 
-# Split age 0-4 into 0-1 & 1-4 - need to pull in code from Noel here
+# Split age 0-4 into 0-1 & 1-4 - need to pull in code from Noel here !!!
 
 
 # Load deaths data
@@ -54,7 +53,7 @@ LT <- tibble(Age = unique(Deaths$Age)) %>%
   arrange(x) %>%
   add_column(Ax = c(0.1,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
 
-a <- MORT_DATA %>%
+LifeTable <- MORT_DATA %>%
   left_join(LT, by="Age") %>%
   select(Region, Sex, Age, Mortality, Population, x, Ax) %>%
   arrange(Region, desc(Sex), x) %>%
@@ -84,7 +83,7 @@ a <- MORT_DATA %>%
   ungroup()
 
 
-#View(a)
+#View(LifeTable)
 
 #save(a, file="Output/LifeTables.Rdata")
 #write.csv(a, "/Users/mweber/Desktop/mort.csv")
@@ -96,20 +95,20 @@ SSA <- read_excel("Input/SSA.xlsx")
 
 # Create final projections for each region  ------------------------------------
 
-Mort_Proj <- a %>%
+Mort_Proj <- LifeTable %>%
   select(Region, Sex, Age, Sx) %>%
   left_join(SSA, by= c("Sex", "Age")) %>%
   mutate(across(c(5:13), .fns = ~.*Sx)) %>%
   select(-Sx)
 
-View(Mort_Proj)
+#View(Mort_Proj)
 
 # Clean-up to values >= 1  ------------------------------------
 
 # Look for any values >= 1
 
 temp <- Mort_Proj %>% select(-c(Region, Sex, Age)) %>% filter_all(any_vars(. > 1))
-View(temp)
+#View(temp)
 
 # Replace values with suggestions from David E-R
 temp <- Mort_Proj$'2035'
@@ -118,5 +117,5 @@ Mort_Proj[5:9] <- temp
 remove(temp)
 
 #save(Mort_Proj, file="Output/Mort_Proj.Rdata")
-#save(a, file="Output/LifeTables.Rdata")
+#save(LifeTable, file="Output/LifeTables.Rdata")
 

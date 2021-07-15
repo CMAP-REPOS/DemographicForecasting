@@ -48,7 +48,6 @@ Deaths_Abg <- Deaths %>% mutate(Age =  case_when(Age %in% c('0 to 1 years', '1 t
 
 #View(Deaths_Abg)
 
-
 LT_Abg <- tibble(Age = unique(Deaths$Age)) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>%
@@ -81,6 +80,7 @@ a_abg <- MORT_DATA %>%
 
 #View(a_abg)
 
+#
 
 
 

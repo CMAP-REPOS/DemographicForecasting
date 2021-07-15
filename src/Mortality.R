@@ -20,9 +20,6 @@ for (YEAR in MORT_YEARS) {
    MORT_POP <- bind_rows(MORT_POP, POP[[as.character(YEAR)]])
 }
 
-# Split age 0-4 into 0-1 & 1-4 - need to pull in code from Noel here !!!
-
-
 # Load deaths data
 Deaths <- read_excel(DEATHS_XLSX) %>%
   mutate(GEOID = as.character(GEOID)) %>%
@@ -40,6 +37,13 @@ MORT_DATA <- MORT_POP %>%
             Mortality = sum(Mortality),
             .groups = "drop") %>%
   arrange(Region, desc(Sex))
+
+# Use PUMS estimates for 0-1 and 1-4 age group -------------------------------------
+
+AGE_0_4_FREQ <- AGE_0_4_FREQ %>% mutate(Age = case_when(AgeGroup == 'Less than 1 year' ~ '0 to 1 years',
+                                        TRUE ~ AgeGroup)) %>% select(-AgeGroup, -Age_0_4_Share)
+
+MORT_DATA <- MORT_DATA %>% full_join(AGE_0_4_FREQ, by=c('Age','Region')) %>% unite('Population', Population.x, Population.y, na.rm = T) %>% subset(Age != '0 to 4 years')
 
 
 #View(MORT_DATA)
@@ -83,7 +87,7 @@ LifeTable <- MORT_DATA %>%
   ungroup()
 
 
-#View(LifeTable)
+View(LifeTable)
 
 #save(a, file="Output/LifeTables.Rdata")
 #write.csv(a, "/Users/mweber/Desktop/mort.csv")

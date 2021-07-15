@@ -62,7 +62,7 @@ LifeTable <- MORT_DATA %>%
   select(Region, Sex, Age, Mortality, Population, x, Ax) %>%
   arrange(Region, desc(Sex), x) %>%
   group_by(Region, Sex) %>%
-  mutate(Mx = (Mortality/Population),
+  mutate(Mx = (Mortality/as.numeric(Population)),
     n = case_when(Age == '0 to 1 years' ~ 1,
                   Age == '1 to 4 years' ~ 4,
                   Age == '85 years and over' ~ 2/Mx,

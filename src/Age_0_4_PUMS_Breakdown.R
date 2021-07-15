@@ -74,7 +74,7 @@ pums_21co <- bind_rows(pums_il, pums_in) %>%
 
 # Summarize PUMS by age and region
 AGE_0_4_FREQ <- pums_21co %>%
-  group_by(Region, AgeGroup, Sex) %>%
+  group_by(Region, Sex, AgeGroup) %>%
   summarize(Population = sum(PWGTP)) %>%
   mutate(Age_0_4_Share = Population / sum(Population)) %>%
   ungroup()

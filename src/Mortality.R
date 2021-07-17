@@ -9,6 +9,8 @@ library(readxl)
 
 load("Output/PopData.Rdata")
 load("Output/Age_0_4_Freq.Rdata")
+AGE_0_4_FREQ$Population <- as.numeric(AGE_0_4_FREQ$Population)
+
 MORT_YEARS <- c(2014:2018)
 DEATHS_XLSX <- "Input/CMAPMortality1990-2019.xlsx"
 
@@ -38,13 +40,20 @@ MORT_DATA <- MORT_POP %>%
             .groups = "drop") %>%
   arrange(Region, desc(Sex))
 
-# Use PUMS estimates for 0-1 and 1-4 age group -------------------------------------
+# Use PUMA proportion estimates for 0-1 and 1-4 age group -------------------------------------
 
-AGE_0_4_FREQ <- AGE_0_4_FREQ %>% mutate(Age = case_when(AgeGroup == 'Less than 1 year' ~ '0 to 1 years',
-                                        TRUE ~ AgeGroup)) %>% select(-AgeGroup, -Age_0_4_Share)
+AGE_0_4_PROP <- AGE_0_4_FREQ %>% mutate(Age = case_when(AgeGroup == 'Less than 1 year' ~ '0 to 1 years',
+                                        TRUE ~ AgeGroup)) %>% select(-AgeGroup, -Population)
 
-MORT_DATA <- MORT_DATA %>% full_join(AGE_0_4_FREQ, by=c('Age','Region')) %>% unite('Population', Population.x, Population.y, na.rm = T) %>% subset(Age != '0 to 4 years')
 
+MORT_DATA <- MORT_DATA %>% left_join(AGE_0_4_PROP, by=c('Age','Region', 'Sex'))
+
+
+
+MORT_DATA <- MORT_DATA %>% mutate(Population = case_when(Age == '0 to 1 years' ~ lead(Population)*Age_0_4_Share,
+                                                         Age == '1 to 4 years' ~ lag(Population)*Age_0_4_Share,
+                                                          TRUE ~ Population)) %>%
+                           select(-Age_0_4_Share) %>% subset(Age != '0 to 4 years')
 
 #View(MORT_DATA)
 #a <- MORT_DATA %>% filter( Region == 'External IL')  %>% group_by(Age, Sex)  %>% mutate(Population = sum(Population))

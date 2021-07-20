@@ -83,7 +83,7 @@ LifeTable <- MORT_DATA %>%
     Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
     Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))),
     temp = ifelse(Age == '85 years and over', Lx, 0),
-    Tx = (accumulate(Lx, `+`, .dir = "backward")),
+    Tx = (ifelse(Age == '85 years and Over', Lx, accumulate(Lx, `+`, .dir = "backward"))),
     Ex = (Tx/Ix),
     Sx = case_when(Age == '0 to 1 years' ~ Lx/Ix,
                    Age == '1 to 4 years' ~ Lx/(lag(Lx)*4),
@@ -92,7 +92,7 @@ LifeTable <- MORT_DATA %>%
                    TRUE ~ Lx/lag(Lx))
   ) %>%
   select(-temp) %>%
-  relocate(n, .after = x) %>%
+  relocate(c(x, n, Ax), .before= Mortality)%>%
   ungroup()
 
 
@@ -114,17 +114,15 @@ Mort_Proj <- LifeTable %>%
   mutate(across(c(5:13), .fns = ~.*Sx)) %>%
   select(-Sx)
 
-#View(Mort_Proj)
+View(Mort_Proj)
 
-# Clean-up to values >= 1  ------------------------------------
+# Clean-up to values >= 1  ------------------------------------ NOT COMPLETE: WAITING ON DAVID ER
 
-# Look for any values >= 1
-
-temp <- Mort_Proj %>% select(-c(Region, Sex, Age)) %>% filter_all(any_vars(. > 1))
-#View(temp)
+temp <- Mort_Proj %>% select(-c(Region, Sex, Age)) %>% filter_all(any_vars(. >= 1))
+View(temp)
 
 # Replace values with suggestions from David E-R
-temp <- Mort_Proj$'2035'
+temp[5:9] <- temp$'2035'
 Mort_Proj[5:9] <- temp
 
 remove(temp)

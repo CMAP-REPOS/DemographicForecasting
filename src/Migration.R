@@ -23,15 +23,20 @@ for (YEAR in MIG_YEARS) {
   MIG_POP <- bind_rows(MIG_POP, POP[[as.character(YEAR)]])
 }
 
-MIG_POP <- MIG_POP %>% select(-County, -GEOID, -State) %>% group_by(Region, Year, Age, Sex) %>%
+MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>% group_by(Region, County, Year, Age, Sex) %>%
                               summarise(Population = sum(Population), .groups="drop") %>% filter(Region == 'External WI') %>% #remember to remove this filter
-                              mutate(Group = case_when(Year %in% 2013:2014  ~ 1,
-                                                       Year %in% 2018:2019 ~ 2)) %>% select(-Year)
+                              mutate(Year2 = case_when(Year %in% 2013:2014  ~ 2014,
+                                                       Year %in% 2018:2019 ~ 2019)) %>% select(-Year)
 
-MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, Group) %>% mutate(Pop_Avg = case_when(Group == 1 ~ round(mean(Population),0),
-                                                                                       Group == 2 ~ round(mean(Population),0))) %>%
-                                ungroup() %>% select(Region, Age, Sex, Group, Pop_Avg) %>% distinct(Age, Sex, Region, Group, .keep_all = TRUE)
+MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, County, Year2) %>% mutate(Pop_Avg = case_when(Year2 == 2014 ~ round(mean(Population),0),
+                                                                                       Year2 == 2019 ~ round(mean(Population),0))) %>%
+                                ungroup() %>% select(Region, County, Age, Sex, Year2, Pop_Avg) %>% distinct(Age, Sex, Region, County, Year2, .keep_all = TRUE) %>%
+                                rename(Year = Year2)
 View(MIG_POP)
+
+
+write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
+
 
 
 # Births by Region 2014-2018 ---------------------------------------------------------

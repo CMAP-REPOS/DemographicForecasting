@@ -40,7 +40,8 @@ write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
 
 
 # Births by Region 2014-2018 ---------------------------------------------------------
-
+Births <- read_excel("Input/Births_CountyGender.xlsx") %>%
+  filter(Year %in% 2014:2018)
 
 
 # Abridged Life Tables (do not separate 0-4 age group) ---------------------------------------------------------

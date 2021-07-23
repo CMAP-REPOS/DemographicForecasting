@@ -96,7 +96,7 @@ LifeTable <- MORT_DATA %>%
   ungroup()
 
 
-View(LifeTable)
+#View(LifeTable)
 
 #save(a, file="Output/LifeTables.Rdata")
 #write.csv(a, "/Users/mweber/Desktop/mort.csv")
@@ -116,15 +116,16 @@ Mort_Proj <- LifeTable %>%
 
 View(Mort_Proj)
 
-# Clean-up to values >= 1  ------------------------------------ NOT COMPLETE: WAITING ON DAVID ER
+# Clean-up to values >= 1  ------------------------------------ This could use some adjustments to make it more dynamic
 
-temp <- Mort_Proj %>% select(-c(Region, Sex, Age)) %>% filter_all(any_vars(. >= 1))
-View(temp)
+temp <- Mort_Proj %>% filter_at(vars(4:12), any_vars(. >= 1))
+temp[7:12] <- temp$'2035'
+#view(temp)
 
-# Replace values with suggestions from David E-R
-temp[5:9] <- temp$'2035'
-Mort_Proj[5:9] <- temp
+Mort_Proj <- rbind(Mort_Proj, temp)
+Mort_Proj <- Mort_Proj %>% filter_at(vars(4:12), all_vars(. < 1))
 
+view(Mort_Proj)
 remove(temp)
 
 #save(Mort_Proj, file="Output/Mort_Proj.Rdata")

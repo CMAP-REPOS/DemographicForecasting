@@ -40,8 +40,7 @@ View(MIG_POP)
 
 
 # Births by Region 2014-2018 ---------------------------------------------------------
-Births <- read_excel("Input/Births_CountyGender.xlsx") %>% select(-County, -State, -Year) %>%
-  filter(Year %in% 2014:2018)
+Births <- read_excel("Input/Births_CountyGender.xlsx") %>% filter(Year %in% 2014:2018) %>% select(-County, -State, -Year)
 
 Births <- Births %>% group_by(Region, Sex) %>% summarise(Births = sum(Births)) %>%
           add_column(Age = '0 to 4 years')
@@ -99,15 +98,15 @@ LT_Abg <- MORT_DATA2 %>%
 View(LT_Abg)
 
 
-# Base Period Migration Rates ---------------------------------------------------------
+# Base Period Migration Rates Table ---------------------------------------------------------
 
 Base_Mig <- MIG_POP %>% filter(Year == '2014') %>% select(Region, Age, Sex, Year) %>%
   left_join(Births, by=c("Age", "Region", "Sex")) %>% arrange(Region, desc(Sex))
 
 
 Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')) %>%
-  mutate(Births = case_when(Age != '0 to 4 years' ~ lag(Pop_Avg),
-                            Age == '85 years and over' ~ (Pop_Avg+lag(Pop_Avg)),
-                            TRUE ~ Births)) %>% select(-Pop_Avg)
+                         mutate(Births = case_when(Age != c('0 to 4 years', '85 years and over') ~ lag(Pop_Avg),
+                                                   Age == '85 years and over' ~ Pop_Avg+lag(Pop_Avg),
+                                                   TRUE ~ Births)) %>% select(-Pop_Avg, -x)
 
 

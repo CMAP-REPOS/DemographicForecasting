@@ -100,19 +100,24 @@ View(LT_Abg)
 
 # Base Period Migration Rates Table ---------------------------------------------------------
 
+
 Base_Mig <- MIG_POP %>% filter(Year == '2014') %>% select(Region, Age, Sex, Year) %>%
   left_join(Births, by=c("Age", "Region", "Sex")) %>% arrange(Region, desc(Sex))
 
-
+# Pull in 2014 population counts
 Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')) %>%
                          mutate(Births = case_when(Age != c('0 to 4 years', '85 years and over') ~ lag(Pop_Avg),
                                                    Age == '85 years and over' ~ Pop_Avg+lag(Pop_Avg),
                                                    TRUE ~ Births)) %>% select(-Pop_Avg, -x) %>% rename(Pop2014 = Births)
 
-
+# Pull in Survival Ratesand calculate Expected Population for 2018
 Base_Mig <- Base_Mig %>% left_join(LT_Abg, by =c('Region', 'Sex', 'Age')) %>% select(Region, Age, Sex, Year, Pop2014, Sx) %>%
                                   rename(SurvivalRate = Sx) %>% mutate(ExpectedPop2018 = Pop2014*SurvivalRate) %>% select(-Year)
 
-
+# Pull in 2018 population counts
 Base_Mig <- MIG_POP %>% filter(Year == '2018') %>%
   left_join(Base_Mig, by=c("Age", "Region", "Sex")) %>% select(Region, Age, Sex, Pop2014, SurvivalRate, ExpectedPop2018, Pop_Avg) %>% rename(PopActuals2018 = Pop_Avg)
+
+
+# Calculate Surviving Migrants for 2018 & Net Migration rates, 2014-2018
+Base_Mig <- Base_Mig %>% mutate(SurvMigrants2018 = (PopActuals2018 - ExpectedPop2018), NetRates = SurvMigrants2018/ExpectedPop2018)

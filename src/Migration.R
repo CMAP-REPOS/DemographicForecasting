@@ -26,10 +26,10 @@ for (YEAR in MIG_YEARS) {
 MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>% group_by(Region, Year, Age, Sex) %>%
                               summarise(Population = sum(Population), .groups="drop") %>% filter(Region == 'External WI') %>% #remember to remove this filter
                               mutate(Year2 = case_when(Year %in% 2013:2014  ~ 2014,
-                                                       Year %in% 2018:2019 ~ 2019)) %>% select(-Year)
+                                                       Year %in% 2018:2019 ~ 2018)) %>% select(-Year)
 
 MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, Year2) %>% mutate(Pop_Avg = case_when(Year2 == 2014 ~ round(mean(Population),0),
-                                                                                       Year2 == 2019 ~ round(mean(Population),0))) %>%
+                                                                                       Year2 == 2018 ~ round(mean(Population),0))) %>%
                                 ungroup() %>% select(Region, Age, Sex, Year2, Pop_Avg) %>% distinct(Age, Sex, Region, Year2, .keep_all = TRUE) %>%
                                 rename(Year = Year2) %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x)
 View(MIG_POP)
@@ -111,6 +111,8 @@ Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')
 
 
 Base_Mig <- Base_Mig %>% left_join(LT_Abg, by =c('Region', 'Sex', 'Age')) %>% select(Region, Age, Sex, Year, Pop2014, Sx) %>%
-                                  rename(SurvivalRate = Sx) %>% mutate(ExpectedPop2018 = Pop2014*SurvivalRate)
+                                  rename(SurvivalRate = Sx) %>% mutate(ExpectedPop2018 = Pop2014*SurvivalRate) %>% select(-Year)
 
 
+Base_Mig <- MIG_POP %>% filter(Year == '2018') %>%
+  left_join(Base_Mig, by=c("Age", "Region", "Sex")) %>% select(Region, Age, Sex, Pop2014, SurvivalRate, ExpectedPop2018, Pop_Avg) %>% rename(PopActuals2018 = Pop_Avg)

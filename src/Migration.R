@@ -35,7 +35,7 @@ MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, County, Year2) %>% mutate(Pop_
 View(MIG_POP)
 
 
-write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
+#write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
 
 
 
@@ -43,6 +43,7 @@ write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
 Births <- read_excel("Input/Births_CountyGender.xlsx") %>%
   filter(Year %in% 2014:2018)
 
+View(Births)
 
 # Abridged Life Tables (do not separate 0-4 age group) ---------------------------------------------------------
 
@@ -52,15 +53,26 @@ Deaths_Abg <- Deaths %>% mutate(Age =  case_when(Age %in% c('0 to 1 years', '1 t
               summarize(Mortality = sum(Mortality), .groups = "drop") %>%
               drop_na()
 
-#View(Deaths_Abg)
-
-LT_Abg <- tibble(Age = unique(Deaths$Age)) %>%
+LT_Age <- tibble(Age = unique(Deaths_Abg$Age)) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>%
-  add_column(Ax = c(0.34,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
+  add_column(Ax = c(0.34,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
 
-a_abg <- MORT_DATA %>%
-  left_join(LT, by="Age") %>%
+
+
+# Join pop to abridged deaths data
+
+MORT_DATA2 <- MORT_POP %>%
+  full_join(Deaths_Abg, by=c('GEOID', 'Age', 'Sex', 'Year', 'Region')) %>%
+  group_by(Age, Sex, Region) %>%
+  summarise(Population = sum(Population),
+            Mortality = sum(Mortality),
+            .groups = "drop")
+
+# code correct up to here
+
+LT_Abg <- MORT_DATA2 %>%
+  left_join(LT_Age, by="Age") %>%
   select(Region, Sex, Age, Mortality, Population, x, Ax) %>%
   arrange(Region, desc(Sex), x) %>%
   group_by(Region, Sex) %>%
@@ -70,12 +82,12 @@ a_abg <- MORT_DATA %>%
          Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
                      (n*Mx/(1+n*(1-Ax)*Mx))),
          Px = (1-Qx),
-         Ix = head(accumulate(Px, `*`, .init=500000), -1), # 0-4 should always be 100000
+         Ix = head(accumulate(Px, `*`, .init=500000), -1), # 0-4 should always be 500000
          Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
-         Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))),
+         Lx = (ifelse(Age == '85 years and over', n*((Ax*Dx))/5, n*(lead(Ix)+(Ax*Dx))/5)),
          temp = ifelse(Age == '85 years and over', Lx, 0),
-         Tx = (accumulate(Lx, `+`, .dir = "backward")),
-         Ex = (Tx/Ix),
+         Tx = (ifelse(Age == '85 years and Over', Lx, accumulate(Lx, `+`, .dir = "backward"))),
+         Ex = (Tx/Ix)*5,
          Sx = case_when(Age == '0 to 4 years' ~ Lx/Ix,
                         Age == '85 years and over' ~ Lx/(Lx +lag(Lx)),
                         TRUE ~ Lx/lag(Lx))
@@ -84,7 +96,7 @@ a_abg <- MORT_DATA %>%
   relocate(n, .after = x) %>%
   ungroup()
 
-#View(a_abg)
+View(LT_Abg)
 
 #
 

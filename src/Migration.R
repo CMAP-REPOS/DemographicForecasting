@@ -107,6 +107,10 @@ Base_Mig <- MIG_POP %>% filter(Year == '2014') %>% select(Region, Age, Sex, Year
 Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')) %>%
                          mutate(Births = case_when(Age != c('0 to 4 years', '85 years and over') ~ lag(Pop_Avg),
                                                    Age == '85 years and over' ~ Pop_Avg+lag(Pop_Avg),
-                                                   TRUE ~ Births)) %>% select(-Pop_Avg, -x)
+                                                   TRUE ~ Births)) %>% select(-Pop_Avg, -x) %>% rename(Pop2014 = Births)
+
+
+Base_Mig <- Base_Mig %>% left_join(LT_Abg, by =c('Region', 'Sex', 'Age')) %>% select(Region, Age, Sex, Year, Pop2014, Sx) %>%
+                                  rename(SurvivalRate = Sx) %>% mutate(ExpectedPop2018 = Pop2014*SurvivalRate)
 
 

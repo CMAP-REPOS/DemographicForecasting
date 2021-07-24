@@ -23,15 +23,15 @@ for (YEAR in MIG_YEARS) {
   MIG_POP <- bind_rows(MIG_POP, POP[[as.character(YEAR)]])
 }
 
-MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>% group_by(Region, County, Year, Age, Sex) %>%
+MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>% group_by(Region, Year, Age, Sex) %>%
                               summarise(Population = sum(Population), .groups="drop") %>% filter(Region == 'External WI') %>% #remember to remove this filter
                               mutate(Year2 = case_when(Year %in% 2013:2014  ~ 2014,
                                                        Year %in% 2018:2019 ~ 2019)) %>% select(-Year)
 
-MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, County, Year2) %>% mutate(Pop_Avg = case_when(Year2 == 2014 ~ round(mean(Population),0),
+MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, Year2) %>% mutate(Pop_Avg = case_when(Year2 == 2014 ~ round(mean(Population),0),
                                                                                        Year2 == 2019 ~ round(mean(Population),0))) %>%
-                                ungroup() %>% select(Region, County, Age, Sex, Year2, Pop_Avg) %>% distinct(Age, Sex, Region, County, Year2, .keep_all = TRUE) %>%
-                                rename(Year = Year2)
+                                ungroup() %>% select(Region, Age, Sex, Year2, Pop_Avg) %>% distinct(Age, Sex, Region, Year2, .keep_all = TRUE) %>%
+                                rename(Year = Year2) %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x)
 View(MIG_POP)
 
 
@@ -40,8 +40,11 @@ View(MIG_POP)
 
 
 # Births by Region 2014-2018 ---------------------------------------------------------
-Births <- read_excel("Input/Births_CountyGender.xlsx") %>%
+Births <- read_excel("Input/Births_CountyGender.xlsx") %>% select(-County, -State, -Year) %>%
   filter(Year %in% 2014:2018)
+
+Births <- Births %>% group_by(Region, Sex) %>% summarise(Births = sum(Births)) %>%
+          add_column(Age = '0 to 4 years')
 
 View(Births)
 
@@ -59,7 +62,6 @@ LT_Age <- tibble(Age = unique(Deaths_Abg$Age)) %>%
   add_column(Ax = c(0.34,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
 
 
-
 # Join pop to abridged deaths data
 
 MORT_DATA2 <- MORT_POP %>%
@@ -68,8 +70,6 @@ MORT_DATA2 <- MORT_POP %>%
   summarise(Population = sum(Population),
             Mortality = sum(Mortality),
             .groups = "drop")
-
-# code correct up to here
 
 LT_Abg <- MORT_DATA2 %>%
   left_join(LT_Age, by="Age") %>%
@@ -86,7 +86,7 @@ LT_Abg <- MORT_DATA2 %>%
          Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
          Lx = (ifelse(Age == '85 years and over', n*((Ax*Dx))/5, n*(lead(Ix)+(Ax*Dx))/5)),
          temp = ifelse(Age == '85 years and over', Lx, 0),
-         Tx = (ifelse(Age == '85 years and Over', Lx, accumulate(Lx, `+`, .dir = "backward"))),
+         Tx = (ifelse(Age == '85 years and over', Lx, accumulate(Lx, `+`, .dir = "backward"))),
          Ex = (Tx/Ix)*5,
          Sx = case_when(Age == '0 to 4 years' ~ Lx/Ix,
                         Age == '85 years and over' ~ Lx/(Lx +lag(Lx)),
@@ -98,12 +98,16 @@ LT_Abg <- MORT_DATA2 %>%
 
 View(LT_Abg)
 
-#
+
+# Base Period Migration Rates ---------------------------------------------------------
+
+Base_Mig <- MIG_POP %>% filter(Year == '2014') %>% select(Region, Age, Sex, Year) %>%
+  left_join(Births, by=c("Age", "Region", "Sex")) %>% arrange(Region, desc(Sex))
 
 
-
-
-
-
+Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')) %>%
+  mutate(Births = case_when(Age != '0 to 4 years' ~ lag(Pop_Avg),
+                            Age == '85 years and over' ~ (Pop_Avg+lag(Pop_Avg)),
+                            TRUE ~ Births)) %>% select(-Pop_Avg)
 
 

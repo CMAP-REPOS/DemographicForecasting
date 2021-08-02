@@ -79,7 +79,7 @@ for (YEAR in YEARS) {
 
 c <- tibble()
 b <- tibble()
-Year2 <- c(2014:2018)
+Year2 <- c(1990:2018)
 
 for (YEAR in Year2) {
   c <- as_tibble(POP[[as.character(YEAR)]])
@@ -88,11 +88,11 @@ for (YEAR in Year2) {
 
 
 
-b <- b %>% filter(State == "Illinois" & Region == 'External IL') %>%  select(-Year, -County, -State, -GEOID) %>%
+b <- b %>% filter(State == "Illinois" & Region == 'CMAP Region') %>%  #select(-Year, -County, -State, -GEOID) %>%
   group_by(Age, Sex) %>% mutate(Population = sum(Population)) %>% ungroup()
 View(b)
 
-write.csv(b, "/Users/mweber/Desktop/IL_External.csv")
+write.csv(b, "/Users/mweber/Desktop/CMAP_POP.csv")
 
 
 # Upload full dataset to GitHub/R  --------------------------------

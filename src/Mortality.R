@@ -115,7 +115,7 @@ Mort_Proj <- LifeTable %>%
   select(-Sx)
 
 View(Mort_Proj)
-
+write.csv(Mort_Proj, "/Users/mweber/Desktop/MortProjRates.csv")
 # Clean-up to values >= 1  ------------------------------------ This could use some adjustments to make it more dynamic
 
 temp <- Mort_Proj %>% filter_at(vars(4:12), any_vars(. >= 1))

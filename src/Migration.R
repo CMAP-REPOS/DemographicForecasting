@@ -24,18 +24,18 @@ for (YEAR in MIG_YEARS) {
 }
 
 MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>% group_by(Region, Year, Age, Sex) %>%
-                              summarise(Population = sum(Population), .groups="drop") %>% filter(Region == 'External WI') %>% #remember to remove this filter
+                              summarise(Population = sum(Population), .groups="drop") %>% #remember to remove this filter
                               mutate(Year2 = case_when(Year %in% 2013:2014  ~ 2014,
                                                        Year %in% 2018:2019 ~ 2018)) %>% select(-Year)
 
 MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, Year2) %>% mutate(Pop_Avg = case_when(Year2 == 2014 ~ round(mean(Population),0),
                                                                                        Year2 == 2018 ~ round(mean(Population),0))) %>%
                                 ungroup() %>% select(Region, Age, Sex, Year2, Pop_Avg) %>% distinct(Age, Sex, Region, Year2, .keep_all = TRUE) %>%
-                                rename(Year = Year2) %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x)
+                                rename(Year = Year2) %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 View(MIG_POP)
 
 
-#write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
+write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
 
 
 
@@ -46,6 +46,8 @@ Births <- Births %>% group_by(Region, Sex) %>% summarise(Births = sum(Births)) %
           add_column(Age = '0 to 4 years')
 
 View(Births)
+
+write.csv(Births, "/Users/mweber/Desktop/Births.csv")
 
 # Abridged Life Tables (do not separate 0-4 age group) ---------------------------------------------------------
 
@@ -98,6 +100,7 @@ LT_Abg <- MORT_DATA2 %>%
 View(LT_Abg)
 
 
+write.csv(LT_Abg, "/Users/mweber/Desktop/Abridged_LT.csv")
 # Base Period Migration Rates Table ---------------------------------------------------------
 
 
@@ -108,9 +111,9 @@ Base_Mig <- MIG_POP %>% filter(Year == '2014') %>% select(Region, Age, Sex, Year
 Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')) %>%
                          mutate(Births = case_when(Age != c('0 to 4 years', '85 years and over') ~ lag(Pop_Avg),
                                                    Age == '85 years and over' ~ Pop_Avg+lag(Pop_Avg),
-                                                   TRUE ~ Births)) %>% select(-Pop_Avg, -x) %>% rename(Pop2014 = Births)
+                                                   TRUE ~ Births)) %>% select(-Pop_Avg) %>% rename(Pop2014 = Births)
 
-# Pull in Survival Ratesand calculate Expected Population for 2018
+# Pull in Survival Rates and calculate Expected Population for 2018
 Base_Mig <- Base_Mig %>% left_join(LT_Abg, by =c('Region', 'Sex', 'Age')) %>% select(Region, Age, Sex, Year, Pop2014, Sx) %>%
                                   rename(SurvivalRate = Sx) %>% mutate(ExpectedPop2018 = Pop2014*SurvivalRate) %>% select(-Year)
 
@@ -121,3 +124,5 @@ Base_Mig <- MIG_POP %>% filter(Year == '2018') %>%
 
 # Calculate Surviving Migrants for 2018 & Net Migration rates, 2014-2018
 Base_Mig <- Base_Mig %>% mutate(SurvMigrants2018 = (PopActuals2018 - ExpectedPop2018), NetRates = SurvMigrants2018/ExpectedPop2018)
+
+write.csv(Base_Mig, "/Users/mweber/Desktop/BaseMigRates.csv")

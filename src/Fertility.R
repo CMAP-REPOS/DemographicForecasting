@@ -151,7 +151,8 @@ ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   mutate(sum = sum(Population)) %>%
   mutate(weight = Population/sum) %>%
   mutate(Weighted_Avg = sum(ASFR*weight)) %>%
-  select(-sum, -weight)
+  select(-sum, -weight) %>%
+  ungroup()
 
 options(scipen = 999) #supposed to turn off scientific notation....
 Projections <- read_xlsx("Input/ASFR_Projections.xlsx")
@@ -168,7 +169,7 @@ df$Projected_ASFR <- as.numeric(df$Projected_ASFR)
 
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%
-  mutate(Projected_ASFR = round(Projected_ASFR*1000, 2)) %>%
+  mutate(Projected_ASFR = round(as.numeric(Projected_ASFR)*1000, 2)) %>%
   mutate(ASFRs = coalesce(Weighted_Avg, Projected_ASFR)) %>%
   select(-GEOID, -County, -Births, -Population, -ASFR, -Weighted_Avg, -Projected_ASFR)
 

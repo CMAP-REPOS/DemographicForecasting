@@ -153,8 +153,18 @@ ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   mutate(Weighted_Avg = sum(ASFR*weight)) %>%
   select(-sum, -weight)
 
-Projections <- read_xlsx("Input/ASFR_Projections.xlsx") %>%
-  mutate(Projected_ASFR = as.numeric(Projected_ASFR))
+options(scipen = 999) #supposed to turn off scientific notation....
+Projections <- read_xlsx("Input/ASFR_Projections.xlsx")
+
+
+
+format(Projections$Projected_ASFR, scientific = FALSE) #also supposed to turn off scientific notation....
+
+
+
+df$Projected_ASFR <- as.numeric(df$Projected_ASFR)
+
+
 
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%
@@ -165,11 +175,9 @@ Final <- bind_rows(ASFR, Projections) %>%
 Final <- distinct(Final)
 
 #write.csv(Final, "/Users/maryweber/Desktop/ASFR2010-2060.csv")
-#write.csv(ASFR, "/Users/maryweber/Desktop/ASFR_HealthDep.csv")
 
 
-
-#save(ASFR, file="Output/ASFR.Rdata")
+#save(Final, file="Output/ASFR.Rdata")
 #load("Output/ASFR.Rdata", "/Users/maryweber/Desktop/ASFR_HealthDep.csv")
 
 

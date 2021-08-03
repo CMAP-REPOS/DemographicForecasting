@@ -125,4 +125,7 @@ Base_Mig <- MIG_POP %>% filter(Year == '2018') %>%
 # Calculate Surviving Migrants for 2018 & Net Migration rates, 2014-2018
 Base_Mig <- Base_Mig %>% mutate(SurvMigrants2018 = (PopActuals2018 - ExpectedPop2018), NetRates = SurvMigrants2018/ExpectedPop2018)
 
+
+#save(Base_Mig, file="Output/Base_Migration.Rdata")
+
 write.csv(Base_Mig, "/Users/mweber/Desktop/BaseMigRates.csv")

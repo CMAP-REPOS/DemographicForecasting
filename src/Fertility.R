@@ -91,8 +91,9 @@ ASFR <- F_HH_Data %>% inner_join(Births, by = c("GEOID", "State", "Age", "Year")
   rename(County = County.x) %>%
   rename(Region = Region.x)
 
-# Combine base year population and summed 2010-2019 birth data to generate base year ASFRs by region
+# Combine population and summed birth data to generate base year ASFRs by region
 BaseYearPop <- F_HH_Data %>%
+  filter(Year %in% 2010:2018) %>% #filter out 2019 because we don't have 2019 births for all regions
   filter(Year == BASE_YEAR) %>%
   group_by(Age,Region)%>%
   summarise(Population = sum(Population),

@@ -143,6 +143,14 @@ for(REGION in unique(BaseYearASFR$Region)){
     mutate(ProjectedASFR = ASFRratio * baseASFR)%>%
     mutate(ProjectedASFRper1000 = round(ProjectedASFR*1000, 2))
 }
+# unList the projections
+Projections <- tibble()
+for(REGION in names(Fertility)){
+  temp <- Fertility[[REGION]] %>%
+    mutate(Region = REGION) %>%
+    ungroup()
+  Projections <- bind_rows(temp, Projections)
+}
 
 
 #----------------------------------

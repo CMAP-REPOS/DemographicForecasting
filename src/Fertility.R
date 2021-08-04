@@ -158,7 +158,7 @@ Projections <- read_xlsx("Input/ASFR_Projections.xlsx")
 
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%
-  mutate(Projected_ASFR = round(as.numeric(Projected_ASFR)*1000, 2)) %>%
+  mutate(Projected_ASFR = as.numeric(Projected_ASFR)) %>%
   mutate(ASFRs = coalesce(Weighted_Avg, Projected_ASFR)) %>%
   select(-GEOID, -County, -Births, -Population, -ASFR, -Weighted_Avg, -Projected_ASFR)
 

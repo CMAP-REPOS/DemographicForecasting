@@ -10,9 +10,7 @@ library(readxl)
 #load("Output/PopData.Rdata")
 
 load("Output/Mort_Proj.Rdata")
-
 load("Output/ASFR.Rdata")
-
 load("Output/Base_Migration.Rdata")
 
 
@@ -23,14 +21,14 @@ Mort_Proj <- Mort_Proj %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
                                   '2032.5'=rowMeans(across('2030':'2035')),
                                   '2037.5'=rowMeans(across('2035':'2040')),
                                   '2042.5'=rowMeans(across('2040':'2045')),  #we don't need to go out to 2060 but we have the data to do so
-                                  '2047.5'=rowMeans(across('2045':'2050'))) # %>%
-                                 #  select(-c(4:12))
+                                  '2047.5'=rowMeans(across('2045':'2050'))) %>%
+                                   select(-c(4:12))
 
 #write.csv(Mort_Proj, "/Users/mweber/Desktop/mort_proj.csv")
 #View(Mort_Proj)
 
 
-# Step 2: Age Specific Fertility Rate Projections, Wisconsin, Midpoints of 5-year Intervals, 2020-2050
+# Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
 #i think we need to divide these values by 1000
 

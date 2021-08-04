@@ -164,8 +164,6 @@ ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   select(-sum, -weight) %>%
   ungroup()
 
-Projections2 <- read_xlsx("Input/ASFR_Projections.xlsx")
-
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%
   mutate(Projected_ASFR = round(as.numeric(Projected_ASFR)*1000, 2)) %>%

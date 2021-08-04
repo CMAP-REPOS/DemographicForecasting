@@ -30,14 +30,15 @@ Mort_Proj <- Mort_Proj %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
-#i think we need to divide these values by 1000
+#Reminder: different states start ASFR porjections at different years, that's why there's no IN data for 2018-19
 
-ASFR <- Final %>% select(State, Age, Sex, Year, Region, ASFRs) %>% pivot_wider(names_from = "Year", values_from="ASFRs")
+
+ASFR <- ASFR_projections %>% select(State, Age, Sex, Year, Region, ASFRs) %>% pivot_wider(names_from = "Year", values_from="ASFRs") %>% select(-c(5:14))
 
 
 # Step 3: Net Migration -------------------------------------------------
 
-#pull in Berger values from spreadsheet
+
 
 temp <- tibble(Period = as.character(), Region = as.character(), NetMigrants = as.numeric()) #
 

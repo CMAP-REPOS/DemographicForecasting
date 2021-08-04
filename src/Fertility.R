@@ -12,7 +12,7 @@ load("Output/GQData.Rdata")
 
 GQE_YEARS <- c(2011:2019) #GQ estimate year range
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
-BASE_YEAR <- 2014 #Base year population, ASFR projections are built off of this year
+BASE_YEAR <- 2014 #Base year population, ASFR projections are built off of this year because it is midpoint of our 2010-2018 data
 
 # Remove estimates of females in GQ from each year ----------------------------
 

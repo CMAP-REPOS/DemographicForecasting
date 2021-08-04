@@ -30,25 +30,14 @@ Mort_Proj <- Mort_Proj %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
-#i think we need to divide these values by 1000
-
-ASFR <- Final %>% select(State, Age, Sex, Year, Region, ASFRs) %>% pivot_wider(names_from = "Year", values_from="ASFRs")
+ASFR <- ASFR_projections %>% select(State, Age, Sex, Year, Region, ASFRs) %>% pivot_wider(names_from = "Year", values_from="ASFRs") %>% select(-c(5:14))
 
 
 # Step 3: Net Migration -------------------------------------------------
 
-#pull in Berger values from spreadsheet
+#read in net migration values (includes the 2014-2018 data as well)
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
 
-temp <- tibble(Period = as.character(), Region = as.character(), NetMigrants = as.numeric()) #
-
-# amend total 2014-18 net migration to Berger values
-
-m <- Base_Mig %>% select(Region, SurvMigrants2018) %>% group_by(Region) %>% mutate(NetMigrants = sum(SurvMigrants2018)) %>% select(-SurvMigrants2018) %>% distinct()
-m$Period <- '2014-2018'
-
-temp %>% add_row(m)
-
-View(m)
 
 # Step 2: Calculate weighted Net Migration -------------------------------------------------
 

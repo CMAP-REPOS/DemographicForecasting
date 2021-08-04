@@ -163,18 +163,7 @@ ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   select(-sum, -weight) %>%
   ungroup()
 
-options(scipen = 999) #supposed to turn off scientific notation....
 Projections <- read_xlsx("Input/ASFR_Projections.xlsx")
-
-
-
-format(Projections$Projected_ASFR, scientific = FALSE) #also supposed to turn off scientific notation....
-
-
-
-df$Projected_ASFR <- as.numeric(df$Projected_ASFR)
-
-
 
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%

@@ -104,7 +104,8 @@ BaseYearASFR <- Births %>%
   summarise(Births=sum(Births),
             .groups="drop") %>%
   left_join(BaseYearPop, by=c("Age","Region")) %>%
-  mutate(baseASFR = Births/Population/9) #9 is the number of years of data we have (2010-2018)
+  mutate(baseASFR = Births/Population/9) %>% #9 is the number of years of data we have (2010-2018)
+  select(Age, Region, baseASFR)
 
 #check TFR
 #BaseYearASFR %>% group_by(Region)%>% summarise(TFR = sum(baseASFR)*5)
@@ -128,30 +129,30 @@ CensusASFRs <- CensusASFRs %>%
                              age %in% 40:54 ~ "40 to 44 years")) %>%
   drop_na() %>% #remove the projections for >45
   group_by(year, agegroup) %>%
-  summarise(natlASFR = sum(ASFR)/5) %>%
-  filter(year >= 2019) #filter out projections from 2014-2018
+  summarise(natlASFR = sum(ASFR)/5) #average the ASFRs for each age group
 
-# Calculate ratio of BaseYearASFR to each year's projected ASFR by age group
-#  Broken out by Region (?)
-Fertility <- list()
-for(REGION in unique(BaseYearASFR$Region)){
-  Fertility[[REGION]] <- BaseYearASFR %>%
-    filter(Region == REGION) %>%
-    select(-Births, -Population, -Region) %>%
-    left_join(x=CensusASFRs, by=c("agegroup" = "Age")) %>%
-    mutate(ASFRratio = natlASFR / baseASFR) %>%
-    mutate(ProjectedASFR = ASFRratio * baseASFR)%>%
-    mutate(ProjectedASFRper1000 = round(ProjectedASFR*1000, 2))
-}
-# unList the projections
-Projections <- tibble()
-for(REGION in names(Fertility)){
-  temp <- Fertility[[REGION]] %>%
-    mutate(Region = REGION) %>%
-    ungroup()
-  Projections <- bind_rows(temp, Projections)
-}
+#Pull out just the projected ASFRs for the Base Year
+CensusBaseYear <- CensusASFRs %>%
+  filter(year==BASE_YEAR) %>%
+  rename(baseASFR = natlASFR) %>%
+  ungroup() %>%
+  select(-year)
 
+#Join the Census Base Year ASFR values to the projected ASFR values
+#and calculate the ratio (projected ASFR / base year ASFR)
+CensusASFRs <- left_join(CensusASFRs, CensusBaseYear, by = "agegroup") %>%
+  ungroup() %>%
+  mutate(CensusRatio = natlASFR / baseASFR) %>%
+  select(year, agegroup, CensusRatio)
+
+#Apply the Census ratio to our region's base year ASFRs
+ASFR_projections <- full_join(CensusASFRs, BaseYearASFR, by = c("agegroup" = "Age")) %>%
+  mutate(ASFR_proj = CensusRatio * baseASFR) %>%
+  rename(Age = agegroup, Year = year) %>%
+  select(Region, Age, Year, ASFR_proj)
+
+#export the ASFR projections
+save(ASFR_projections, file="Output/ASFR.Rdata")
 
 #----------------------------------
 
@@ -163,7 +164,7 @@ ASFR <- ASFR %>% group_by(Age, State, Year, Region) %>%
   select(-sum, -weight) %>%
   ungroup()
 
-Projections <- read_xlsx("Input/ASFR_Projections.xlsx")
+Projections2 <- read_xlsx("Input/ASFR_Projections.xlsx")
 
 #multiply by 1000
 Final <- bind_rows(ASFR, Projections) %>%

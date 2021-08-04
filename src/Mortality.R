@@ -55,10 +55,6 @@ MORT_DATA <- MORT_DATA %>% mutate(Population = case_when(Age == '0 to 1 years' ~
                                                           TRUE ~ Population)) %>%
                            select(-Age_0_4_Share) %>% subset(Age != '0 to 4 years')
 
-#View(MORT_DATA)
-#a <- MORT_DATA %>% filter( Region == 'External IL')  %>% group_by(Age, Sex)  %>% mutate(Population = sum(Population))
-#View(a)
-
 # Life Tables Calculations ---------------------------------------------------------
 
 LT <- tibble(Age = unique(Deaths$Age)) %>%
@@ -115,7 +111,7 @@ Mort_Proj <- LifeTable %>%
   select(-Sx)
 
 View(Mort_Proj)
-write.csv(Mort_Proj, "/Users/mweber/Desktop/MortProjRates.csv")
+# write.csv(Mort_Proj, "/Users/mweber/Desktop/MortProjRates.csv")
 # Clean-up to values >= 1  ------------------------------------ This could use some adjustments to make it more dynamic
 
 temp <- Mort_Proj %>% filter_at(vars(4:12), any_vars(. >= 1))

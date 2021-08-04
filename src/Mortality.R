@@ -91,13 +91,6 @@ LifeTable <- MORT_DATA %>%
   relocate(c(x, n, Ax), .before= Mortality)%>%
   ungroup()
 
-
-#View(LifeTable)
-
-#save(a, file="Output/LifeTables.Rdata")
-#write.csv(a, "/Users/mweber/Desktop/mort.csv")
-
-
 # Read in SSA tables -----------------------------------------------------------
 
 SSA <- read_excel("Input/SSA.xlsx")

@@ -149,7 +149,8 @@ CensusASFRs <- left_join(CensusASFRs, CensusBaseYear, by = "agegroup") %>%
 ASFR_projections <- full_join(CensusASFRs, BaseYearASFR, by = c("agegroup" = "Age")) %>%
   mutate(ASFR_proj = CensusRatio * baseASFR) %>%
   rename(Age = agegroup, Year = year) %>%
-  select(Region, Age, Year, ASFR_proj)
+  select(Region, Age, Year, ASFR_proj) %>%
+  filter(Year %% 5 == 0) #select just the 5-year ASFRs
 
 #export the ASFR projections
 save(ASFR_projections, file="Output/ASFR.Rdata")

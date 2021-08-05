@@ -102,19 +102,16 @@ Mort_Proj <- LifeTable %>%
   left_join(SSA, by= c("Sex", "Age")) %>%
   mutate(across(c(5:13), .fns = ~.*Sx)) %>%
   #select(-Sx)
-  rename(2018 = Sx) #keep the calculated Sx
+  rename("2018" = Sx) #keep the calculated Sx
 
 # Clean-up to values >= 1  ------------------------------------ This could use some adjustments to make it more dynamic
 
-temp <- Mort_Proj %>% filter_at(vars(4:12), any_vars(. >= 1))
-temp[7:12] <- temp$'2035'
+temp <- Mort_Proj %>% filter_at(vars(4:13), any_vars(. >= 1))
+temp[7:13] <- temp$'2035'
 #view(temp)
 
 Mort_Proj <- rbind(Mort_Proj, temp)
-Mort_Proj <- Mort_Proj %>% filter_at(vars(4:12), all_vars(. < 1))
-
-view(Mort_Proj)
-remove(temp)
+Mort_Proj <- Mort_Proj %>% filter_at(vars(4:13), all_vars(. < 1))
 
 #save(Mort_Proj, file="Output/Mort_Proj.Rdata")
 #save(LifeTable, file="Output/LifeTables.Rdata")

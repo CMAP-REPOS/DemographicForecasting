@@ -101,7 +101,8 @@ Mort_Proj <- LifeTable %>%
   select(Region, Sex, Age, Sx) %>%
   left_join(SSA, by= c("Sex", "Age")) %>%
   mutate(across(c(5:13), .fns = ~.*Sx)) %>%
-  select(-Sx)
+  #select(-Sx)
+  rename(2018 = Sx) #keep the calculated Sx
 
 # Clean-up to values >= 1  ------------------------------------ This could use some adjustments to make it more dynamic
 

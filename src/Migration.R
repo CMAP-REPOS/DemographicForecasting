@@ -17,6 +17,7 @@ MIG_YEARS <- c(2013:2014, 2018:2019)
 
 # Population by 5-Year Age Group, Sex and Region; 2013-14 and 2018-19 Averaged  ---------------------------------------------------------
 
+
 MIG_POP <- tibble()
 
 for (YEAR in MIG_YEARS) {
@@ -32,24 +33,19 @@ MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, Year2) %>% mutate(Pop_Avg = ca
                                                                                        Year2 == 2018 ~ round(mean(Population),0))) %>%
                                 ungroup() %>% select(Region, Age, Sex, Year2, Pop_Avg) %>% distinct(Age, Sex, Region, Year2, .keep_all = TRUE) %>%
                                 rename(Year = Year2) %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
-View(MIG_POP)
-
-
-write.csv(MIG_POP, "/Users/mweber/Desktop/mig_pop.csv")
-
 
 
 # Births by Region 2014-2018 ---------------------------------------------------------
+
+
 Births <- read_excel("Input/Births_CountyGender.xlsx") %>% filter(Year %in% 2014:2018) %>% select(-County, -State, -Year)
 
 Births <- Births %>% group_by(Region, Sex) %>% summarise(Births = sum(Births)) %>%
           add_column(Age = '0 to 4 years')
 
-View(Births)
-
-write.csv(Births, "/Users/mweber/Desktop/Births.csv")
 
 # Abridged Life Tables (do not separate 0-4 age group) ---------------------------------------------------------
+
 
 Deaths_Abg <- Deaths %>% mutate(Age =  case_when(Age %in% c('0 to 1 years', '1 to 4 years') ~ '0 to 4 years',
                                                   TRUE ~ Age)) %>%
@@ -97,10 +93,6 @@ LT_Abg <- MORT_DATA2 %>%
   relocate(n, .after = x) %>%
   ungroup()
 
-View(LT_Abg)
-
-
-write.csv(LT_Abg, "/Users/mweber/Desktop/Abridged_LT.csv")
 # Base Period Migration Rates Table ---------------------------------------------------------
 
 

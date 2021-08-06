@@ -40,8 +40,6 @@ ASFR_MidPoint <- ASFR_MidPoint %>% mutate('2022.5'=rowMeans(across('2020':'2025'
 PEP2020_2 <- POP[["2020"]] %>% select(-County,-State) %>%
   group_by(Age, Region, Sex) %>% summarise(Population = sum(Population))
 
-
-
 # Step 3: Pull in Berger Net Migration values and calculate flat average; should automate 2014-18 data
 
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx")

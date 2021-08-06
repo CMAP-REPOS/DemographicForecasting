@@ -35,9 +35,9 @@ ASFR_MidPoint <- ASFR_MidPoint %>% mutate('2022.5'=rowMeans(across('2020':'2025'
                                    select(-c(3:11))
 #add in special calculation to combine 0-1 and 1-4 (David ER)
 
-#Step 3: Pull in 2020 PEP data (not available via Census API yet)
+#Step 3: Pull in 2020 PEP data
 
-PEP2020 <- read_excel("Input/PEP2020.xlsx") %>% select(-County) %>%
+PEP2020_2 <- POP[["2020"]] %>% select(-County,-State) %>%
   group_by(Age, Region, Sex) %>% summarise(Population = sum(Population))
 
 

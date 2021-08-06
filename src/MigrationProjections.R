@@ -2,13 +2,11 @@
 
 library(dplyr)
 library(tidyverse)
-library(tidycensus)
 library(readxl)
 
 # Parameters ---------------------------------------------------------
 
-#load("Output/PopData.Rdata")
-
+load("Output/PopData.Rdata")
 load("Output/Mort_Proj.Rdata")
 load("Output/ASFR.Rdata")
 load("Output/Base_Migration.Rdata")

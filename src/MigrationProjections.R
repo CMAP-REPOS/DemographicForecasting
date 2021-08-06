@@ -25,19 +25,19 @@ Mort_MidPoint <- Mort_Proj %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
 ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_from="ASFR_proj") %>%
-                          mutate('2022.5'=rowMeans(across('2020':'2025')),
-                                  '2027.5'=rowMeans(across('2025':'2030')),
-                                  '2032.5'=rowMeans(across('2030':'2035')),
-                                  '2037.5'=rowMeans(across('2035':'2040')),
-                                  '2042.5'=rowMeans(across('2040':'2045')), #if want to add midpoints for 2050-60, add mutates here
-                                  '2047.5'=rowMeans(across('2045':'2050'))) %>%
+                          mutate('ASFR2022.5'=rowMeans(across('2020':'2025')),
+                                  'ASFR2027.5'=rowMeans(across('2025':'2030')),
+                                  'ASFR2032.5'=rowMeans(across('2030':'2035')),
+                                  'ASFR2037.5'=rowMeans(across('2035':'2040')),
+                                  'ASFR2042.5'=rowMeans(across('2040':'2045')), #if want to add midpoints for 2050-60, add mutates here
+                                  'ASFR2047.5'=rowMeans(across('2045':'2050'))) %>%
                                    select(c(1:2) | ends_with(".5"))
 #add in special calculation to combine 0-1 and 1-4 (David ER)
 
 #Step 3: Pull in 2020 PEP data
 
-PEP2020_2 <- POP[["2020"]] %>% select(-County,-State) %>%
-  group_by(Age, Region, Sex) %>% summarise(Population = sum(Population))
+PEP2020 <- POP[["2020"]] %>% select(-County,-State) %>%
+  group_by(Age, Region, Sex) %>% summarise(Pop2020 = sum(Population))
 
 # Step 3: Pull in Berger Net Migration values and calculate flat average; should automate 2014-18 data
 
@@ -60,6 +60,16 @@ NetMig <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) 
 
 #multiply 2020 PEP by 2022.5 ASFRs to get expected births by age group, 2020-2025
 #sum expected births and multiply by average fertility ratio (not sure how this is calculated)
+F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
+
+projectedBirths <- PEP2020 %>%
+  filter(Sex == "Female", Age %in% F_Groups) %>%
+  full_join(select(ASFR_MidPoint, c(1:2) | ASFR2022.5), by = c("Age", "Region")) %>%
+  mutate(projBirths = Pop2020 * ASFR2022.5 * 5)
+
+
+projBirthSums <- projectedBirths %>%
+  group_by(Region) %>%
 
 
 # Step 5: calculate expected 2025 population

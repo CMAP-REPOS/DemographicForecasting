@@ -41,18 +41,16 @@ ASFR_MidPoint <- ASFR_MidPoint %>% mutate('2022.5'=rowMeans(across('2020':'2025'
 # numbers match Alexis' excel model :)
 
 
-#Step 3: Pull in 2020 PEP data
+#Step 3: Pull in 2020 PEP data (not available via Census API yet)
+
+PEP2020 <- read_excel("Input/PEP2020.xlsx") %>% select(-County) %>%
+  group_by(Age, Region, Sex) %>% summarise(Population = sum(Population))
+
+# numbers match Alexis' excel model :)
 
 
+# Step 3: Pull in Berger Net Migration values (includes 2014-2018 data as well)
 
-
-
-
-
-
-# Step 3: Net Migration -------------------------------------------------
-
-#read in net migration values (includes the 2014-2018 data as well)
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
 
 

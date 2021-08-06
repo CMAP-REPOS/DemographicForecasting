@@ -23,8 +23,6 @@ Mort_MidPoint <- Mort_Proj %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
                                   '2047.5'=rowMeans(across('2045':'2050'))) %>%
                                    select(-c(4:13)) %>% filter(Region == 'CMAP Region')
 
-# numbers match Alexis' excel model :)
-
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
@@ -37,28 +35,40 @@ ASFR_MidPoint <- ASFR_MidPoint %>% mutate('2022.5'=rowMeans(across('2020':'2025'
                                   '2042.5'=rowMeans(across('2040':'2045')),
                                   '2047.5'=rowMeans(across('2045':'2050'))) %>%
                                    select(-c(3:11))
-
-# numbers match Alexis' excel model :)
-
+#add in special calculation to combine 0-1 and 1-4 (David ER)
 
 #Step 3: Pull in 2020 PEP data (not available via Census API yet)
 
 PEP2020 <- read_excel("Input/PEP2020.xlsx") %>% select(-County) %>%
   group_by(Age, Region, Sex) %>% summarise(Population = sum(Population))
 
-# numbers match Alexis' excel model :)
 
 
-# Step 3: Pull in Berger Net Migration values (includes 2014-2018 data as well)
+# Step 3: Pull in Berger Net Migration values and calculate flat average; should automate 2014-18 data
 
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
 
+NetMig <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
+  group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand
+
+#m <- Base_Mig %>%
+#  select(Region, Sex, SurvMigrants2018) %>%
+#  group_by(Region, Sex) %>%
+#  mutate(SurvMigrants2018 = sum(SurvMigrants2018)) %>% unique()
 
 
 
+# all numbers up to this point match Alexis' excel model :)
 
-# Step 2: Calculate weighted Net Migration -------------------------------------------------
 
-temp <- group_by(Region) %>% mutate() #case when and calculate by period range
+# Step 4: get projected birth for 0-1 age group
 
+#multiply 2020 PEP by 2022.5 ASFRs to get expected births by age group, 2020-2025
+#sum expected births and multiply by average fertility ratio (not sure how this is calculated)
+
+
+# Step 5: calculate expected 2025 population
+
+
+#2020 PEP * 2022.5 ASFRs - births calculation comes from step above
 

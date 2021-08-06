@@ -24,15 +24,14 @@ Mort_MidPoint <- Mort_Proj %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
-ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_from="ASFR_proj") %>% select(-c(3))
-
-ASFR_MidPoint <- ASFR_MidPoint %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
+ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_from="ASFR_proj") %>%
+                          mutate('2022.5'=rowMeans(across('2020':'2025')),
                                   '2027.5'=rowMeans(across('2025':'2030')),
                                   '2032.5'=rowMeans(across('2030':'2035')),
                                   '2037.5'=rowMeans(across('2035':'2040')),
-                                  '2042.5'=rowMeans(across('2040':'2045')),
+                                  '2042.5'=rowMeans(across('2040':'2045')), #if want to add midpoints for 2050-60, add mutates here
                                   '2047.5'=rowMeans(across('2045':'2050'))) %>%
-                                   select(-c(3:11))
+                                   select(c(1:2) | ends_with(".5"))
 #add in special calculation to combine 0-1 and 1-4 (David ER)
 
 #Step 3: Pull in 2020 PEP data

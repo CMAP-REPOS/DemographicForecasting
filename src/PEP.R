@@ -67,6 +67,7 @@ d <- POP[["2014"]] %>% filter(State == "Illinois") %>% filter(Sex == "Female") %
 
 #POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")
 #POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
+#POP[["2020"]] <- read_excel("Input/Pop2005.xlsx")
 
 #POP <- POP[as.character(sort(as.numeric(names(POP))))]
 

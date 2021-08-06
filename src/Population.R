@@ -1,12 +1,11 @@
 # CMAP | Noel Peterson, Mary Weber | 1/15/2021
 
-#This file contains 1990, 2000 and 2010 Decennial Census data
+#This file fetches and formats 1990, 2000 and 2010 Decennial Census data
 
 #install.packages(c("tidyverse", "tidycensus", "readxl"))
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-load("Output/PopData.Rdata")
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
 
@@ -71,7 +70,8 @@ for (YEAR in YEARS) {
     ) %>%
     group_by(GEOID, County, State, Sex, Age, Year, Region) %>%
     summarize(Population = sum(Population)) %>%
-    drop_na()
+    drop_na() %>%
+    ungroup()
 }
 
 

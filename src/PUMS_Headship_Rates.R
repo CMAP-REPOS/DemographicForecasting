@@ -24,9 +24,11 @@ pums_21co <- bind_rows(pums_il, pums_in) %>%
          )) %>%
   select(SERIALNO, PUMA, ST, PWGTP, IsHouseholder, ExactAge, AgeGroup)
 
-## TO DO: Still need to exclude PUMAs outside of 21-county modeling area.
-## (See Age_0_4_PUMS_Breakdown.R for method.)
+load("Output/PUMA_region_assignments.Rdata")
 
+pums_21co <- PUMAregions %>%
+  select(PUMA, Region) %>%
+  inner_join(pums_21co, by= "PUMA")
 
 # Calculate headship rates for each age group by PUMA ---------------------
 

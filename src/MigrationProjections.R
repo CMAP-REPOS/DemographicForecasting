@@ -10,6 +10,8 @@ load("Output/PopData.Rdata")
 load("Output/Mort_Proj.Rdata")
 load("Output/ASFR.Rdata")
 load("Output/Base_Migration.Rdata")
+load("Output/BirthRatios.Rdata")
+
 
 # Step 1: Age-Sex Specific Survival Rates, 2020-2050, Midpoints of 5-year Intervals
 
@@ -65,14 +67,28 @@ F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 ye
 projectedBirths <- PEP2020 %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%
   full_join(select(ASFR_MidPoint, c(1:2) | ASFR2022.5), by = c("Age", "Region")) %>%
-  mutate(projBirths = Pop2020 * ASFR2022.5 * 5)
-
-
-projBirthSums <- projectedBirths %>%
+  mutate(projTotBirths = Pop2020 * ASFR2022.5 * 5) %>%
   group_by(Region) %>%
+  summarise(projTotBirths = round(sum(projTotBirths), digits = 0)) %>%
+  left_join(bRatios, by="Region") %>%
+  mutate(projMaleBirths = round(projTotBirths * Male,0),
+         projFemaleBirths = round(projTotBirths * Female,0))
+
+projBirths_long <- projectedBirths %>%
+  select(Region, projMaleBirths, projFemaleBirths) %>%
+  pivot_longer(cols=c("projMaleBirths", "projFemaleBirths"), names_to = "Sex", values_to = "Pop2020") %>%
+  mutate(Sex = case_when(Sex == "projMaleBirths" ~ "Male",
+                         Sex == "projFemaleBirths" ~ "Female")) %>%
+  mutate(Age = "Births") %>%
+  select(Age, Region, Sex, Pop2020)
 
 
 # Step 5: calculate expected 2025 population
+expectedpop25 <- PEP2020 %>%
+  bind_rows(projBirths_long)
+
+
+
 
 
 #2020 PEP * 2022.5 ASFRs - births calculation comes from step above

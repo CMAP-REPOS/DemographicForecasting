@@ -154,3 +154,29 @@ ASFR_projections <- full_join(CensusASFRs, BaseYearASFR, by = c("agegroup" = "Ag
 
 #export the ASFR projections
 save(ASFR_projections, file="Output/ASFR.Rdata")
+
+###########------------ calculate sex by births ratios for each region
+
+#Import births by sex data (2014-2018)
+bdata <- read_excel("Input/Births_CountyGender.xlsx") %>% filter(Year %in% 2014:2018)
+
+#calculate totals by region, year and sex
+btemp <- bdata %>%
+  group_by(Year, Region, Sex) %>%
+  summarise(Births = sum(Births))
+
+#calculate totals by region and year
+btemp2 <- bdata %>%
+  group_by(Year, Region) %>%
+  summarise(totBirths = sum(Births))
+
+#calculate the ratios by year, region and sex, and take average across all years
+bRatios <- left_join(btemp, btemp2, by = c("Year", "Region")) %>%
+  mutate(bRatio = Births / totBirths) %>%
+  group_by(Region, Sex) %>%
+  summarize(avgRatio = mean(bRatio))
+rm(btemp)
+rm(btemp2)
+rm(bdata)
+save(bRatios, file="Output/BirthRatios.Rdata")
+

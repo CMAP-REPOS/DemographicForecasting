@@ -174,7 +174,8 @@ btemp2 <- bdata %>%
 bRatios <- left_join(btemp, btemp2, by = c("Year", "Region")) %>%
   mutate(bRatio = Births / totBirths) %>%
   group_by(Region, Sex) %>%
-  summarize(avgRatio = mean(bRatio))
+  summarize(avgRatio = mean(bRatio)) %>%
+  pivot_wider(names_from = "Sex", values_from = "avgRatio")
 rm(btemp)
 rm(btemp2)
 rm(bdata)

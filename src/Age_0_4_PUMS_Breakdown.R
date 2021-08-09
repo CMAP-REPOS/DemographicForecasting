@@ -6,7 +6,7 @@ library(tidycensus)
 library(tigris)
 library(sf)
 
-#install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
+install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
 library(cmapgeo)
 
 

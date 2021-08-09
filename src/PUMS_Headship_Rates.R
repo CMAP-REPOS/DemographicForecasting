@@ -33,16 +33,23 @@ pums_21co <- PUMAregions %>%
 # Calculate headship rates for each age group by PUMA ---------------------
 
 total_pop <- pums_21co %>%
-  group_by(ST, PUMA, AgeGroup) %>%
-  summarize(TotalPop = sum(PWGTP))  # Sum person weights
+  group_by(ST, PUMA, AgeGroup, Region) %>% #only change here was adding in region
+  summarize(TotalPop = sum(PWGTP), .groups = 'drop') %>% # Sum person weights
+  select(-ST, -PUMA) %>%
+  group_by(AgeGroup, Region) %>%
+  summarise(TotalPop = sum(TotalPop))
 
 householders <- pums_21co %>%
   filter(IsHouseholder == TRUE) %>%
-  group_by(ST, PUMA, AgeGroup) %>%
-  summarize(NumHouseholders = sum(PWGTP))  # Sum person weights
+  group_by(ST, PUMA, AgeGroup, Region) %>%
+  summarize(NumHouseholders = sum(PWGTP), .groups='drop') %>%
+  select(-ST, -PUMA) %>%
+  group_by(AgeGroup, Region) %>%
+  summarise(NumHouseholders = sum(NumHouseholders))# Sum person weights
 
 HEADSHIP_RATES <- left_join(householders, total_pop) %>%
   mutate(HeadshipRate = NumHouseholders / TotalPop)
 
 ## TO DO: Calculate rates by county instead of PUMA. Have to assign PUMAs to
 ## counties (or counties to PUMAs, in rural areas).
+

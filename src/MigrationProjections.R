@@ -113,7 +113,8 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   ungroup() %>%
   rbind(PEP2020) %>%
   left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5) %>%
-  mutate(Pop2025 = Pop2020 * Mort2022.5)
+  arrange(Region, desc(Sex)) %>%
+  mutate(Pop2025 = round(lag(Pop2020) * Mort2022.5,0))
 
 
 #add in case when for 0 to 4 survival rate

@@ -3,20 +3,16 @@
 library(tidyverse)
 library(tidycensus)
 
+load("Output/PumaRegions.Rdata")
 
 # Get PUMS person-level age data ------------------------------------------
 
-pums_il <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "17", year = 2010, survey = "acs5",
+pums_il <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "17", year = 2019, survey = "acs5",
                     variables_filter = list(AGEP = 15:99), show_call = TRUE)
-pums_in <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "18", year = 2010, survey = "acs5",
+pums_in <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "18", year = 2019, survey = "acs5",
                    variables_filter = list(AGEP = 15:99), show_call = TRUE)
-pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "55", year = 2010, survey = "acs5",
+pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "55", year = 2019, survey = "acs5",
                     variables_filter = list(AGEP = 15:99), show_call = TRUE)
-
-pums_wi$SPORDER <- as.character(pums_wi$SPORDER)
-pums_wi$AGEP <- as.double(pums_wi$AGEP)
-pums_wi$PUMA <- as.double(pums_wi$PUMA)
-load("Output/PumaRegions.Rdata")
 
 # Join PUMS data to PUMA region assignments -------------------------------
 
@@ -25,7 +21,7 @@ pums_21co <- bind_rows(pums_il, pums_in) %>%
   rename(ExactAge = AGEP) %>%
   mutate(IsHouseholder = SPORDER == 1,
          AgeGroup = case_when(
-           ExactAge < 85 ~ paste(floor(ExactAge/5)*5, "to", floor(ExactAge/5)*5+4, "years"),
+           ExactAge < 85 ~ paste(floor(as.double(ExactAge)/5)*5, "to", floor(as.double(ExactAge)/5)*5+4, "years"),
            TRUE ~ "85 years and over"
          )) %>%
   select(SERIALNO, PUMA, ST, PWGTP, IsHouseholder, ExactAge, AgeGroup)

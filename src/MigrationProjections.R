@@ -36,7 +36,6 @@ ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_fr
                           rename_with(.fn = ~paste0("ASFR",.), .cols=starts_with("2")) %>%
                           ungroup()
                                   #select(c(1:2) | ends_with(".5"))
-#add in special calculation to combine 0-1 and 1-4 (David ER)
 
 #Step 3: Pull in 2020 PEP data
 
@@ -102,14 +101,19 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
                                 TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
-  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #preps table for cbind into ExpectedPop2025
+  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2020") %>% mutate(Age = "Births") #preps table for cbind into ExpectedPop2025
 
+
+temp <- projectedBirths_0to4surviving
 # Step 5: apply Survival Rates and calculate Expected 2025 population
 expectedpop25 <- PEP2020 %>%
-  rename(Age2020 = Age) %>%
-  ungroup()
+ # rename(Age2020 = Age) %>%
+  ungroup() %>%
+  rbind(temp)
 
-
+#add in births 2020
+#add in 2022.5 survival rate
+#multiply for expected 2025 population
 
 # Step 6: Import Target Migrant values and calculate K factors
 

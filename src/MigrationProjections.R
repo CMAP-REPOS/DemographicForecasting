@@ -104,15 +104,20 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
   pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #preps table for cbind into ExpectedPop2025
 
-# Step 5: calculate expected 2025 population
+# Step 5: apply Survival Rates and calculate Expected 2025 population
 expectedpop25 <- PEP2020 %>%
   rename(Age2020 = Age) %>%
   ungroup()
 
 
 
+# Step 6: Import Target Migrant values and calculate K factors
+
+# Step 7: Apply K factors to NMRs in order to calculate Net Migration
+
+# Step 8: Apply Net Migration to Expected Population in order to calculate Projected Population
+
+# Step 9: Assemble Components of Change to check work (Optional)
 
 
-
-#2020 PEP * 2022.5 ASFRs - births calculation comes from step above
 

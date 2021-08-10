@@ -55,6 +55,8 @@ puma_region <- puma_21co_sf %>%
   as.data.frame() %>%
   select(GEOID10, STATEFP10, PUMACE10, Region)
 
+#save(puma_region, file="Output/PumaRegions.Rdata")
+
 # Get PUMS person-level age data
 pums_il <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "17", year = 2019, survey = "acs5",
                     variables_filter = list(AGEP = 0:4), show_call = TRUE)
@@ -80,4 +82,4 @@ AGE_0_4_FREQ <- pums_21co %>%
   ungroup()
 
 # Save frequency table to output folder
-save(AGE_0_4_FREQ, file="Output/Age_0_4_Freq.Rdata")
+#save(AGE_0_4_FREQ, file="Output/Age_0_4_Freq.Rdata")

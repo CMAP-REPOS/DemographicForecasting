@@ -11,6 +11,7 @@ pums_in <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "18", year
 pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "55", year = 2019, survey = "acs5",
                     variables_filter = list(AGEP = 15:99), show_call = TRUE)
 
+load("Output/PumaRegions.Rdata")
 
 # Join PUMS data to PUMA region assignments -------------------------------
 
@@ -24,12 +25,12 @@ pums_21co <- bind_rows(pums_il, pums_in) %>%
          )) %>%
   select(SERIALNO, PUMA, ST, PWGTP, IsHouseholder, ExactAge, AgeGroup)
 
-load("Output/PUMA_region_assignments.Rdata")
+#load("Output/PUMA_region_assignments.Rdata")
 
-pums_21co <- PUMAregions %>%
-  select(PUMA, Region) %>%
-  inner_join(pums_21co, by= "PUMA")
 
+pums_21co <- pums_21co %>%
+  right_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>% #added in region here
+  select(-SERIALNO, -GEOID10)
 # Calculate headship rates for each age group by PUMA ---------------------
 
 total_pop <- pums_21co %>%
@@ -50,6 +51,6 @@ householders <- pums_21co %>%
 HEADSHIP_RATES <- left_join(householders, total_pop) %>%
   mutate(HeadshipRate = NumHouseholders / TotalPop)
 
-## TO DO: Calculate rates by county instead of PUMA. Have to assign PUMAs to
-## counties (or counties to PUMAs, in rural areas).
+write.csv(HEADSHIP_RATES, "/Users/mweber/Desktop/HSRates.csv")
+
 

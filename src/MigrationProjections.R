@@ -42,6 +42,8 @@ ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_fr
 PEP2020 <- POP[["2020"]] %>% select(-County,-State) %>%
   group_by(Age, Region, Sex) %>% summarise(Pop2020 = sum(Population))
 
+agefactors <- factor(unique(POP[["2020"]]$Age), ordered=TRUE)
+
 # Step 3: Pull in Berger Net Migration values and calculate flat average; should automate 2014-18 data
 
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
@@ -101,7 +103,7 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
                                 TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
-  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2020") %>% mutate(Age = "Births") #preps table for cbind into ExpectedPop2025
+  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #preps table for cbind into ExpectedPop2025
 
 
 
@@ -115,6 +117,9 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5) %>%
   arrange(Region, desc(Sex)) %>%
   mutate(Pop2025 = round(lag(Pop2020) * Mort2022.5,0))
+
+PEP2020_test <- PEP2020 %>% mutate(Age = factor(Age, levels = agefactors, ordered = TRUE)) %>% ungroup()
+
 
 
 #add in case when for 0 to 4 survival rate

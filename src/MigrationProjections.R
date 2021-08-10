@@ -21,7 +21,7 @@ Mort_MidPoint <- Mort_Proj %>% mutate('2022.5'=rowMeans(across('2020':'2025')),
                                   '2037.5'=rowMeans(across('2035':'2040')),
                                   '2042.5'=rowMeans(across('2040':'2045')),  #we don't need to go out to 2060 but we have the data to do so
                                   '2047.5'=rowMeans(across('2045':'2050'))) %>%
-                                   select(-c(4:13)) %>% filter(Region == 'CMAP Region')
+                                   select(-c(4:13)) # %>% filter(Region == 'CMAP Region')
 
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
@@ -60,13 +60,9 @@ NetMig <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) 
 # all numbers up to this point match Alexis' excel model :)
 
 
-# Step 4: get projected birth for 0-1 age group
+# Step 4 part 1: Calculate projected Births by age cohort and Region in 1-year intervals
 
-#multiply 2020 PEP by 2022.5 ASFRs to get expected births by age group, 2020-2025
-#sum expected births and multiply by average fertility ratio (not sure how this is calculated)
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
-
-projyears <- c("2020","2021","2022","2023","2024")
 
 projectedBirths <- PEP2020 %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%
@@ -77,30 +73,33 @@ projectedBirths <- PEP2020 %>%
          Births2023 = Pop2020 * ASFR2023,
          Births2024 = Pop2020 * ASFR2024) %>%
   select(c(1:2, starts_with("Births"))) %>%
-  group_by(Region)
+  pivot_longer(cols=starts_with("Births"), names_to = "Year", values_to = "totBirths") %>%
+  group_by(Region, Year) %>%
+  summarise(totBirths = sum(totBirths))
 
+# Step 4 part 2: Calculate the number of Births (by Sex and Region) that survive the projection period.
+# Survival rates for 0-1 and 1-4 are applied based on David ER's cohort method
+projectedBirths_bySex <- projectedBirths %>%
+  left_join(bRatios, by="Region")%>%
+  mutate(fBirths = totBirths*Female,
+         mBirths = totBirths*Male, .keep = "unused")
 
-temp <- projectedBirths %>%
-  mutate(births = Pop2020 * "2020")
+#pull and rearrange 0-1 and 1-4 Survival Rates by sex and Region from Mort_MidPoint
+Mort_0to4 <- Mort_MidPoint %>%
+  filter(Age == "0 to 1 years" | Age == "1 to 4 years") %>%
+  select(1:3 | "2022.5") %>%
+  pivot_wider(names_from = c("Sex","Age"), values_from = "2022.5")
+names(Mort_0to4) <- make.names(names(Mort_0to4))
 
-projectedBirths <- PEP2020 %>%
-  filter(Sex == "Female", Age %in% F_Groups) %>%
-  full_join(select(ASFR_MidPoint, c(1:2) | ASFR2022.5), by = c("Age", "Region")) %>%
-  mutate(projTotBirths = Pop2020 * ASFR2022.5 * 5) %>%
+# Step 4 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
+projectedBirths_0to4surviving <- projectedBirths_bySex %>%
+  left_join(Mort_0to4, by="Region") %>%
+  mutate(fSurvivors = case_when(Year == "Births2024" ~ fBirths * Female_0.to.1.years,
+                                TRUE ~ fBirths * Female_0.to.1.years * Female_1.to.4.years),
+         mSurvivors = case_when(Year == "Births2024" ~ mBirths * Male_0.to.1.years,
+                                TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
-  summarise(projTotBirths = round(sum(projTotBirths), digits = 0)) %>%
-  left_join(bRatios, by="Region") %>%
-  mutate(projMaleBirths = round(projTotBirths * Male,0),
-         projFemaleBirths = round(projTotBirths * Female,0))
-
-projBirths_long <- projectedBirths %>%
-  select(Region, projMaleBirths, projFemaleBirths) %>%
-  pivot_longer(cols=c("projMaleBirths", "projFemaleBirths"), names_to = "Sex", values_to = "Pop2020") %>%
-  mutate(Sex = case_when(Sex == "projMaleBirths" ~ "Male",
-                         Sex == "projFemaleBirths" ~ "Female")) %>%
-  mutate(Age = "Births") %>%
-  select(Age, Region, Sex, Pop2020)
-
+  summarize(f0to4 = sum(fSurvivors), m0to4 = sum(mSurvivors))
 
 # Step 5: calculate expected 2025 population
 expectedpop25 <- PEP2020 %>%

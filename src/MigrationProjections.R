@@ -64,6 +64,8 @@ NetMig <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) 
 
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
+projyears <- c("2020","2021","2022","2023","2024")
+
 projectedBirths <- PEP2020 %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%
   full_join(select(ASFR_MidPoint, c(1:2,contains(all_of(projyears)))), by = c("Age", "Region")) %>%
@@ -99,11 +101,14 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
          mSurvivors = case_when(Year == "Births2024" ~ mBirths * Male_0.to.1.years,
                                 TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
-  summarize(f0to4 = sum(fSurvivors), m0to4 = sum(mSurvivors))
+  summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
+  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #preps table for cbind into ExpectedPop2025
 
 # Step 5: calculate expected 2025 population
 expectedpop25 <- PEP2020 %>%
-  bind_rows(projBirths_long)
+  rename(Age = Age2020) %>%
+  left_join()
+
 
 
 

@@ -1,16 +1,21 @@
+# CMAP | Noel Peterson, Alexis McAdams | 8/7/2021
+
 library(tidyverse)
 library(tidycensus)
 
 
 # Get PUMS person-level age data ------------------------------------------
 
-pums_il <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "17", year = 2019, survey = "acs5",
+pums_il <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "17", year = 2010, survey = "acs5",
                     variables_filter = list(AGEP = 15:99), show_call = TRUE)
-pums_in <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "18", year = 2019, survey = "acs5",
-                    variables_filter = list(AGEP = 15:99), show_call = TRUE)
-pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "55", year = 2019, survey = "acs5",
+pums_in <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "18", year = 2010, survey = "acs5",
+                   variables_filter = list(AGEP = 15:99), show_call = TRUE)
+pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SPORDER"), state = "55", year = 2010, survey = "acs5",
                     variables_filter = list(AGEP = 15:99), show_call = TRUE)
 
+pums_wi$SPORDER <- as.character(pums_wi$SPORDER)
+pums_wi$AGEP <- as.double(pums_wi$AGEP)
+pums_wi$PUMA <- as.double(pums_wi$PUMA)
 load("Output/PumaRegions.Rdata")
 
 # Join PUMS data to PUMA region assignments -------------------------------
@@ -29,7 +34,7 @@ pums_21co <- bind_rows(pums_il, pums_in) %>%
 
 
 pums_21co <- pums_21co %>%
-  right_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>% #added in region here
+  right_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>%
   select(-SERIALNO, -GEOID10)
 # Calculate headship rates for each age group by PUMA ---------------------
 
@@ -51,6 +56,6 @@ householders <- pums_21co %>%
 HEADSHIP_RATES <- left_join(householders, total_pop) %>%
   mutate(HeadshipRate = NumHouseholders / TotalPop)
 
-write.csv(HEADSHIP_RATES, "/Users/mweber/Desktop/HSRates.csv")
+write.csv(HEADSHIP_RATES, "/Users/mweber/Desktop/HSRates1.csv")
 
 

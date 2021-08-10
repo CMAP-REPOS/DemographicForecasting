@@ -106,8 +106,8 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
 
 # Step 5: calculate expected 2025 population
 expectedpop25 <- PEP2020 %>%
-  rename(Age = Age2020) %>%
-  left_join()
+  rename(Age2020 = Age) %>%
+  ungroup()
 
 
 

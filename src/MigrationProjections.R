@@ -13,16 +13,18 @@ load("Output/ASFR.Rdata")
 load("Output/Base_Migration.Rdata")
 load("Output/BirthRatios.Rdata")
 
-startyr = "2020"
-midpointyr = "2022.5"
-endyr = "2024"
+#load in variables from projection_control
+startyr = "2020"                              #as.character(projstart)
+midpointyr = "2022.5"                         #as.character(projmidpoint)
+endyr = "2024"                                #as.character(projend - 1)
+cycleyears = c(2020,2021,2022,2023,2024)      # projyears
 
 under55 <- c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years')
 over55 <- c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
 
 # Step 1: Age-Sex Specific Survival Rates, 2020-2050, Midpoints of 5-year Intervals
 
-#get column names and use below to make cyclical
+#get column names
 Mort_MidPoint <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025')),
                                   'Mort2027.5'=rowMeans(across('2025':'2030')),
                                   'Mort2032.5'=rowMeans(across('2030':'2035')),
@@ -47,6 +49,9 @@ ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_fr
                           rename_with(.fn = ~paste0("ASFR",.), .cols=starts_with("2")) %>%
                           ungroup()
                                   #select(c(1:2) | ends_with(".5"))
+ASFR_MidPoint <- ASFR_MidPoint %>%
+  select(c(1:2) | contains(midpointyr) | num_range("ASFR", cycleyears))
+
 
 #Step 3: Pull in 2020 PEP data
 
@@ -198,12 +203,27 @@ K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Regio
 K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
   mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor)
 
-K_factors <- bind_rows(K_Under55, K_Over55)
+K_factors <- bind_rows(K_Under55, K_Over55) %>%
+  select(-Period) %>%
+  pivot_wider(names_from = Age, values_from = kfactor)%>%
+  rename_with(make.names)
 
 
 # Step 7: Apply K factors to NMRs in order to calculate Net Migration
+Migration <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>%
+  left_join(K_factors, by = c("Region", "Sex")) %>%
+  mutate(kfactor = case_when(Age %in% under55 ~ Under.55,
+                            Age %in% over55 ~ Over.55)) %>%
+  mutate(Age = factor(Age, levels = agefactors))%>%
+  arrange(Region, Sex, Age) %>%
+  mutate(NMRforecast = NetRates + kfactor) %>%
+  mutate(NMRforecast = case_when(Age == "50 to 54 years" ~ (lead(NMRforecast)+lag(NMRforecast))/2 ,
+                             TRUE ~ NMRforecast)) %>%
+  select(Region, Age, Sex, NMRforecast)
 
 # Step 8: Apply Net Migration to Expected Population in order to calculate Projected Population
+
+
 
 # Step 9: Assemble Components of Change to check work (Optional)
 

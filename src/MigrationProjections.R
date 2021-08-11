@@ -140,6 +140,15 @@ n <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == '55+', Se
   mutate(TargetTM_55Plus = TargetTM*SexProp) %>%
   mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>% select(-NetMigration, -TargetTM)
 
+#Net Migrants from prior5-year period
+
+#Change in net migrants from prior 5-year period
+
+#Expected Populations of Current Period
+
+
+#Change in Net Migration Rates (K) from Prior Period
+
 
 # Step 7: Apply K factors to NMRs in order to calculate Net Migration
 

@@ -102,16 +102,16 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
 
 PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
-expectedpop25 <- projectedBirths_0to4surviving %>%
-  ungroup() %>%
-  full_join(PEP2020, by=c("Region", "Sex", "Age")) %>%
-  relocate(c(Age, Pop2020), .before= Pop2025) %>%
-  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5, Pop2025) %>%
-  arrange(Region, desc(Sex)) %>%
-  mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
-                              Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
-                                    TRUE ~ Pop2025)) %>%
-  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
+#expectedpop25 <- projectedBirths_0to4surviving %>%
+#  ungroup() %>%
+#  full_join(PEP2020, by=c("Region", "Sex", "Age")) %>%
+#  relocate(c(Age, Pop2020), .before= Pop2025) %>%
+#  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5, Pop2025) %>%
+#  arrange(Region, desc(Sex)) %>%
+#  mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
+#                             Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
+#                                    TRUE ~ Pop2025)) %>%
+#  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
 
 
 expectedpop25 <- PEP2020 %>% mutate(Age2020 = factor(Age, levels = agefactors, ordered = TRUE), .before = Pop2020) %>%

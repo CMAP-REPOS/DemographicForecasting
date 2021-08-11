@@ -13,6 +13,9 @@ load("Output/ASFR.Rdata")
 load("Output/Base_Migration.Rdata")
 load("Output/BirthRatios.Rdata")
 
+startyr = "2020"
+midpointyr = "2022.5"
+endyr = "2024"
 
 # Step 1: Age-Sex Specific Survival Rates, 2020-2050, Midpoints of 5-year Intervals
 
@@ -23,6 +26,9 @@ Mort_MidPoint <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025'
                                   'Mort2042.5'=rowMeans(across('2040':'2045')),  #we don't need to go out to 2060 but we have the data to do so
                                   'Mort2047.5'=rowMeans(across('2045':'2050'))) %>%
                                    select(-c(4:13))
+
+Mort_MidPoint <- Mort_MidPoint %>%
+  select(c(1:3) | ends_with(midpointyr))
 
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
@@ -75,7 +81,6 @@ projectedBirths_bySex <- projectedBirths %>%
 #pull and rearrange 0-1 and 1-4 Survival Rates by sex and Region from Mort_MidPoint
 Mort_0to4 <- Mort_MidPoint %>%
   filter(Age == "0 to 1 years" | Age == "1 to 4 years") %>%
-  select(1:3 | "Mort2022.5") %>%
   pivot_wider(names_from = c("Sex","Age"), values_from = "Mort2022.5")
 names(Mort_0to4) <- make.names(names(Mort_0to4))
 
@@ -88,7 +93,8 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
                                 TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
-  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #preps table for cbind into ExpectedPop2025
+  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") %>%
+  rename(Age2025 = Age)
 
 
 
@@ -99,7 +105,7 @@ PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) 
 expectedpop25 <- projectedBirths_0to4surviving %>%
   ungroup() %>%
   full_join(PEP2020, by=c("Region", "Sex", "Age")) %>%
-  relocate(c(Age, Pop2020), .before= Pop2025)%>%
+  relocate(c(Age, Pop2020), .before= Pop2025) %>%
   left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5, Pop2025) %>%
   arrange(Region, desc(Sex)) %>%
   mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
@@ -108,13 +114,20 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
 
 
-PEP2020_test <- PEP2020 %>% mutate(Age2020 = factor(Age, levels = agefactors, ordered = TRUE), .before = Pop2020) %>%
+expectedpop25 <- PEP2020 %>% mutate(Age2020 = factor(Age, levels = agefactors, ordered = TRUE), .before = Pop2020) %>%
   ungroup() %>%
-  select(-Age)
-expectedpop25 <- PEP2020_test %>%
-  mutate(Age2025 = fct_shift(Age2020, -1))
-
-
+  select(-Age) %>%
+  arrange(Region, Sex, Age2020) %>%
+  mutate(Age2025 = lead(Age2020,1)) %>%
+  left_join(Mort_MidPoint, by=c('Region', 'Age2025' ='Age' , 'Sex')) %>%
+  mutate(Pop2025 = case_when(!Age2025 %in% c('0 to 4 years', '85 years and over') ~ Pop2020 * Mort2022.5,
+                             Age2025 == '85 years and over' ~ Mort2022.5 * (Pop2020 +lead(Pop2020,1)),
+                             TRUE ~ NA_real_)) %>%
+  filter(!is.na(Pop2025)) %>%
+  bind_rows(projectedBirths_0to4surviving)%>%
+  mutate(Age2025 = factor(Age2025, levels = agefactors, ordered = TRUE)) %>%
+  arrange(Region,Sex,Age2025) %>%
+  select(Region, Sex, Age2025, Pop2025)
 
 # Step 6: Import Target Migrant values and calculate K factors
 

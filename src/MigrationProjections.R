@@ -45,13 +45,6 @@ PEP2020 <- POP[["2020"]] %>% select(-County,-State) %>%
 
 agefactors <- unique(POP[["2020"]]$Age) %>% factor(ordered=TRUE) %>% fct_relevel("5 to 9 years", after = 1)
 
-# Step 3: Pull in Berger Net Migration values and calculate flat average; should automate 2014-18 data
-
-
-
-
-# all numbers up to this point match Alexis' excel model :)
-
 
 # Step 4 part 1: Calculate projected Births by age cohort and Region in 1-year intervals
 
@@ -130,15 +123,22 @@ NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
 target_NM <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
   group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand
 
+#Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
+
 #Target TM by sex
 m <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == 'Total', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration) %>%
-  group_by(Period, Region) %>% mutate(SexProp = NetTotal / sum(NetTotal)) %>% select(-NetTotal) %>%
+  group_by(Period, Region) %>% mutate(SexProp = NetTotal / sum(NetTotal)) %>%
   full_join(target_NM, by='Region') %>% mutate(TargetTM = SexProp*NetMigration)
 
 
-
 #Target TM <55 / 55+ by sex
+n <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == '55+', Sex %in% c('Male', 'Female')) %>%
+  group_by(Sex, Region) %>% mutate(NetTotal2 = sum(NetMigration)) %>% select(-NetMigration) %>%
+  group_by(Period, Region) %>% left_join(m, by=c('Region', 'Period', 'Sex')) %>% select(-Age.y, -SexProp) %>%
+  mutate(SexProp = NetTotal2/NetTotal) %>% select(-NetTotal2, -NetTotal) %>%
+  mutate(TargetTM_55Plus = TargetTM*SexProp) %>%
+  mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>% select(-NetMigration, -TargetTM)
 
 
 # Step 7: Apply K factors to NMRs in order to calculate Net Migration

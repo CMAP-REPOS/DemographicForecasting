@@ -7,17 +7,24 @@ library(readxl)
 
 # Parameters ---------------------------------------------------------
 
-load("Output/PopData.Rdata")
 load("Output/Mort_Proj.Rdata")
 load("Output/ASFR.Rdata")
-load("Output/Base_Migration.Rdata")
 load("Output/BirthRatios.Rdata")
 
 #load in variables from projection_control
 startyr = "2020"                              #as.character(projstart)
 midpointyr = "2022.5"                         #as.character(projmidpoint)
 endyr = "2024"                                #as.character(projend - 1)
-cycleyears = c(2020,2021,2022,2023,2024)      # projyears
+cycleyears = c(2020,2021,2022,2023,2024)      #projyears
+
+if(startyr = baseyear){
+  load("Output/PopData.Rdata")
+  load("Output/Base_Migration.Rdata")
+}else{
+  #add in location/filename to load non-base year Pop and NMRs
+}
+
+
 
 under55 <- c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years')
 over55 <- c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
@@ -53,7 +60,7 @@ ASFR_MidPoint <- ASFR_MidPoint %>%
   select(c(1:2) | contains(midpointyr) | num_range("ASFR", cycleyears))
 
 
-#Step 3: Pull in 2020 PEP data
+#Step 3: Pull in Base Year Population Data
 
 PEP2020 <- POP[["2020"]] %>% select(-County,-State) %>%
   group_by(Age, Region, Sex) %>% summarise(Pop2020 = sum(Population))

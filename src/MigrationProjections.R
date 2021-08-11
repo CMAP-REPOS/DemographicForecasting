@@ -88,8 +88,8 @@ projectedBirths_bySex <- projectedBirths %>%
 #pull and rearrange 0-1 and 1-4 Survival Rates by sex and Region from Mort_MidPoint
 Mort_0to4 <- Mort_MidPoint %>%
   filter(Age == "0 to 1 years" | Age == "1 to 4 years") %>%
-  select(1:3 | "2022.5") %>%
-  pivot_wider(names_from = c("Sex","Age"), values_from = "2022.5")
+  select(1:3 | "Mort2022.5") %>%
+  pivot_wider(names_from = c("Sex","Age"), values_from = "Mort2022.5")
 names(Mort_0to4) <- make.names(names(Mort_0to4))
 
 # Step 4 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
@@ -101,26 +101,35 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
                                 TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
-  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2020") %>% mutate(Age = "Births") #preps table for cbind into ExpectedPop2025
+  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #preps table for cbind into ExpectedPop2025
 
 
 
 # Step 5: apply Survival Rates and calculate Expected 2025 population
 
-PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x)
+PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
+
+#multiply prior 2020 age group population by survival rate for current age group
 
 expectedpop25 <- projectedBirths_0to4surviving %>%
   ungroup() %>%
-  rbind(PEP2020) %>%
-  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5) %>%
+  full_join(PEP2020, by=c("Region", "Sex", "Age")) %>%
+  relocate(c(Age, Pop2020), .before= Pop2025)%>%
+  full_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5, Pop2025) %>%
   arrange(Region, desc(Sex)) %>%
-  mutate(Pop2025 = round(lag(Pop2020) * Mort2022.5,0))
+  mutate(Pop2025 = case_when(Age != '0 to 4 years' ~ lag(Pop2020) * Mort2022.5,
+                                    TRUE ~ Pop2025))
+
+#drop Pop 2020 column so it doesn't cause confusion later on
+
 
 
 #add in case when for 0 to 4 survival rate
-#multiply for expected 2025 population
+
 
 # Step 6: Import Target Migrant values and calculate K factors
+#fine in input folder
+
 
 # Step 7: Apply K factors to NMRs in order to calculate Net Migration
 

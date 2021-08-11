@@ -47,15 +47,6 @@ agefactors <- unique(POP[["2020"]]$Age) %>% factor(ordered=TRUE) %>% fct_relevel
 
 # Step 3: Pull in Berger Net Migration values and calculate flat average; should automate 2014-18 data
 
-NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
-
-NetMig <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
-  group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand
-
-#m <- Base_Mig %>%
-#  select(Region, Sex, SurvMigrants2018) %>%
-#  group_by(Region, Sex) %>%
-#  mutate(SurvMigrants2018 = sum(SurvMigrants2018)) %>% unique()
 
 
 
@@ -112,15 +103,13 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
 
 PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
-#multiply prior 2020 age group population by survival rate for current age group
-
 expectedpop25 <- projectedBirths_0to4surviving %>%
   ungroup() %>%
   full_join(PEP2020, by=c("Region", "Sex", "Age")) %>%
   relocate(c(Age, Pop2020), .before= Pop2025)%>%
   left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5, Pop2025) %>%
   arrange(Region, desc(Sex)) %>%
-  mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5,
+  mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
                               Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
                                     TRUE ~ Pop2025)) %>%
   select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
@@ -133,11 +122,23 @@ expectedpop25 <- PEP2020_test %>%
   mutate(Age2025 = fct_shift(Age2020, -1))
 
 
-#add in case when for 0 to 4 survival rate
-
 
 # Step 6: Import Target Migrant values and calculate K factors
-#fine in input folder
+
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
+
+target_NM <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
+  group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand
+
+#Target TM by sex
+m <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == 'Total', Sex %in% c('Male', 'Female')) %>%
+  group_by(Sex, Region) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration) %>%
+  group_by(Period, Region) %>% mutate(SexProp = NetTotal / sum(NetTotal)) %>% select(-NetTotal) %>%
+  full_join(target_NM, by='Region') %>% mutate(TargetTM = SexProp*NetMigration)
+
+
+
+#Target TM <55 / 55+ by sex
 
 
 # Step 7: Apply K factors to NMRs in order to calculate Net Migration

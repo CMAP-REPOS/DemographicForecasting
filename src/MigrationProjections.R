@@ -42,7 +42,7 @@ ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_fr
 PEP2020 <- POP[["2020"]] %>% select(-County,-State) %>%
   group_by(Age, Region, Sex) %>% summarise(Pop2020 = sum(Population))
 
-agefactors <- factor(unique(POP[["2020"]]$Age), ordered=TRUE)
+agefactors <- unique(POP[["2020"]]$Age) %>% factor(ordered=TRUE) %>% fct_relevel("5 to 9 years", after = 1)
 
 # Step 3: Pull in Berger Net Migration values and calculate flat average; should automate 2014-18 data
 
@@ -118,8 +118,11 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   arrange(Region, desc(Sex)) %>%
   mutate(Pop2025 = round(lag(Pop2020) * Mort2022.5,0))
 
-PEP2020_test <- PEP2020 %>% mutate(Age = factor(Age, levels = agefactors, ordered = TRUE)) %>% ungroup()
-
+PEP2020_test <- PEP2020 %>% mutate(Age2020 = factor(Age, levels = agefactors, ordered = TRUE), .before = Pop2020) %>%
+  ungroup() %>%
+  select(-Age)
+expectedpop25 <- PEP2020_test %>%
+  mutate(Age2025 = fct_shift(Age2020, -1))
 
 
 #add in case when for 0 to 4 survival rate

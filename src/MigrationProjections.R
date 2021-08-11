@@ -32,7 +32,7 @@ Mort_MidPoint <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025'
                                    select(-c(4:13))
 
 Mort_MidPoint <- Mort_MidPoint %>%
-  select(c(1:3) | ends_with(midpointyr))
+select(c(1:3) | ends_with(midpointyr))
 
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
@@ -184,7 +184,7 @@ NM_Change_Prior_over55 <- full_join(TM_55, NM_55Plus, by=c('Region', 'Sex')) %>%
 
 #Expected Populations of Current Period
 expectedpop_under55 <- expectedpop25 %>% select(-Mort2022.5) %>% filter(Age %in% under55) %>%
-                      group_by(Region, Sex) %>% mutate(Pop2025 = sum(Pop2025)) %>% select( -Age) %>% distinct() %>%
+                      group_by(Region, Sex) %>% replace(is.na(.), 0) %>% mutate(Pop2025 = sum(Pop2025)) %>% select( -Age) %>% distinct() %>%
                       mutate(Age = 'Under 55')
 
 expectedpop_over55 <- expectedpop25 %>% select(-Mort2022.5) %>% filter(Age %in% over55) %>%

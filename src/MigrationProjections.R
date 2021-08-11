@@ -193,10 +193,12 @@ expectedpop_over55 <- expectedpop25 %>% select(-Mort2022.5) %>% filter(Age %in% 
 
 #Change in Net Migration Rates (K) from Prior Period
 K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(k_under55 = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, k_under55)
+  mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor)
 
 K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(k_over55 = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, k_over55)
+  mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor)
+
+K_factors <- bind_rows(K_Under55, K_Over55)
 
 
 # Step 7: Apply K factors to NMRs in order to calculate Net Migration

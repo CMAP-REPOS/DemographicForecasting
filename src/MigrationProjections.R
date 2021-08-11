@@ -129,9 +129,9 @@ expectedpop25 <- PEP2020 %>% mutate(Age2020 = factor(Age, levels = agefactors, o
   arrange(Region,Sex,Age2025) %>%
   select(Region, Sex, Age2025, Pop2025)
 
-# Step 6: Import Target Migrant values and calculate K factors
+# Step 6: Import historical Net Migration values, calculate Target Net Migrants, calculate K factors
 
-NetMig <- read_excel("Input/NetMigration_Berger.xlsx")
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 
 target_NM <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
   group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand

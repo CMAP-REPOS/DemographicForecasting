@@ -226,16 +226,27 @@ Migration <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>%
                               TRUE ~ Male_NMR))
 
 
-
 # Step 8: Apply Net Migration to Expected Population in order to calculate Projected Population
 
+Projections <- Migration %>% pivot_longer(cols = ends_with("NMR"),
+                                names_to = "Sex",
+                                values_to = "NMRs") %>% select(Region, Age, Sex, NMRs)
+
+Projections$Sex <- substr(Projections$Sex,1,nchar(Projections$Sex)-4)
+
+M <- Projections %>% left_join(expectedpop25, by=c("Region", "Age", "Sex")) %>% select(-Mort2022.5) %>% relocate(c(Pop2020, Pop2025), .before=NMRs)
+
+
+
+#need to rewrite below code to work for both M/F
+
 Projections_Male <- expectedpop25 %>% select(-Mort2022.5) %>%
-  pivot_wider(names_from = c("Sex"), values_from=c("Pop2020", "Pop2025")) %>%
-                    select(-Pop2020_Female, -Pop2025_Female) %>%
-                    left_join(Migration %>% select(Region, Age, Male_NMR), by=c("Region","Age")) %>%
+ # pivot_wider(names_from = c("Sex"), values_from=c("Pop2020", "Pop2025")) %>%
+ #                   select(-Pop2020_Female, -Pop2025_Female) %>%
+                    #left_join(Migration %>% select(Region, Age, Male_NMR), by=c("Region","Age")) %>%
                     mutate(NMs_Living =  Pop2025_Male * Male_NMR) %>%
                     mutate(NMs_Living_Abs =  abs(Pop2025_Male * Male_NMR)) %>% group_by(Region) %>%
-                    rename(ExpPop2025_Male = Pop2025_Male)
+                   # rename(ExpPop2025_Male = Pop2025_Male)
 
 sum_NM <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM = sum(NMs_Living))
 sum_NM_Abs <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
@@ -260,6 +271,7 @@ Projections_Male <- Projections_Male %>%
                                                TRUE ~ 0))
 
 # Step 9: Assemble Components of Change to check work (Optional)
+
 
 
 

@@ -127,8 +127,8 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   arrange(Region, desc(Sex)) %>%
   mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
                              Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
-                                    TRUE ~ Pop2025)) %>%
-  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
+                                    TRUE ~ Pop2025)) #%>%
+  #select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
 
 
 # Step 6: Import historical Net Migration values, calculate Target Net Migrants, calculate K factors
@@ -191,10 +191,10 @@ expectedpop_over55 <- expectedpop25 %>% select(-Mort2022.5) %>% filter(Age %in% 
 
 #Change in Net Migration Rates (K) from Prior Period
 K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor)
+  mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
 
 K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor)
+  mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
 
 #THIS IS BROKEN DONT RERUN YET
 K_factors <- bind_rows(K_Under55, K_Over55) %>%
@@ -252,8 +252,8 @@ Births_2020 <- projectedBirths_bySex %>% select(-Year) %>% group_by(Region) %>% 
 Projections_Male <- Projections_Male %>% full_join(Births_2020, by='Region')
 
 Projections_Male <- Projections_Male %>%
-                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ (Pop2020_Male - lead(expectedpop25)),
-                                               Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))- expectedpop25,
+                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ (Pop2020_Male - lead(pop2025)),
+                                               Age == '85 years and over' ~ (Pop2020_Male + lag(Pop2020_Male))- pop2025,
                                                TRUE ~ 0))
 
 # Step 9: Assemble Components of Change to check work (Optional)

@@ -234,19 +234,12 @@ Projections <- Migration %>% pivot_longer(cols = ends_with("NMR"),
 
 Projections$Sex <- substr(Projections$Sex,1,nchar(Projections$Sex)-4)
 
-M <- Projections %>% left_join(expectedpop25, by=c("Region", "Age", "Sex")) %>% select(-Mort2022.5) %>% relocate(c(Pop2020, Pop2025), .before=NMRs)
-
+M <- Projections %>% left_join(expectedpop25, by=c("Region", "Age", "Sex")) %>% select(-Mort2022.5) %>% relocate(c(Pop2020, Pop2025), .before=NMRs) %>%
+                      mutate(NMs_Living =  Pop2025 * NMRs)  %>%
+                      mutate(NMs_Living_Abs =  abs(Pop2025 * NMRs))
 
 
 #need to rewrite below code to work for both M/F
-
-Projections_Male <- expectedpop25 %>% select(-Mort2022.5) %>%
- # pivot_wider(names_from = c("Sex"), values_from=c("Pop2020", "Pop2025")) %>%
- #                   select(-Pop2020_Female, -Pop2025_Female) %>%
-                    #left_join(Migration %>% select(Region, Age, Male_NMR), by=c("Region","Age")) %>%
-                    mutate(NMs_Living =  Pop2025_Male * Male_NMR) %>%
-                    mutate(NMs_Living_Abs =  abs(Pop2025_Male * Male_NMR)) %>% group_by(Region) %>%
-                   # rename(ExpPop2025_Male = Pop2025_Male)
 
 sum_NM <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM = sum(NMs_Living))
 sum_NM_Abs <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))

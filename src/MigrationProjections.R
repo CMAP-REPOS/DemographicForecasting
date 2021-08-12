@@ -196,38 +196,41 @@ K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Regio
 K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
   mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
 
-#THIS IS BROKEN DONT RERUN YET
 K_factors <- bind_rows(K_Under55, K_Over55) %>%
   select(-Period) %>%
- pivot_wider(names_from = Sex, values_from = c('kfactor')) %>%
-  pivot_wider(names_from = Age, values_from = c('Female', 'Male')) %>%
+  pivot_wider(names_from = Age, values_from = c('kfactor')) %>%
+ # pivot_wider(names_from = Age, values_from = c('Female', 'Male')) %>%
   rename_with(make.names)
 
 
 # Step 7: Apply K factors to NMRs in order to calculate Net Migration
 
 Migration <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>%
-  pivot_wider(names_from = "Sex", values_from=c("NetRates")) %>%
-  rename(Female_NMRs = Female, Male_NMRs = Male) %>%
-  full_join(K_factors, by='Region') %>%
- # arrange(Region) %>%
-  mutate(Female_Under.55 = case_when(Age %in% over55 ~ Female_Over.55,
-                                     TRUE ~ Female_Under.55)) %>% select(-Female_Over.55) %>% rename(Female_K = Female_Under.55) %>%
-  mutate(Male_Under.55 = case_when(Age %in% over55 ~ Male_Over.55,
-                                     TRUE ~ Male_Under.55)) %>% select(-Male_Over.55) %>% rename(Male_K = Male_Under.55) %>%
-  mutate(Male_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (Male_NMRs + Female_NMRs + Female_K + Male_K)/2,
-                              TRUE ~ Male_NMRs + Male_K)) %>%
+  left_join(K_factors, by=c('Region', 'Sex')) %>%
+  pivot_wider(names_from = "Sex", values_from=c("NetRates", "Under.55", "Over.55")) %>%
+  rename(K_U55_Female = Under.55_Female, K_O55_Female = Over.55_Female, K_U55_Male = Under.55_Male, K_O55_Male = Over.55_Male) %>%
+  arrange(Region) %>%
+
+  mutate(Male_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + K_U55_Male + K_U55_Female)/2,
+                              Age %in% c('15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years') ~ NetRates_Male + K_U55_Male,
+                              Age %in% c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over') ~ NetRates_Male + K_O55_Male)) %>%
+
   mutate(Male_NMR = case_when(Age == "50 to 54 years" ~ (lead(Male_NMR) + lag(Male_NMR))/2, #why is this not calculating as negative??
                               TRUE ~ Male_NMR)) %>%
-  mutate(Female_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (Male_NMRs + Female_NMRs + Female_K + Male_K)/2,
-                            TRUE ~ Female_NMRs + Female_K)) %>%
-  mutate(Female_NMR = case_when(Age == "50 to 54 years" ~ (lead(Female_NMR) + lag(Female_NMR))/2,
-                              TRUE ~ Female_NMR))
+
+  mutate(Female_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + K_U55_Male + K_U55_Female)/2,
+                                Age %in% c('15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years') ~ NetRates_Female + K_U55_Female,
+                                Age %in% c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over') ~ NetRates_Female + K_O55_Female)) %>%
+
+  mutate(Male_NMR = case_when(Age == "50 to 54 years" ~ (lead(Female_NMR) + lag(Female_NMR))/2, #why is this not calculating as negative??
+                              TRUE ~ Male_NMR))
+
 
 
 # Step 8: Apply Net Migration to Expected Population in order to calculate Projected Population
 
-Projections_Male <- expectedpop25 %>% select(-Mort2022.5) %>% pivot_wider(names_from = c("Sex"), values_from=c("Pop2020", "Pop2025")) %>%
+Projections_Male <- expectedpop25 %>% select(-Mort2022.5) %>%
+  pivot_wider(names_from = c("Sex"), values_from=c("Pop2020", "Pop2025")) %>%
                     select(-Pop2020_Female, -Pop2025_Female) %>%
                     left_join(Migration %>% select(Region, Age, Male_NMR), by=c("Region","Age")) %>%
                     mutate(NMs_Living =  Pop2025_Male * Male_NMR) %>%

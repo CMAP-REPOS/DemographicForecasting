@@ -29,18 +29,14 @@ Mort_MidPoint <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025'
                                       'Mort2037.5'=rowMeans(across('2035':'2040')),
                                       'Mort2042.5'=rowMeans(across('2040':'2045')),  #we don't need to go out to 2060 but we have the data to do so
                                       'Mort2047.5'=rowMeans(across('2045':'2050'))) %>%
-  select(-c(4:13))
+                                       select(-c(4:13))
 
 #Mort_MidPoint <- Mort_MidPoint %>%
 # select(c(1:3) | ends_with(midpointyr))
 
 
-midpoint_year <- names(Mort_MidPoint[,4:9]) %>% as_tibble() %>% rename('Midpoint' = 'value')
+Mort_Midpoint_Year <- names(Mort_MidPoint[,4:9]) %>% as_tibble() %>% rename('Midpoint' = 'value')
 
-
-
-titanic_df <- titanic_df %>%
-  rename(pc_class = PC)
 
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
@@ -54,7 +50,11 @@ ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_fr
          'ASFR2047.5'=rowMeans(across('2045':'2050'))) %>%
   rename_with(.fn = ~paste0("ASFR",.), .cols=starts_with("2")) %>%
   ungroup()
-#select(c(1:2) | ends_with(".5"))
+
+ASFR_Midpoint_Year <- ASFR_MidPoint %>% select(c(1:2) | ends_with(".5"))
+ASFR_Midpoint_Year <- names(ASFR_Midpoint_Year[,3:8]) %>% as_tibble() %>% rename('Midpoint' = 'value')
+
+
 
 #Step 3: Pull in 2020 PEP data
 
@@ -107,4 +107,97 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
   pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #%>%
 #rename(Age2025 = Age)
+
+
+# Step 5: apply Survival Rates and calculate Expected 2025 population
+
+PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
+
+
+expectedpop25 <- projectedBirths_0to4surviving %>%
+  ungroup() %>%
+  full_join(PEP2020, by=c("Region", "Sex", "Age")) %>%
+  relocate(c(Age, Pop2020), .before= Pop2025) %>%
+  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% select(Region, Sex, Age, Pop2020, Mort2022.5, Pop2025) %>%
+  arrange(Region, desc(Sex)) %>%
+  mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
+                             Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
+                             TRUE ~ Pop2025)) %>%
+  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
+
+
+# Step 6: Import historical Net Migration values, calculate Target Net Migrants, calculate K factors
+
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+
+target_NM <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
+  group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand
+
+#Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
+
+#Target TM by sex
+TM_Sex <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == 'Total', Sex %in% c('Male', 'Female')) %>%
+  group_by(Sex, Region) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration) %>%
+  group_by(Period, Region) %>% mutate(SexProp = NetTotal / sum(NetTotal)) %>%
+  full_join(target_NM, by='Region') %>% mutate(TargetTM = SexProp*NetMigration)
+
+
+#Target TM <55 / 55+ by sex
+TM_55 <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == '55+', Sex %in% c('Male', 'Female')) %>%
+  group_by(Sex, Region) %>% mutate(NetTotal2 = sum(NetMigration)) %>% select(-NetMigration) %>%
+  group_by(Period, Region) %>% left_join(TM_Sex, by=c('Region', 'Period', 'Sex')) %>% select(-Age.y, -SexProp) %>%
+  mutate(SexProp = NetTotal2/NetTotal) %>% select(-NetTotal2, -NetTotal) %>%
+  mutate(TargetTM_55Plus = TargetTM*SexProp) %>%
+  mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>% select(-NetMigration, -TargetTM, - SexProp, -Age.x) %>%
+  ungroup() %>% select(-Period) %>% unique()
+
+
+TM_Sex <- TM_Sex %>% ungroup() %>% select(-Period) %>% unique() %>% select(Region, Sex, Age, TargetTM)
+
+
+#Net Migrants from prior5-year period
+
+NM_55Plus <-  NetMig %>% filter(Period == '2014-2018', Age == '55+', Sex %in% c('Male', 'Female')) %>%
+  group_by(Region, Sex) %>% rename(NM_O55 = NetMigration)
+
+NM_Under55 <- NetMig %>% filter(Period == '2014-2018', Age == 'Total', Sex %in% c('Male', 'Female')) %>%
+  group_by(Region, Sex) %>% full_join(NM_55Plus, by=c('Region', 'Period', 'Sex')) %>%
+  mutate(NM_U55 = NetMigration - NM_O55) %>%
+  select(-Age.x, -Age.y, -NetMigration, -NM_O55) %>%
+  mutate(Age = 'Under 55')
+
+
+#Change in net migrants from prior 5-year period
+NM_Change_Prior_under55 <- full_join(TM_55, NM_Under55, by=c('Region', 'Sex')) %>%
+  mutate(NM_Change_U55 = TargetTM_U55 - NM_U55) %>% select(Period, Region, Sex, Age, NM_Change_U55)
+
+NM_Change_Prior_over55 <- full_join(TM_55, NM_55Plus, by=c('Region', 'Sex')) %>%
+  mutate(NM_Change_U55 = TargetTM_55Plus - NM_O55) %>% select(Period, Region, Sex, Age, NM_Change_U55) %>%
+  mutate(Age = 'Over 55')
+
+#Expected Populations of Current Period
+expectedpop_under55 <- expectedpop25 %>% select(-Mort2022.5) %>% filter(Age %in% under55) %>%
+  group_by(Region, Sex) %>% replace(is.na(.), 0) %>% mutate(Pop2025 = sum(Pop2025)) %>% select( -Age) %>% distinct() %>%
+  mutate(Age = 'Under 55')
+
+expectedpop_over55 <- expectedpop25 %>% select(-Mort2022.5) %>% filter(Age %in% over55) %>%
+  group_by(Region, Sex) %>% mutate(Pop2025 = sum(Pop2025)) %>% select( -Age) %>% distinct() %>%
+  mutate(Age = 'Over 55')
+
+#Change in Net Migration Rates (K) from Prior Period
+K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Region', 'Sex', 'Age')) %>%
+  mutate(k_under55 = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, k_under55)
+
+K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
+  mutate(k_over55 = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, k_over55)
+
+
+# Step 7: Apply K factors to NMRs in order to calculate Net Migration
+
+# Step 8: Apply Net Migration to Expected Population in order to calculate Projected Population
+
+# Step 9: Assemble Components of Change to check work (Optional)
+
+
+
 

@@ -12,13 +12,14 @@ load("Output/ASFR.Rdata")
 load("Output/BirthRatios.Rdata")
 
 #load in variables from projection_control
+baseyear = "2020"
 startyr = "2020"                              #as.character(projstart)
 midpointyr = "2022.5"                         #as.character(projmidpoint)
 endyr = "2024"                                #as.character(projend - 1)
 cycleyears = c(2020,2021,2022,2023,2024)      #projyears
 lastyear = as.character(max(cycleyears))
 
-if(startyr = baseyear){
+if(startyr == baseyear){
   load("Output/PopData.Rdata")
   load("Output/Base_Migration.Rdata")
 }else{
@@ -126,10 +127,8 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   arrange(Region, desc(Sex)) %>%
   mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
                              Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
-                                    TRUE ~ Pop2025))
-
-#%>%
-#  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
+                                    TRUE ~ Pop2025)) %>%
+  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
 
 
 # Step 6: Import historical Net Migration values, calculate Target Net Migrants, calculate K factors

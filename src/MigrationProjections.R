@@ -211,7 +211,7 @@ Migration <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>%
   pivot_wider(names_from = "Sex", values_from=c("NetRates")) %>%
   rename(Female_NMRs = Female, Male_NMRs = Male) %>%
   full_join(K_factors, by='Region') %>%
-  arrange(Region) %>%
+ # arrange(Region) %>%
   mutate(Female_Under.55 = case_when(Age %in% over55 ~ Female_Over.55,
                                      TRUE ~ Female_Under.55)) %>% select(-Female_Over.55) %>% rename(Female_K = Female_Under.55) %>%
   mutate(Male_Under.55 = case_when(Age %in% over55 ~ Male_Over.55,
@@ -232,17 +232,31 @@ Projections_Male <- expectedpop25 %>% select(-Mort2022.5) %>% pivot_wider(names_
                     select(-Pop2020_Female, -Pop2025_Female) %>%
                     left_join(Migration %>% select(Region, Age, Male_NMR), by=c("Region","Age")) %>%
                     mutate(NMs_Living =  Pop2025_Male * Male_NMR) %>%
-                    mutate(NMs_Living_Abs =  abs(Pop2025_Male * Male_NMR)) %>% group_by(Region)
+                    mutate(NMs_Living_Abs =  abs(Pop2025_Male * Male_NMR)) %>% group_by(Region) %>%
+                    rename(ExpPop2025_Male = Pop2025_Male)
 
 sum_NM <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM = sum(NMs_Living))
 sum_NM_Abs <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
-
-Projections_Male <- Projections_Male %>% full_join(sum_NM, by='Region') %>% full_join(sum_NM_Abs, by="Region")
-
+Male_K <- TM_55 %>% filter(Sex == 'Male') %>% select(-TargetTM_55Plus, -Sex)
 
 
-mutate(migrants_living = round(((NMs_Living_Abs/sum_NM_Abs)*(k_factor - sum_NM)+sum_NM),0))
+Projections_Male <- Projections_Male %>% full_join(sum_NM, by='Region') %>% full_join(sum_NM_Abs, by="Region") %>%
+  full_join(Male_K, by= 'Region')
 
+
+Projections_Male <- Projections_Male %>% mutate(migrants_living = (NMs_Living_Abs/sum_NM_Abs)*(sum_NM-TargetTM_U55)+NMs_Living) %>%
+                                         mutate(pop2025 = round(ExpPop2025_Male + migrants_living,-1)) %>%
+                                         mutate(Deaths = Pop2020_Male - ExpPop2025_Male)
+
+Births_2020 <- projectedBirths_bySex %>% select(-Year) %>% group_by(Region) %>% mutate(fBirths = sum(fBirths), mBirths = sum(mBirths)) %>% select(-fBirths) %>% distinct()
+
+#good up to here
+Projections_Male <- Projections_Male %>% full_join(Births_2020, by='Region') %>%
+                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ Pop2020_Male - lead(expectedpop25)))
+
+                                              ,
+                                               Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))- expectedpop25,
+                                               TRUE ~ mBirths))
 
 # Step 9: Assemble Components of Change to check work (Optional)
 

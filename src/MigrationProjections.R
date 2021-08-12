@@ -244,18 +244,17 @@ Projections_Male <- Projections_Male %>% full_join(sum_NM, by='Region') %>% full
 
 
 Projections_Male <- Projections_Male %>% mutate(migrants_living = (NMs_Living_Abs/sum_NM_Abs)*(sum_NM-TargetTM_U55)+NMs_Living) %>%
-                                         mutate(pop2025 = round(ExpPop2025_Male + migrants_living,-1)) %>%
-                                         mutate(Deaths = Pop2020_Male - ExpPop2025_Male)
+                                         mutate(pop2025 = round(ExpPop2025_Male + migrants_living,-1))
 
 Births_2020 <- projectedBirths_bySex %>% select(-Year) %>% group_by(Region) %>% mutate(fBirths = sum(fBirths), mBirths = sum(mBirths)) %>% select(-fBirths) %>% distinct()
 
 #good up to here
-Projections_Male <- Projections_Male %>% full_join(Births_2020, by='Region') %>%
-                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ Pop2020_Male - lead(expectedpop25)))
+Projections_Male <- Projections_Male %>% full_join(Births_2020, by='Region')
 
-                                              ,
+Projections_Male <- Projections_Male %>%
+                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ (Pop2020_Male - lead(expectedpop25)),
                                                Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))- expectedpop25,
-                                               TRUE ~ mBirths))
+                                               TRUE ~ 0))
 
 # Step 9: Assemble Components of Change to check work (Optional)
 

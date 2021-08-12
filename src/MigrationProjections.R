@@ -126,24 +126,11 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   arrange(Region, desc(Sex)) %>%
   mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
                              Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
-                                    TRUE ~ Pop2025)) %>%
-  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
+                                    TRUE ~ Pop2025))
 
+#%>%
+#  select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
 
-#expectedpop25 <- PEP2020 %>% mutate(Age2020 = factor(Age, levels = agefactors, ordered = TRUE), .before = Pop2020) %>%
-#  ungroup() %>%
-#  select(-Age) %>%
-#  arrange(Region, Sex, Age2020) %>%
-#  mutate(Age2025 = lead(Age2020,1)) %>%
-#  left_join(Mort_MidPoint, by=c('Region', 'Age2025' ='Age' , 'Sex')) %>%
-#  mutate(Pop2025 = case_when(!Age2025 %in% c('0 to 4 years', '85 years and over') ~ Pop2020 * Mort2022.5,
-#                             Age2025 == '85 years and over' ~ Mort2022.5 * (Pop2020 +lead(Pop2020,1)),
-#                             TRUE ~ NA_real_)) %>%
-#  filter(!is.na(Pop2025)) %>%
-#  bind_rows(projectedBirths_0to4surviving)%>%
-#  mutate(Age2025 = factor(Age2025, levels = agefactors, ordered = TRUE)) %>%
-#  arrange(Region,Sex,Age2025) %>%
-#  select(Region, Sex, Age2025, Pop2025)
 
 # Step 6: Import historical Net Migration values, calculate Target Net Migrants, calculate K factors
 
@@ -210,9 +197,10 @@ K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Regio
 K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
   mutate(kfactor = NM_Change_U55/Pop2025) %>% select(Period, Region, Sex, Age, kfactor)
 
+#THIS IS BROKEN DONT RERUN YET
 K_factors <- bind_rows(K_Under55, K_Over55) %>%
   select(-Period) %>%
-  pivot_wider(names_from = Sex, values_from = kfactor)%>%
+ pivot_wider(names_from = Sex, values_from = c('kfactor')) %>%
   pivot_wider(names_from = Age, values_from = c('Female', 'Male')) %>%
   rename_with(make.names)
 
@@ -240,9 +228,20 @@ Migration <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>%
 
 # Step 8: Apply Net Migration to Expected Population in order to calculate Projected Population
 
-Projections <- Migration
+Projections_Male <- expectedpop25 %>% select(-Mort2022.5) %>% pivot_wider(names_from = c("Sex"), values_from=c("Pop2020", "Pop2025")) %>%
+                    select(-Pop2020_Female, -Pop2025_Female) %>%
+                    left_join(Migration %>% select(Region, Age, Male_NMR), by=c("Region","Age")) %>%
+                    mutate(NMs_Living =  Pop2025_Male * Male_NMR) %>%
+                    mutate(NMs_Living_Abs =  abs(Pop2025_Male * Male_NMR)) %>% group_by(Region)
+
+sum_NM <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM = sum(NMs_Living))
+sum_NM_Abs <- Projections_Male %>% filter(Age %in% under55) %>% group_by(Region) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
+
+Projections_Male <- Projections_Male %>% full_join(sum_NM, by='Region') %>% full_join(sum_NM_Abs, by="Region")
 
 
+
+mutate(migrants_living = round(((NMs_Living_Abs/sum_NM_Abs)*(k_factor - sum_NM)+sum_NM),0))
 
 
 # Step 9: Assemble Components of Change to check work (Optional)

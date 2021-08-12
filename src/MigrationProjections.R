@@ -16,6 +16,7 @@ startyr = "2020"                              #as.character(projstart)
 midpointyr = "2022.5"                         #as.character(projmidpoint)
 endyr = "2024"                                #as.character(projend - 1)
 cycleyears = c(2020,2021,2022,2023,2024)      #projyears
+lastyear = as.character(max(cycleyears))
 
 if(startyr = baseyear){
   load("Output/PopData.Rdata")
@@ -40,8 +41,8 @@ Mort_MidPoint <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025'
                                   'Mort2047.5'=rowMeans(across('2045':'2050'))) %>%
                                    select(-c(4:13))
 
-#Mort_MidPoint <- Mort_MidPoint %>%
-#select(c(1:3) | ends_with(midpointyr))
+Mort_MidPoint <- Mort_MidPoint %>%
+select(c(1:3) | ends_with(midpointyr))
 
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
@@ -65,19 +66,19 @@ ASFR_MidPoint <- ASFR_MidPoint %>%
 PEP2020 <- POP[["2020"]] %>% select(-County,-State) %>%
   group_by(Age, Region, Sex) %>% summarise(Pop2020 = sum(Population))
 
+#pull age groups, make ordered factors list with proper sorting
 agefactors <- unique(POP[["2020"]]$Age) %>% factor(ordered=TRUE) %>% fct_relevel("5 to 9 years", after = 1)
-
+#check levels
+agefactors
 
 # Step 4 part 1: Calculate projected Births by age cohort and Region in 1-year intervals
 
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
-projyears <- c("2020","2021","2022","2023","2024")
-
 projectedBirths <- PEP2020 %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%
-  full_join(select(ASFR_MidPoint, c(1:2,contains(all_of(projyears)))), by = c("Age", "Region")) %>%
-  mutate(Births2020 = Pop2020 * ASFR2020,
+  full_join(ASFR_MidPoint, by = c("Age", "Region")) %>%
+  mutate(Births2020 = Pop2020 * ASFR2020,    #consider replacing with a matrix multiplication function
          Births2021 = Pop2020 * ASFR2021,
          Births2022 = Pop2020 * ASFR2022,
          Births2023 = Pop2020 * ASFR2023,
@@ -90,29 +91,28 @@ projectedBirths <- PEP2020 %>%
 # Step 4 part 2: Calculate the number of Births (by Sex and Region) that survive the projection period.
 # Survival rates for 0-1 and 1-4 are applied based on David ER's cohort method
 projectedBirths_bySex <- projectedBirths %>%
-  left_join(bRatios, by="Region")%>%
+  left_join(bRatios, by="Region") %>%
   mutate(fBirths = totBirths*Female,
          mBirths = totBirths*Male, .keep = "unused")
 
 #pull and rearrange 0-1 and 1-4 Survival Rates by sex and Region from Mort_MidPoint
 Mort_0to4 <- Mort_MidPoint %>%
   filter(Age == "0 to 1 years" | Age == "1 to 4 years") %>%
-  pivot_wider(names_from = c("Sex","Age"), values_from = "Mort2022.5")
+  pivot_wider(names_from = c("Sex","Age"), values_from = starts_with("Mort"))
 names(Mort_0to4) <- make.names(names(Mort_0to4))
 
 # Step 4 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
+endyearBirths <- projectedBirths_bySex$Year %>% str_subset(lastyear) %>% unique()
+
 projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   left_join(Mort_0to4, by="Region") %>%
-  mutate(fSurvivors = case_when(Year == "Births2024" ~ fBirths * Female_0.to.1.years,
+  mutate(fSurvivors = case_when(Year == endyearBirths ~ fBirths * Female_0.to.1.years,
                                 TRUE ~ fBirths * Female_0.to.1.years * Female_1.to.4.years),
-         mSurvivors = case_when(Year == "Births2024" ~ mBirths * Male_0.to.1.years,
+         mSurvivors = case_when(Year == endyearBirths ~ mBirths * Male_0.to.1.years,
                                 TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
-  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years") #%>%
-  #rename(Age2025 = Age)
-
-
+  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years")
 
 # Step 5: apply Survival Rates and calculate Expected 2025 population
 
@@ -241,6 +241,8 @@ Migration <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>%
 # Step 8: Apply Net Migration to Expected Population in order to calculate Projected Population
 
 Projections <- Migration
+
+
 
 
 # Step 9: Assemble Components of Change to check work (Optional)

@@ -76,7 +76,8 @@ agefactors
 
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
-#NEED TO ADD SEX INTO THIS
+#NEED TO ADD SEX INTO THIS !!!!!!!!!!!
+
 projectedBirths <- PEP2020 %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%
   full_join(ASFR_MidPoint, by = c("Age", "Region")) %>%
@@ -118,6 +119,7 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
 
 # Step 5: apply Survival Rates and calculate Expected 2025 population
 
+
 PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
 expectedpop25 <- projectedBirths_0to4surviving %>%
@@ -128,8 +130,7 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
   arrange(Region, desc(Sex)) %>%
   mutate(Pop2025 = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(Pop2020) * Mort2022.5, #multiply prior 2020 age group population by survival rate for current age group
                              Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))* Mort2022.5,
-                                    TRUE ~ Pop2025)) #%>%
-  #select(-Pop2020) #drop Pop 2020 column so it doesn't cause confusion later on
+                                    TRUE ~ Pop2025))
 
 
 # Step 6: Import historical Net Migration values, calculate Target Net Migrants, calculate K factors

@@ -48,6 +48,9 @@ if(startyr == baseyear){
 
 ###### other definitions
 
+#used for Births calculation
+F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
+
 #used for k factor calculations:
 under55 <- c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years')
 over55 <- c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
@@ -62,11 +65,9 @@ select(c(1:3) | ends_with(midpointyr))
 ASFR_MidPoint <- ASFR_projections %>%
   select(c(1:2) | contains(midpointyr) | num_range("ASFR", cycleyears))
 
-# Step 4 part 1: Calculate projected Births by age cohort and Region in 1-year intervals
+# Step 3: Special Handling for Calculating Predicted Births and Infant Survival (ages 0-4)
 
-F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
-
-#NEED TO ADD SEX INTO THIS !!!!!!!!!!!
+# Step 3 Part 1: Calculate projected Births by Age Cohort and Region in 1-year intervals
 
 projectedBirths <- PEP2020 %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%

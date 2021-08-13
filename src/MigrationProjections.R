@@ -46,7 +46,9 @@ if(startyr == baseyear){
 }
 
 
+###### other definitions
 
+#used for k factor calculations:
 under55 <- c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years')
 over55 <- c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
 
@@ -71,14 +73,6 @@ ASFR_MidPoint <- ASFR_MidPoint %>%
   select(c(1:2) | contains(midpointyr) | num_range("ASFR", cycleyears))
 
 
-#Step 3: Pull in Base Year Population Data
-
-
-
-#pull age groups, make ordered factors list with proper sorting
-agefactors <- unique(POP[["2020"]]$Age) %>% factor(ordered=TRUE) %>% fct_relevel("5 to 9 years", after = 1)
-#check levels
-agefactors
 
 # Step 4 part 1: Calculate projected Births by age cohort and Region in 1-year intervals
 

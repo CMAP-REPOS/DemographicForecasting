@@ -63,7 +63,7 @@ projyears <- seq(from=projstart,
 print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "))
 
 #run the migration code
-#source("src/MigrationProjections.R")
+source("src/MigrationProjections.R")
 
 #save the final population projection
 
@@ -91,22 +91,4 @@ save(NETMIGPROJ, file="Output/NMProj.Rdata")
 
 #export projections
 
-
-
-
-
-
-
-
-
-
-
-#### scrap pile below
-
-projlist <- vector("list",length(series))
-names(projlist) <- paste(series, "projection")
-
-for (year in series) {
-  projlist[[year]]
-}
 

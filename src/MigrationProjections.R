@@ -13,11 +13,11 @@ load("Output/BirthRatios.Rdata")  #named bRatios
 load("Output/targetNM.Rdata")     #named target_NM
 
 #load in variables from projection_control
-baseyr = "2020"                               #as.character(baseyear)
-startyr = "2020"                              #as.character(projstart)
-midpointyr = "2022.5"                         #as.character(projmidpoint)
-endyr = "2024"                                #as.character(projend - 1)
-cycleyears = c(2020,2021,2022,2023,2024)      #projyears
+baseyr = as.character(baseyear)    #"2020"
+startyr = as.character(projstart)  #"2020"
+midpointyr = as.character(projmidpoint)  #"2022.5"
+endyr = as.character(projend - 1)  #"2024"
+cycleyears = projyears # c(2020,2021,2022,2023,2024)
 lastyear = as.character(max(cycleyears))
 
 
@@ -255,7 +255,7 @@ tempNetMig1 <- Projections %>%
   summarise(NetMigration = round(sum(projNetMigrants),0)) %>%
   mutate(agegrp = "Total")
 
-tempNetMig2 <- tempNetMig %>%
+tempNetMig2 <- tempNetMig1 %>%
   group_by(Region) %>%
   summarise(NetMigration = sum(NetMigration)) %>%
   mutate(Sex = "Both", agegrp = "Total")

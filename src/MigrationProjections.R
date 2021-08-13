@@ -131,19 +131,24 @@ expectedpop <- expectedpop %>%
   mutate(ProjectedPop = case_when(is.na(ProjectedPop.x) ~ ProjectedPop.y,
                                   TRUE ~ ProjectedPop.x), .keep = "unused")
 
-# Step 6: Calculate K factors from Target Net Migrants value and previous Net Migration totals
+# Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+
+NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
+NMperiods <- tail(NMperiods, 2)
+NMperiods
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
 #Target TM by sex
-TM_Sex <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == 'Total', Sex %in% c('Male', 'Female')) %>%
+TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration) %>%
   group_by(Period, Region) %>% mutate(SexProp = NetTotal / sum(NetTotal)) %>%
   full_join(target_NM, by='Region') %>% mutate(TargetTM = SexProp*NetMigration)
 
 
 #Target TM <55 / 55+ by sex
-TM_55 <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == '55+', Sex %in% c('Male', 'Female')) %>%
+TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region) %>% mutate(NetTotal2 = sum(NetMigration)) %>% select(-NetMigration) %>%
   group_by(Period, Region) %>% left_join(TM_Sex, by=c('Region', 'Period', 'Sex')) %>% select(-Age.y, -SexProp) %>%
   mutate(SexProp = NetTotal2/NetTotal) %>% select(-NetTotal2, -NetTotal) %>%
@@ -154,18 +159,16 @@ TM_55 <- NetMig %>% filter(Period %in% c('2005-2010', '2014-2018'), Age == '55+'
 
 TM_Sex <- TM_Sex %>% ungroup() %>% select(-Period) %>% unique() %>% select(Region, Sex, Age, TargetTM)
 
-
 #Net Migrants from prior5-year period
 
-NM_55Plus <-  NetMig %>% filter(Period == '2014-2018', Age == '55+', Sex %in% c('Male', 'Female')) %>%
+NM_55Plus <-  NetMig %>% filter(Period == NMperiods[2], Age == '55+', Sex %in% c('Male', 'Female')) %>%
   group_by(Region, Sex) %>% rename(NM_O55 = NetMigration)
 
-NM_Under55 <- NetMig %>% filter(Period == '2014-2018', Age == 'Total', Sex %in% c('Male', 'Female')) %>%
+NM_Under55 <- NetMig %>% filter(Period == NMperiods[2], Age == 'Total', Sex %in% c('Male', 'Female')) %>%
   group_by(Region, Sex) %>% full_join(NM_55Plus, by=c('Region', 'Period', 'Sex')) %>%
   mutate(NM_U55 = NetMigration - NM_O55) %>%
   select(-Age.x, -Age.y, -NetMigration, -NM_O55) %>%
   mutate(Age = 'Under 55')
-
 
 #Change in net migrants from prior 5-year period
 NM_Change_Prior_under55 <- full_join(TM_55, NM_Under55, by=c('Region', 'Sex')) %>%
@@ -174,6 +177,9 @@ NM_Change_Prior_under55 <- full_join(TM_55, NM_Under55, by=c('Region', 'Sex')) %
 NM_Change_Prior_over55 <- full_join(TM_55, NM_55Plus, by=c('Region', 'Sex')) %>%
   mutate(NM_Change_U55 = TargetTM_55Plus - NM_O55) %>% select(Period, Region, Sex, Age, NM_Change_U55) %>%
   mutate(Age = 'Over 55')
+
+#_______
+
 
 #Expected Populations of Current Period
 expectedpop_under55 <- expectedpop25 %>% select(-Mort2022.5) %>% filter(Age %in% under55) %>%

@@ -90,5 +90,14 @@ save(NETMIGPROJ, file="Output/NMProj.Rdata")
 ######## Final Step
 
 #export projections
-
+export <- tibble()
+i=1
+for(item in POPPROJ){
+  print(item)
+  temp <- item
+  temp$year <- names(POPPROJ)[i]
+  export <- bind_rows(export, temp)
+  i <- i + 1
+}
+write.csv(export, file = "C:/Users/amcadams/Documents/R/projections_export.csv")
 

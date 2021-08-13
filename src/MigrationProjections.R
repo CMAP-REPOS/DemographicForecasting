@@ -7,9 +7,10 @@ library(readxl)
 
 # Parameters ---------------------------------------------------------
 
-load("Output/Mort_Proj.Rdata")
-load("Output/ASFR.Rdata")
-load("Output/BirthRatios.Rdata")
+load("Output/Mort_Proj.Rdata")    #named Mort_Proj
+load("Output/ASFR.Rdata")         #named ASFR_projections
+load("Output/BirthRatios.Rdata")  #named bRatios
+load("Output/targetNM.Rdata")     #named target_NM
 
 #load in variables from projection_control
 baseyear = "2020"
@@ -27,19 +28,21 @@ if(startyr == baseyear){
   load("Output/PopData.Rdata")  # named POP
 
   baseyearpoptable <- POP[["2020"]] %>%
-    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population))
+    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
+    ungroup()
 
 #Load in and reformat base year migration rate data
+  load("Output/Base_Migration.Rdata") %>% # named Base_Mig
 
-  load("Output/Base_Migration.Rdata")   # named Base_Mig
+  Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
 
 }else{
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))
 
 #Load in population data
   load("Output/ProjData.Rdata")
-  baseyearpoptable <- POPPROJ[[ ]]  #fix this later
-
+  baseyearpoptable <- POPPROJ[[ ]]  ################################################################fix this part of loop later
+  Base_Mig <- MIGPROJ[[]]
 }
 
 
@@ -138,12 +141,7 @@ expectedpop25 <- projectedBirths_0to4surviving %>%
                                     TRUE ~ Pop2025))
 
 
-# Step 6: Import historical Net Migration values, calculate Target Net Migrants, calculate K factors
-
-NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
-
-target_NM <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
-  group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand
+# Step 6: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 

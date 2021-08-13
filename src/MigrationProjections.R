@@ -76,7 +76,7 @@ agefactors
 
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
-#add Sex into this
+#NEED TO ADD SEX INTO THIS
 projectedBirths <- PEP2020 %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%
   full_join(ASFR_MidPoint, by = c("Age", "Region")) %>%
@@ -239,8 +239,8 @@ Projections <- Projections %>% left_join(expectedpop25, by=c("Region", "Age", "S
                       mutate(NMs_Living =  Pop2025 * NMRs)  %>%
                       mutate(NMs_Living_Abs =  abs(Pop2025 * NMRs))
 
-sum_NM <- M %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM = sum(NMs_Living))
-sum_NM_Abs <- M %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
+sum_NM <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM = sum(NMs_Living))
+sum_NM_Abs <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
 Target_TM_U55 <- TM_55 %>% select(-TargetTM_55Plus)
 
 Projections <- Projections %>% left_join(sum_NM, by=c('Region', 'Sex')) %>% left_join(sum_NM_Abs, by=c("Region", "Sex")) %>%
@@ -259,12 +259,19 @@ Births2020 <- tibble(Region = c("CMAP Region", "CMAP Region", "External IL", "Ex
                       Births = c(263558, 252240, 24441, 22974, 23565, 19616, 14202, 13301))
 
 Projections <- Projections %>% left_join(Births2020, by=c('Region','Sex'))%>%  arrange(Region, Sex) %>%
-                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ (lag(Pop2020) - Pop2025),
-                                               Age == '85 years and over' ~ (Pop2020 + lag(Pop2020))- Pop2025,
-                                               Age == '0 to 4 years' ~ Births - Pop2025))
+                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ round(lag(Pop2020) - Pop2025,0),
+                                               Age == '85 years and over' ~ round((Pop2020 + lag(Pop2020))- Pop2025,0),
+                                               Age == '0 to 4 years' ~ round(Births - Pop2025,0)))
 
+# OK to use the survival rate for ages 1-4 in first part of equation, rather than recalculating 0-4.
+Mort_MidPoint <- Mort_MidPoint %>% mutate(Age = case_when(Age == '1 to 4 years' ~ '0 to 4 years',
+                                                          TRUE ~ Age)) %>% rename(Mort_Calc = Mort2022.5)
 
+Projections <- Projections %>% full_join(Mort_MidPoint, by=c("Sex", "Region", "Age"))
 
+Projections <- Projections %>% mutate(Migrant_Deaths = round((net_migrants25/((Mort_Calc+1)/2)-net_migrants25),0)) %>%
+                               mutate(Resident_Deaths = Deaths + Migrant_Deaths) %>%
+                               select(-sum_NM, -sum_NM_Abs, -TargetTM_U55, -Births, -Mort_Calc)
 
 # Step 9: Assemble Components of Change to check work (Optional)
 

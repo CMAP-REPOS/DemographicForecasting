@@ -21,14 +21,32 @@ series <- seq(from=startyear,
               by= 5)
 series
 
-########set up projection location
-#create new folder (on GitHub)
+########set up where the projection files will go
+#create new file
+POPPROJ <- list()
+for(years in series){
+  POPPROJ[[as.character(years)]] <- tibble()
+}
+NETMIGPROJ <- list()
+for(years in series){
+  NETMIGPROJ[[as.character(years)]] <- tibble()
+}
+
+
+#input baseyear into POPPROJ - can omit if confusing
+POPPROJ[[as.character(baseyear)]] <- POP[[as.character(baseyear)]] %>%
+  group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
+  ungroup()
 
 #set new folder as working directory
 
 #copy in base projection files that will be needed (Output/...Rdata)
  # population, NMRs
 
+
+#######
+#Do a one-time import of the historical Net Migration data ahead of running the
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 
 ######## run the loop
 
@@ -47,12 +65,21 @@ print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "
 #run the migration code
 #source("src/MigrationProjections.R")
 
-#save the final population projection - put in a tibble? rbind()
+#save the final population projection
+
+POPPROJ[[as.character(projend)]] <- Projections
+save(POPPROJ, file="Output/PopProj.Rdata")
+
+#save the Net Migration rates
+NETMIGPROJ[[as.character(projend)]] <- Migration
+save(NETMIGPROJ, file="Output/NMProj.Rdata")
+
 
 #save the Components of Change (optional)
 
-#save the outputs that will become the inputs for the next cycle
+#save the outputs (besides population) that will become the inputs for the next cycle
   #population, NMRs
+
 
 
 #-------
@@ -60,7 +87,10 @@ print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "
 }
 
 
-######## Final Step: combine all of the population projections into one table
+######## Final Step
+
+#export projections
+
 
 
 

@@ -13,7 +13,7 @@ load("Output/BirthRatios.Rdata")  #named bRatios
 load("Output/targetNM.Rdata")     #named target_NM
 
 #load in variables from projection_control
-baseyear = "2020"
+baseyr = "2020"                               #as.character(baseyear)
 startyr = "2020"                              #as.character(projstart)
 midpointyr = "2022.5"                         #as.character(projmidpoint)
 endyr = "2024"                                #as.character(projend - 1)
@@ -21,13 +21,13 @@ cycleyears = c(2020,2021,2022,2023,2024)      #projyears
 lastyear = as.character(max(cycleyears))
 
 
-if(startyr == baseyear){
-  print(paste("GENERATING", baseyear, "PROJECTION"))
+if(startyr == baseyr){
+  print(paste("GENERATING", baseyr, "PROJECTION"))
 
 #Load in and reformat population data
   load("Output/PopData.Rdata")  # named POP
 
-  baseyearpoptable <- POP[["2020"]] %>%
+  baseyearpoptable <- POP[[baseyr]] %>%
     group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
     ungroup()
   #sort the population by age group
@@ -42,12 +42,18 @@ if(startyr == baseyear){
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))
 
 #Load in population data
-  load("Output/ProjData.Rdata")
-  baseyearpoptable <- POPPROJ[[ ]]  ################################################################fix this part of loop later
-  #sort the pop table (might not be necessary here)
-  PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
+  load("Output/PopProj.Rdata")
 
-  Base_Mig <- MIGPROJ[[]]
+  baseyearpoptable <- POPPROJ[[startyr]]
+  names(baseyearpoptable) <- c("Age","Region","Sex","baseyrpop")
+  #sort the pop table (may not be necessary, but it's here just in case)
+  baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
+
+#load in Migration data
+  Base_Mig <- NETMIGPROJ[[startyr]]
+  names(Base_Mig) <- c("Region","Age","Sex","NetRates")
+
+
 }
 
 
@@ -132,11 +138,11 @@ expectedpop <- expectedpop %>%
                                   TRUE ~ ProjectedPop.x), .keep = "unused")
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
-NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+#NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex) %>%
 
-NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort() #########________________________________________________come back and fix this~
+NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
 NMperiods <- tail(NMperiods, 2)
-NMperiods
+paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" ")
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
@@ -145,7 +151,6 @@ TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('M
   group_by(Sex, Region) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration) %>%
   group_by(Period, Region) %>% mutate(SexProp = NetTotal / sum(NetTotal)) %>%
   full_join(target_NM, by='Region') %>% mutate(TargetTM = SexProp*NetMigration)
-
 
 #Target TM <55 / 55+ by sex
 TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male', 'Female')) %>%
@@ -243,10 +248,38 @@ Projections <- Projections %>% mutate(projNetMigrants = (NMs_Living_Abs/sum_NM_A
   mutate(ProjectedPop_final = round(ProjectedPop + projNetMigrants,0))
 
 
+#calculate Total Migration by Sex and +/-55, add to NetMig table
 
-# Step 8: Save Population projection
+tempNetMig1 <- Projections %>%
+  group_by(Region,Sex) %>%
+  summarise(NetMigration = round(sum(projNetMigrants),0)) %>%
+  mutate(agegrp = "Total")
+
+tempNetMig2 <- tempNetMig %>%
+  group_by(Region) %>%
+  summarise(NetMigration = sum(NetMigration)) %>%
+  mutate(Sex = "Both", agegrp = "Total")
+
+totNM <- Projections %>%
+  filter(Age %in% over55) %>%
+  mutate(agegrp = "55+") %>%
+  group_by(Region,Sex,agegrp) %>%
+  summarise(NetMigration = round(sum(projNetMigrants),0)) %>%
+  bind_rows(tempNetMig1) %>%
+  bind_rows(tempNetMig2) %>%
+  rename(Age = agegrp) %>%
+  mutate(Period = paste(cycleyears[1], cycleyears[5]+1, sep="-"))
+
+NetMig <- NetMig %>% bind_rows(totNM)
 
 
+
+# Step 8: Save Population projection, Net Migration rates, and Total Migration
+
+Projections <- Projections %>%
+  select(Age, Region, Sex, ProjectedPop_final)
+
+Migration <- Migration
 
 
 

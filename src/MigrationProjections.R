@@ -228,9 +228,9 @@ Migration <- Base_Mig %>%
 
 # Step 7: Apply Net Migration to Expected Population in order to calculate Projected Population
 
-Projections <- Migration %>% left_join(expectedpop25, by=c("Region", "Age", "Sex")) %>% select(-Mort2022.5) %>% relocate(c(Pop2020, Pop2025), .before=NMRs) %>%
-                      mutate(NMs_Living =  Pop2025 * NMRs)  %>%
-                      mutate(NMs_Living_Abs =  abs(Pop2025 * NMRs))
+Projections <- Migration %>% left_join(expectedpop, by=c("Region", "Age", "Sex")) %>% #relocate(c(Pop2020, Pop2025), .before=NMRs) %>%
+                      mutate(NMs_Living =  ProjectedPop * NMRs)  %>%
+                      mutate(NMs_Living_Abs =  abs(ProjectedPop * NMRs))
 
 sum_NM <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM = sum(NMs_Living))
 sum_NM_Abs <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
@@ -239,34 +239,44 @@ Target_TM_U55 <- TM_55 %>% select(-TargetTM_55Plus)
 Projections <- Projections %>% left_join(sum_NM, by=c('Region', 'Sex')) %>% left_join(sum_NM_Abs, by=c("Region", "Sex")) %>%
   left_join(Target_TM_U55 , by=c('Region', 'Sex'))
 
-Projections <- Projections %>% mutate(net_migrants25 = (NMs_Living_Abs/sum_NM_Abs)*(TargetTM_U55-sum_NM)+NMs_Living) %>%
-  mutate(Pop2025_Proj = round(Pop2025 + net_migrants25,-1))
+Projections <- Projections %>% mutate(projNetMigrants = (NMs_Living_Abs/sum_NM_Abs)*(TargetTM_U55-sum_NM)+NMs_Living) %>%
+  mutate(ProjectedPop_final = round(ProjectedPop + projNetMigrants,0))
+
+
+
+# Step 8: Save Population projection
+
+
+
+
+
+# Step 9: Assemble Components of Change to check work (Optional)
+
 
 
 #Births_2020 <- projectedBirths_bySex %>% select(-Year) %>% group_by(Region) %>%
 #mutate(fBirths = sum(fBirths), mBirths = sum(mBirths)) %>% distinct()
 
 
-Births2020 <- tibble(Region = c("CMAP Region", "CMAP Region", "External IL", "External IL", "External WI", "External WI", "External WI", "External WI"),
-                      Sex = c("Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female"),
-                      Births = c(263558, 252240, 24441, 22974, 23565, 19616, 14202, 13301))
+#Births2020 <- tibble(Region = c("CMAP Region", "CMAP Region", "External IL", "External IL", "External WI", "External WI", "External WI", "External WI"),
+#                      Sex = c("Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female"),
+#                      Births = c(263558, 252240, 24441, 22974, 23565, 19616, 14202, 13301))
 
-Projections <- Projections %>% left_join(Births2020, by=c('Region','Sex'))%>%  arrange(Region, Sex) %>%
-                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ round(lag(Pop2020) - Pop2025,0),
-                                               Age == '85 years and over' ~ round((Pop2020 + lag(Pop2020))- Pop2025,0),
-                                               Age == '0 to 4 years' ~ round(Births - Pop2025,0)))
+#Projections <- Projections %>% left_join(Births2020, by=c('Region','Sex'))%>%  arrange(Region, Sex) %>%
+#                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ round(lag(Pop2020) - Pop2025,0),
+#                                               Age == '85 years and over' ~ round((Pop2020 + lag(Pop2020))- Pop2025,0),
+#                                               Age == '0 to 4 years' ~ round(Births - Pop2025,0)))
 
 # OK to use the survival rate for ages 1-4 in first part of equation, rather than recalculating 0-4.
-Mort_MidPoint <- Mort_MidPoint %>% mutate(Age = case_when(Age == '1 to 4 years' ~ '0 to 4 years',
-                                                          TRUE ~ Age)) %>% rename(Mort_Calc = Mort2022.5)
+#Mort_MidPoint <- Mort_MidPoint %>% mutate(Age = case_when(Age == '1 to 4 years' ~ '0 to 4 years',
+#                                                          TRUE ~ Age)) %>% rename(Mort_Calc = Mort2022.5)
 
-Projections <- Projections %>% left_join(Mort_MidPoint, by=c("Sex", "Region", "Age"))
+#Projections <- Projections %>% left_join(Mort_MidPoint, by=c("Sex", "Region", "Age"))
 
-Projections <- Projections %>% mutate(Migrant_Deaths = round((net_migrants25/((Mort_Calc+1)/2)-net_migrants25),0)) %>%
-                               mutate(Resident_Deaths = Deaths + Migrant_Deaths) %>%
-                               select(-sum_NM, -sum_NM_Abs, -TargetTM_U55, -Births, -Mort_Calc)
+#Projections <- Projections %>% mutate(Migrant_Deaths = round((net_migrants25/((Mort_Calc+1)/2)-net_migrants25),0)) %>%
+#                               mutate(Resident_Deaths = Deaths + Migrant_Deaths) %>%
+#                               select(-sum_NM, -sum_NM_Abs, -TargetTM_U55, -Births, -Mort_Calc)
 
-# Step 9: Assemble Components of Change to check work (Optional)
 
 
 

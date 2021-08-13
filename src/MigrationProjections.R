@@ -30,6 +30,8 @@ if(startyr == baseyear){
   baseyearpoptable <- POP[["2020"]] %>%
     group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
     ungroup()
+  #sort the population by age group
+  baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
 #Load in and reformat base year migration rate data
   load("Output/Base_Migration.Rdata") # named Base_Mig
@@ -42,6 +44,9 @@ if(startyr == baseyear){
 #Load in population data
   load("Output/ProjData.Rdata")
   baseyearpoptable <- POPPROJ[[ ]]  ################################################################fix this part of loop later
+  #sort the pop table (might not be necessary here)
+  PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
+
   Base_Mig <- MIGPROJ[[]]
 }
 
@@ -110,9 +115,6 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
 
 
 # Step 4: apply Survival Rates and calculate Expected 2025 population
-
-
-PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
 expectedpop25 <- projectedBirths_0to4surviving %>%
   ungroup() %>%

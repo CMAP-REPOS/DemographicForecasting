@@ -82,7 +82,7 @@ projectedBirths <- bind_cols(projectedBirths[1:2], projectedBirths$baseyrpop * p
   summarise(totBirths = sum(totBirths)) %>%
   ungroup()
 
-# Step 4 part 2: Calculate the number of Births (by Sex and Region) that survive the projection period.
+# Step 3 part 2: Calculate the number of Births (by Sex and Region) that survive the projection period.
 # Survival rates for 0-1 and 1-4 are applied based on David ER's cohort method
 projectedBirths_bySex <- projectedBirths %>%
   left_join(bRatios, by="Region") %>%
@@ -95,7 +95,7 @@ Mort_0to4 <- Mort_MidPoint %>%
   pivot_wider(names_from = c("Sex","Age"), values_from = starts_with("Mort"))
 names(Mort_0to4) <- make.names(names(Mort_0to4))
 
-# Step 4 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
+# Step 3 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
 endyearBirths <- projectedBirths_bySex$Year %>% str_subset(lastyear) %>% unique()
 
 projectedBirths_0to4surviving <- projectedBirths_bySex %>%
@@ -108,7 +108,8 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
   pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "ProjectedPop") %>% mutate(Age = "0 to 4 years")
 
-# Step 5: apply Survival Rates and calculate Expected 2025 population
+
+# Step 4: apply Survival Rates and calculate Expected 2025 population
 
 
 PEP2020 <- PEP2020 %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)

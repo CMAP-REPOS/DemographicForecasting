@@ -32,7 +32,7 @@ if(startyr == baseyear){
     ungroup()
 
 #Load in and reformat base year migration rate data
-  load("Output/Base_Migration.Rdata") %>% # named Base_Mig
+  load("Output/Base_Migration.Rdata") # named Base_Mig
 
   Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
 
@@ -69,18 +69,18 @@ ASFR_MidPoint <- ASFR_projections %>%
 
 # Step 3 Part 1: Calculate projected Births by Age Cohort and Region in 1-year intervals
 
-projectedBirths <- PEP2020 %>%
+#grab possible Mother population (females 15-44) and join to ASFRs
+projectedBirths <- baseyearpoptable %>%
   filter(Sex == "Female", Age %in% F_Groups) %>%
-  full_join(ASFR_MidPoint, by = c("Age", "Region")) %>%
-  mutate(Births2020 = Pop2020 * ASFR2020,    #consider replacing with a matrix multiplication function
-         Births2021 = Pop2020 * ASFR2021,
-         Births2022 = Pop2020 * ASFR2022,
-         Births2023 = Pop2020 * ASFR2023,
-         Births2024 = Pop2020 * ASFR2024) %>%
-  select(c(1:2, starts_with("Births"))) %>%
-  pivot_longer(cols=starts_with("Births"), names_to = "Year", values_to = "totBirths") %>%
+  full_join(ASFR_MidPoint, by = c("Age", "Region"))
+
+#calculate population * ASFR, pivot table to Long format, then summarize total births by Region and Year
+projectedBirths <- bind_cols(projectedBirths[1:2], projectedBirths$baseyrpop * projectedBirths[, 6:10]) %>%
+  pivot_longer(cols=starts_with("ASFR"), names_to = "Year", values_to = "totBirths") %>%
+  mutate(Year = paste("Births", str_sub(Year, start = -4), sep="")) %>%
   group_by(Region, Year) %>%
-  summarise(totBirths = sum(totBirths))
+  summarise(totBirths = sum(totBirths)) %>%
+  ungroup()
 
 # Step 4 part 2: Calculate the number of Births (by Sex and Region) that survive the projection period.
 # Survival rates for 0-1 and 1-4 are applied based on David ER's cohort method

@@ -59,20 +59,8 @@ select(c(1:3) | ends_with(midpointyr))
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
-ASFR_MidPoint <- ASFR_projections %>% pivot_wider(names_from = "Year", values_from="ASFR_proj") %>%
-                          mutate('ASFR2022.5'=rowMeans(across('2020':'2025')),
-                                  'ASFR2027.5'=rowMeans(across('2025':'2030')),
-                                  'ASFR2032.5'=rowMeans(across('2030':'2035')),
-                                  'ASFR2037.5'=rowMeans(across('2035':'2040')),
-                                  'ASFR2042.5'=rowMeans(across('2040':'2045')), #if want to add midpoints for 2050-60, add mutates here
-                                  'ASFR2047.5'=rowMeans(across('2045':'2050'))) %>%
-                          rename_with(.fn = ~paste0("ASFR",.), .cols=starts_with("2")) %>%
-                          ungroup()
-                                  #select(c(1:2) | ends_with(".5"))
-ASFR_MidPoint <- ASFR_MidPoint %>%
+ASFR_MidPoint <- ASFR_projections %>%
   select(c(1:2) | contains(midpointyr) | num_range("ASFR", cycleyears))
-
-
 
 # Step 4 part 1: Calculate projected Births by age cohort and Region in 1-year intervals
 

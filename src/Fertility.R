@@ -152,6 +152,19 @@ ASFR_projections <- full_join(CensusASFRs, BaseYearASFR, by = c("agegroup" = "Ag
   select(Region, Age, Year, ASFR_proj) # %>%
   #filter(Year %% 5 == 0) #select just the 5-year ASFRs
 
+#Calculate ASFR midpoints
+ASFR_projections <- ASFR_projections %>% pivot_wider(names_from = "Year", values_from="ASFR_proj") %>%
+  mutate('ASFR2022.5'=rowMeans(across('2020':'2025')),
+         'ASFR2027.5'=rowMeans(across('2025':'2030')),
+         'ASFR2032.5'=rowMeans(across('2030':'2035')),
+         'ASFR2037.5'=rowMeans(across('2035':'2040')),
+         'ASFR2042.5'=rowMeans(across('2040':'2045')),
+         'ASFR2047.5'=rowMeans(across('2045':'2050')),
+         'ASFR2052.5'=rowMeans(across('2050':'2055')),
+         'ASFR2057.5'=rowMeans(across('2055':'2060')) ) %>%
+  rename_with(.fn = ~paste0("ASFR",.), .cols=starts_with("2")) %>%
+  ungroup()
+
 #export the ASFR projections
 save(ASFR_projections, file="Output/ASFR.Rdata")
 

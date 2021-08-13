@@ -106,7 +106,7 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
                                 TRUE ~ mBirths * Male_0.to.1.years * Male_1.to.4.years)) %>%
   group_by(Region) %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
-  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "Pop2025") %>% mutate(Age = "0 to 4 years")
+  pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "ProjectedPop") %>% mutate(Age = "0 to 4 years")
 
 # Step 5: apply Survival Rates and calculate Expected 2025 population
 

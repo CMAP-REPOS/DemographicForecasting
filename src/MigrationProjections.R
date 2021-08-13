@@ -134,7 +134,7 @@ expectedpop <- expectedpop %>%
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 
-NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
+NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort() #########________________________________________________come back and fix this~
 NMperiods <- tail(NMperiods, 2)
 NMperiods
 
@@ -199,7 +199,7 @@ K_factors <- bind_rows(K_Under55, K_Over55) %>%
   pivot_wider(names_from = Age, values_from = c('kfactor')) %>%
   rename_with(make.names)
 
-# Step 7: Apply K factors to NMRs in order to calculate Net Migration
+# Step 6: Apply K factors to NMRs in order to calculate Net Migration
 
 Migration <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>%
   left_join(K_factors, by=c('Region', 'Sex')) %>%

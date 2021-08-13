@@ -19,11 +19,27 @@ endyr = "2024"                                #as.character(projend - 1)
 cycleyears = c(2020,2021,2022,2023,2024)      #projyears
 lastyear = as.character(max(cycleyears))
 
+
 if(startyr == baseyear){
-  load("Output/PopData.Rdata")
-  load("Output/Base_Migration.Rdata")
+  print(paste("GENERATING", baseyear, "PROJECTION"))
+
+#Load in and reformat population data
+  load("Output/PopData.Rdata")  # named POP
+
+  baseyearpoptable <- POP[["2020"]] %>%
+    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population))
+
+#Load in and reformat base year migration rate data
+
+  load("Output/Base_Migration.Rdata")   # named Base_Mig
+
 }else{
-  #add in location/filename to load non-base year Pop and NMRs
+  print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))
+
+#Load in population data
+  load("Output/ProjData.Rdata")
+  baseyearpoptable <- POPPROJ[[ ]]  #fix this later
+
 }
 
 
@@ -33,18 +49,8 @@ over55 <- c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 year
 
 # Step 1: Age-Sex Specific Survival Rates, 2020-2050, Midpoints of 5-year Intervals
 
-#get column names
-Mort_MidPoint <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025')),
-                                  'Mort2027.5'=rowMeans(across('2025':'2030')),
-                                  'Mort2032.5'=rowMeans(across('2030':'2035')),
-                                  'Mort2037.5'=rowMeans(across('2035':'2040')),
-                                  'Mort2042.5'=rowMeans(across('2040':'2045')),  #we don't need to go out to 2060 but we have the data to do so
-                                  'Mort2047.5'=rowMeans(across('2045':'2050'))) %>%
-                                   select(-c(4:13))
-
-Mort_MidPoint <- Mort_MidPoint %>%
+Mort_MidPoint <- Mort_Proj %>%
 select(c(1:3) | ends_with(midpointyr))
-
 
 # Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
 
@@ -64,8 +70,7 @@ ASFR_MidPoint <- ASFR_MidPoint %>%
 
 #Step 3: Pull in Base Year Population Data
 
-PEP2020 <- POP[["2020"]] %>% select(-County,-State) %>%
-  group_by(Age, Region, Sex) %>% summarise(Pop2020 = sum(Population))
+
 
 #pull age groups, make ordered factors list with proper sorting
 agefactors <- unique(POP[["2020"]]$Age) %>% factor(ordered=TRUE) %>% fct_relevel("5 to 9 years", after = 1)

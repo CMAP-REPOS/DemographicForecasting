@@ -113,6 +113,20 @@ temp[7:13] <- temp$'2035'
 Mort_Proj <- rbind(Mort_Proj, temp)
 Mort_Proj <- Mort_Proj %>% filter_at(vars(4:13), all_vars(. < 1))
 
+
+# Calculate midpoints
+Mort_Proj <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025')),
+                                      'Mort2027.5'=rowMeans(across('2025':'2030')),
+                                      'Mort2032.5'=rowMeans(across('2030':'2035')),
+                                      'Mort2037.5'=rowMeans(across('2035':'2040')),
+                                      'Mort2042.5'=rowMeans(across('2040':'2045')),
+                                      'Mort2047.5'=rowMeans(across('2045':'2050')),
+                                      'Mort2052.5'=rowMeans(across('2050':'2055')),
+                                      'Mort2057.5'=rowMeans(across('2055':'2060'))) %>%
+                                      select(c(1:3) | starts_with("Mort"))
+
+
+
 #save(Mort_Proj, file="Output/Mort_Proj.Rdata")
 #save(LifeTable, file="Output/LifeTables.Rdata")
 

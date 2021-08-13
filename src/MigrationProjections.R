@@ -268,7 +268,7 @@ Projections <- Projections %>% left_join(Births2020, by=c('Region','Sex'))%>%  a
 Mort_MidPoint <- Mort_MidPoint %>% mutate(Age = case_when(Age == '1 to 4 years' ~ '0 to 4 years',
                                                           TRUE ~ Age)) %>% rename(Mort_Calc = Mort2022.5)
 
-Projections <- Projections %>% full_join(Mort_MidPoint, by=c("Sex", "Region", "Age"))
+Projections <- Projections %>% left_join(Mort_MidPoint, by=c("Sex", "Region", "Age"))
 
 Projections <- Projections %>% mutate(Migrant_Deaths = round((net_migrants25/((Mort_Calc+1)/2)-net_migrants25),0)) %>%
                                mutate(Resident_Deaths = Deaths + Migrant_Deaths) %>%

@@ -89,3 +89,26 @@ GQ_NONINST <- GQ %>%
 #save(GQ, GQ_INST, GQ_NONINST, file="Output/GQData.Rdata") #add GQE, too
 #load("Output/GQData.Rdata")
 
+#calculate ratio of GQ pop to total pop in 2010
+GQratios <- GQ %>%
+  filter(Sex != "County") %>%
+  group_by(Region, Age, Sex) %>%
+  summarize(GQpop = sum(Value)) %>%
+  mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
+                         TRUE ~ Age))
+
+#import 2010 pop, join to GQratios
+pop2010 <- POP[["2010"]] %>%
+  group_by(Region, Age, Sex) %>%
+  summarize(nonGQpop = sum(Population)) %>%
+  mutate(Age = case_when(Age == "60 and 64 years" ~ "60 to 64 years",
+                         Age == "65 and 69 years" ~ "65 to 69 years",
+                         TRUE ~ Age))
+GQratios <- GQratios %>%
+  left_join(pop2010, by = c("Age","Sex","Region")) %>%
+  mutate(GQratio = GQpop / (GQpop + nonGQpop)) %>%
+  ungroup() %>%
+  select(-GQpop, -nonGQpop)
+
+save(GQ, GQ_INST, GQ_NONINST, GQratios, file="Output/GQData.Rdata")
+

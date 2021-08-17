@@ -100,10 +100,8 @@ GQratios <- GQ %>%
 #import 2010 pop, join to GQratios
 pop2010 <- POP[["2010"]] %>%
   group_by(Region, Age, Sex) %>%
-  summarize(nonGQpop = sum(Population)) %>%
-  mutate(Age = case_when(Age == "60 and 64 years" ~ "60 to 64 years",
-                         Age == "65 and 69 years" ~ "65 to 69 years",
-                         TRUE ~ Age))
+  summarize(nonGQpop = sum(Population))
+
 GQratios <- GQratios %>%
   left_join(pop2010, by = c("Age","Sex","Region")) %>%
   mutate(GQratio = GQpop / (GQpop + nonGQpop)) %>%

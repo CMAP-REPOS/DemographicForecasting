@@ -92,6 +92,7 @@ GQ_NONINST <- GQ %>%
 #calculate ratio of GQ pop to total pop in 2010
 GQratios <- GQ %>%
   filter(Sex != "County") %>%
+  #filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE") %>%
   group_by(Region, Age, Sex) %>%
   summarize(GQpop = sum(Value)) %>%
   mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",

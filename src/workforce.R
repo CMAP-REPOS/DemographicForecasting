@@ -45,19 +45,20 @@ for(i in names(laborforce)){
 }
 
 #join the LSPRs to each of the tables in laborforce
-laborforce[["2010"]] <- laborforce[["2010"]] %>% left_join(LFPRs[c(1:2,3)], by=c("Age","Sex"))
-laborforce[["2015"]] <- laborforce[["2015"]] %>% left_join(LFPRs[c(1:2,4)], by=c("Age","Sex"))
-laborforce[["2020"]] <- laborforce[["2020"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex"))
-laborforce[["2025"]] <- laborforce[["2025"]] %>% left_join(LFPRs[c(1:2,6)], by=c("Age","Sex"))
+laborforce[["2010"]] <- laborforce[["2010"]] %>% left_join(LFPRs[c(1:2,3)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2010)
+laborforce[["2015"]] <- laborforce[["2015"]] %>% left_join(LFPRs[c(1:2,4)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2015)
+laborforce[["2020"]] <- laborforce[["2020"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2020)
+laborforce[["2025"]] <- laborforce[["2025"]] %>% left_join(LFPRs[c(1:2,6)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2025)
 
 for(i in c("2030","2035","2040","2045","2050")){
-  laborforce[[i]] <- laborforce[[i]] %>% left_join(LFPRs[c(1:2,7)], by=c("Age","Sex"))
+  laborforce[[i]] <- laborforce[[i]] %>% left_join(LFPRs[c(1:2,7)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2030)
 }
 
 #multiply NonGQpop * LFPR for each year
 for(i in names(laborforce)){
   laborforce[[i]] <-  laborforce[[i]] %>%
-    mutate(laborforce = NonGQpop * grep("^LFPR", colnames(laborforce[[i]]) ) )
+    ungroup() %>%
+    mutate(laborforce = NonGQpop * (LFPR/100))
 }
 
 #condense laborforce into one table
@@ -73,7 +74,7 @@ for(item in laborforce){
 
 #total up laborforce, join with unemployment rate, calculate number of workers
 workers <- workers %>%
-  select(-starts_with("LFPR")) %>%
+  #select(-starts_with("LFPR")) %>%
   group_by(Region, year) %>%
   summarize(totlaborforce = sum(laborforce)) %>%
   left_join(unemp, by=c("year" = "Year")) %>%

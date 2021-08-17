@@ -1,6 +1,7 @@
 # CMAP | Noel Peterson, Mary Weber | 1/15/2021
 
 #This file fetches and formats 1990, 2000 and 2010 Decennial Census data
+#AFTER RUNNING, make sure to run the companion script PEP.R!
 
 #install.packages(c("tidyverse", "tidycensus", "readxl"))
 library(tidyverse)
@@ -64,8 +65,8 @@ for (YEAR in YEARS) {
       Age = case_when(Age %in% c("Under 5 years") ~ "0 to 4 years",
                       Age %in% c("15 to 17 years", "18 and 19 years") ~ "15 to 19 years",
                       Age %in% c("20 years", "21 years", "22 to 24 years") ~ "20 to 24 years",
-                      Age %in% c("60 and 61 years", "62 to 64 years") ~ "60 and 64 years",
-                      Age %in% c("65 and 66 years", "67 to 69 years") ~ "65 and 69 years",
+                      Age %in% c("60 and 61 years", "62 to 64 years") ~ "60 to 64 years",
+                      Age %in% c("65 and 66 years", "67 to 69 years") ~ "65 to 69 years",
                       TRUE ~ Age)
     ) %>%
     group_by(GEOID, County, State, Sex, Age, Year, Region) %>%
@@ -95,14 +96,7 @@ View(b)
 write.csv(b, "/Users/mweber/Desktop/Total_POP.csv")
 
 
-# Upload full dataset to GitHub/R  --------------------------------
+# Upload POP to GitHub  --------------------------------
 
-#View(POP[["2010"]])
-#View(POP[["2000"]])
-
-#Read 1990 data from spreadsheets
-#POP[["1990"]] <- read_excel("Input/Pop1990.xlsx")
-
-
-#save(POP, file="Output/PopData.Rdata")
+save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")

@@ -4,15 +4,9 @@ baseyr2 <- 2019
 startyr2 <- 2019
 endyear <- 2050
 
-
-#projnums <- (endyear - startyr2) / 5 #code to use when 2020 PEP available
 projnums <- 6
 
 series <- c(2019, 2025, 2030, 2035, 2040, 2045, 2050) #code to use when 2020 PEP available
-#series <- seq(from=startyear,
-#              to=endyear,
-#              by= 5)
-#series
 
 HH_PROJ <- list()
 for(years in series){
@@ -32,7 +26,7 @@ while(i <= projnums){
 
   source("src/Household_Totals.R")
 
-  HH_PROJ[[as.character(projend)]] <- Headship_Ratios
+  HH_PROJ[[as.character(projend)]] <- Head_of_HH
 
   save(HH_PROJ, file="Output/HH_Proj.Rdata")
 

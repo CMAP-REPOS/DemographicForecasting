@@ -1,14 +1,14 @@
-
-
+# CMAP | Alexis McAdams, Mary Weber | 8/18/2021
 
 baseyr2 <- 2019
 startyr2 <- 2019
 endyear <- 2050
-series <- c(2019, 2025, 2030, 2035, 2040, 2045, 2050)
+
 
 #projnums <- (endyear - startyr2) / 5 #code to use when 2020 PEP available
 projnums <- 6
 
+series <- c(2019, 2025, 2030, 2035, 2040, 2045, 2050) #code to use when 2020 PEP available
 #series <- seq(from=startyear,
 #              to=endyear,
 #              by= 5)
@@ -23,7 +23,6 @@ for(years in series){
 i <- 1
 while(i <= projnums){
 
-  #set up variables that MigrationProjections needs
   projstart <- series[i]
   projend <- series[i+1]
   projyears <- seq(from=projstart,
@@ -41,5 +40,17 @@ while(i <= projnums){
 }
 
 
+export2 <- tibble()
+i=1
+for(item in HH_PROJ){
+  print(item)
+  temp2 <- item
+  temp2$year <- names(HH_PROJ)[i]
+  export2 <- bind_rows(export2, temp2)
+  i <- i + 1
+}
 
+export2 <- export2 %>% select(-Year) %>% rename(Year = year)
+
+View(export2)
 

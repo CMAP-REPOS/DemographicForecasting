@@ -52,6 +52,8 @@ householders <- pums_21co %>%
 HEADSHIP_RATES <- left_join(householders, total_pop) %>%
   mutate(HeadshipRate = NumHouseholders / TotalPop)
 
-write.csv(HEADSHIP_RATES, "/Users/mweber/Desktop/HSRates1.csv")
+HEADSHIP_RATES <- HEADSHIP_RATES %>% rename(Age = AgeGroup) %>% select(-NumHouseholders, -TotalPop)
+
+#save(HEADSHIP_RATES, file="Output/PUMS_HeadshipRates.Rdata")
 
 

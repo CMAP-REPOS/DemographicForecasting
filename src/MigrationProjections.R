@@ -146,6 +146,9 @@ paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
+#filter out the correct
+target_NM <- target_NM %>% filter(Year == endyr) %>% select(-Year)
+
 #Target TM by sex
 TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration) %>%

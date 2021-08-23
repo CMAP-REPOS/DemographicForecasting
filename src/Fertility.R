@@ -189,8 +189,20 @@ bRatios <- left_join(btemp, btemp2, by = c("Year", "Region")) %>%
   group_by(Region, Sex) %>%
   summarize(avgRatio = mean(bRatio)) %>%
   pivot_wider(names_from = "Sex", values_from = "avgRatio")
+
+#TEMPORARY#
+# this part replaces faulty PUMS-derived IN ratios with average of other 3 regions' ratios
+# MUST FIX THIS when we have the real IN Births data
+bRatiostemp <- bRatios %>% filter(Region != "External IN") %>%
+  ungroup() %>%
+  summarize(averagef = mean(Female), averagem = mean(Male))
+bRatios[3,2] <- bRatiostemp[1,1]
+bRatios[3,3] <- bRatiostemp[1,2]
+
 rm(btemp)
 rm(btemp2)
 rm(bdata)
+rm(bRatiostemp)
+
 save(bRatios, file="Output/BirthRatios.Rdata")
 

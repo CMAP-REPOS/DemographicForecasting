@@ -79,8 +79,9 @@ workers <- workers %>%
   summarize(totlaborforce = sum(laborforce)) %>%
   left_join(unemp, by=c("year" = "Year")) %>%
   mutate(workers = round(totlaborforce * (1 - (Unemployment.Rate / 100)),0)) %>%
-  select(-totlaborforce, -Unemployment.Rate)
+  select(-totlaborforce, -Unemployment.Rate) %>%
+  mutate(workers2 = workers * 1.00113)
 
 #let's plot to see what that looks like
-p <- workers %>% ggplot(aes(x=year, y=workers)) + geom_point() + facet_wrap(~Region, scales="free") + ggtitle("Number of Workers, 2010-2050")
-p
+#p <- workers %>% ggplot(aes(x=year, y=workers2, group = Region)) + geom_point() + geom_line() + facet_wrap(~Region, scales="free") + ggtitle("Number of Workers, 2010-2050")
+#p

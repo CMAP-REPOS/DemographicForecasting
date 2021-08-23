@@ -16,7 +16,7 @@ load("Output/targetNM.Rdata")     #named target_NM
 baseyr = as.character(baseyear)    #"2020"
 startyr = as.character(projstart)  #"2020"
 midpointyr = as.character(projmidpoint)  #"2022.5"
-endyr = as.character(projend - 1)  #"2024"
+endyr = as.character(projend)  #"2025"
 cycleyears = projyears # c(2020,2021,2022,2023,2024)
 lastyear = as.character(max(cycleyears))
 
@@ -138,15 +138,15 @@ expectedpop <- expectedpop %>%
                                   TRUE ~ ProjectedPop.x), .keep = "unused")
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
-#NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex) %>%
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
 NMperiods <- tail(NMperiods, 2)
-paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" ")
+print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" "))
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
-#filter out the correct
+#filter out the correct Target Net Migrant numbers from the list and apply to the projection
 target_NM <- target_NM %>% filter(Year == endyr) %>% select(-Year)
 
 #Target TM by sex

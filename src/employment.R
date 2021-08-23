@@ -27,17 +27,20 @@ baseline2 <- baseline %>%
   #filter(locsplit == "non-local") %>% ###### HERE is where to decide if local industries is included or not
   group_by(Region, Year) %>%
   summarize(totemp = sum(Employment)) %>%
-  mutate(Year = str_sub(Year, 5,8))
+  mutate(Year = str_sub(Year, 5,8)) %>%
+  mutate(totemp2 = totemp * 1.049)
 
 #let's plot to see what it looks like
-p <- baseline2 %>% ggplot(aes(x=Year, y = totemp)) + geom_point() + facet_wrap(~Region, scales = "free") + ggtitle("Number of Jobs, 2010-2050")
+p <- baseline2 %>% ggplot(aes(x=Year, y = totemp2, group = Region)) + geom_point() + geom_line() + facet_wrap(~Region, scales = "free") + ggtitle("Number of Jobs, 2010-2050 \n Local industries excluded")
 p
 
 #let's try to join it with the workers data, and then graph it
 workersandjobs <- left_join(workers, baseline2, by=c("Region", "year" = "Year")) %>%
+  select(-workers, -totemp) %>%
   pivot_longer(cols = c(3:4), names_to = "type", values_to = "num")
 
-q <- workersandjobs %>% ggplot(aes(x=year, y=num, color = type)) + geom_point() +  facet_wrap(~Region, scales = "free") + ggtitle("Jobs and Workers, 2010-2050 \n Local industries INcluded")
+
+q <- workersandjobs %>% ggplot(aes(x=year, y=num, color = type, group = type)) + geom_point() + geom_line() +  facet_wrap(~Region, scales = "free") + ggtitle("Jobs and Workers, 2010-2050 \n Local industries INcluded")
 q
 
 

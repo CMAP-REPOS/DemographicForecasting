@@ -87,6 +87,7 @@ for(item in POPPROJ){
   i <- i + 1
 }
 export <- export %>% filter(year != 2020)
+
 exporttemp <- tibble()
 i=1
 for(item in POP){
@@ -96,6 +97,12 @@ for(item in POP){
   exporttemp <- bind_rows(exporttemp, temp)
   i <- i + 1
 }
+
+### Generate some graphs!
+source("src/workforce.R")
+#source("src/employment")
+
+
 
 
 

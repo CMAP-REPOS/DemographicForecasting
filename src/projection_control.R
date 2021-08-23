@@ -34,19 +34,11 @@ for(years in series){
 
 
 #input baseyear into POPPROJ - can omit if confusing
+load("Output/PopData.Rdata")
+
 POPPROJ[[as.character(baseyear)]] <- POP[[as.character(baseyear)]] %>%
   group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
   ungroup()
-
-#set new folder as working directory
-
-#copy in base projection files that will be needed (Output/...Rdata)
- # population, NMRs
-
-
-#######
-#Do a one-time import of the historical Net Migration data ahead of running the
-NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 
 ######## run the loop
 
@@ -77,11 +69,6 @@ save(NETMIGPROJ, file="Output/NMProj.Rdata")
 
 #save the Components of Change (optional)
 
-#save the outputs (besides population) that will become the inputs for the next cycle
-  #population, NMRs
-
-
-
 #-------
   i <- i+1
 }
@@ -99,5 +86,34 @@ for(item in POPPROJ){
   export <- bind_rows(export, temp)
   i <- i + 1
 }
-write.csv(export, file = "C:/Users/amcadams/Documents/R/projections_export.csv")
+export <- export %>% filter(year != 2020)
+exporttemp <- tibble()
+i=1
+for(item in POP){
+  temp <- item
+  temp$GEOID <- as.character(temp$GEOID)
+  temp$year <- names(POP)[i]
+  exporttemp <- bind_rows(exporttemp, temp)
+  i <- i + 1
+}
+
+
+
+###### scratchpad
+
+exporttemp2 <- exporttemp %>%
+  select(-GEOID, -County, -State, -Year) %>%
+  group_by(Region, Age, Sex, year) %>%
+    summarize(totpop = sum(Population))
+
+export <- export %>% select(-baseyrpop)
+export_totals <- export %>% group_by(Region, Sex, year) %>% summarize(total_population = sum(ProjectedPop_final))
+p <- export_totals %>% ggplot(aes(x=year, y=total_population, color=Sex, group = Sex)) + geom_point() + geom_line() + facet_wrap(~Region, scales="free") + ggtitle("Total Population, 2025-2050")
+p
+
+export_allpop <- bind_rows(rename(export, population = ProjectedPop_final), rename(exporttemp2, population = totpop))
+export_allpop$year <- as.integer(export_allpop$year)
+
+
+write.csv(export_allpop, file = "C:/Users/amcadams/Documents/R/projections_exportallpops_23AUG.csv")
 

@@ -32,6 +32,9 @@ for(years in series){
   NETMIGPROJ[[as.character(years)]] <- tibble()
 }
 
+#import in NetMigration periods
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+
 
 #input baseyear into POPPROJ - can omit if confusing
 load("Output/PopData.Rdata")
@@ -100,7 +103,7 @@ for(item in POP){
 
 ### Generate some graphs!
 source("src/workforce.R")
-#source("src/employment")
+source("src/employment")
 
 
 

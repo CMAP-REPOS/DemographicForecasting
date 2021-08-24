@@ -10,7 +10,9 @@ library(readxl)
 load("Output/Mort_Proj.Rdata")    #named Mort_Proj
 load("Output/ASFR.Rdata")         #named ASFR_projections
 load("Output/BirthRatios.Rdata")  #named bRatios
-load("Output/targetNM.Rdata")     #named target_NM
+#load("Output/targetNM.Rdata")     #named target_NM
+target_NM <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Desktop/NetMigration_CMAP.xlsx") %>%
+  mutate(Year = as.character(Year))
 
 #load in variables from projection_control
 baseyr = as.character(baseyear)    #"2020"

@@ -89,7 +89,10 @@ for(item in POPPROJ){
   export <- bind_rows(export, temp)
   i <- i + 1
 }
-export <- export %>% filter(year != 2020)
+Mig_Proj <- export %>% filter(year != 2020)
+
+#save(Mig_Proj, file="Output/Migration_Projections.Rdata")
+write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
 
 exporttemp <- tibble()
 i=1

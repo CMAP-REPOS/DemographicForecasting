@@ -71,6 +71,8 @@ GQ <- GQ %>%
 
 
 # Split out institutionalized and non-institutionalized
+
+#change to GQ_Non_Military and GQ_Military
 GQ_INST <- GQ %>%
   filter(Concept %in% c(
     "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE",
@@ -108,6 +110,8 @@ GQratios <- GQratios %>%
   mutate(GQratio = GQpop / (GQpop + nonGQpop)) %>%
   ungroup() %>%
   select(-GQpop, -nonGQpop)
+
+#take out military and hold as a constant number
 
 save(GQ, GQ_INST, GQ_NONINST, GQratios, file="Output/GQData.Rdata")
 

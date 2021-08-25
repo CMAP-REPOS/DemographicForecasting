@@ -10,6 +10,7 @@ load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/Head_of_HH.Rdata") #Head_of_HH
 load("Output/Migration_Projections.Rdata") #temp
 
+#add in 2020 data but also back project to 2010 and 2015
 
 #lines 15-22 are duplicate from PEP code....should consolidate
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")

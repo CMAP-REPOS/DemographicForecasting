@@ -1,5 +1,16 @@
 # CMAP | Alexis McAdams, Mary Weber | 8/18/2021
 
+load("Output/GQData.Rdata")
+
+
+# Subtract military GQ totals from population projections
+GQ_Military_Pop <- GQ_Military %>%
+  filter(Sex != "All" & !Age %in% c('Male Total', 'Female Total')) %>%
+  group_by(Region, Age, Sex) %>%
+  summarize(GQpop = sum(Value)) %>%
+  mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
+                         TRUE ~ Age))
+
 baseyr2 <- 2019
 startyr2 <- 2019
 endyear <- 2050
@@ -34,6 +45,8 @@ while(i <= projnums){
 }
 
 
+
+
 export2 <- tibble()
 i=1
 for(item in HH_PROJ){
@@ -43,8 +56,6 @@ for(item in HH_PROJ){
   export2 <- bind_rows(export2, temp2)
   i <- i + 1
 }
-
-#export2 <- export2 %>% select(-Year) %>% rename(Year = year)
 
 View(export2)
 

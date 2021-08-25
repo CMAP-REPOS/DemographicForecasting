@@ -5,7 +5,6 @@ library(tidyverse)
 library(tidycensus)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
-#16 to 64 and a 65+ category
 
 # Set parameters ----------------------------------------------------------
 
@@ -70,31 +69,24 @@ GQ <- GQ %>%
                     TRUE ~ Sex))
 
 
-# Split out institutionalized and non-institutionalized
-
-#change to GQ_Non_Military and GQ_Military
-GQ_INST <- GQ %>%
+# Split out Military vs Non-Military; Military help constant in future projections
+GQ_Non_Military <- GQ %>%
   filter(Concept %in% c(
     "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE",
     "GROUP QUARTERS POPULATION IN JUVENILE FACILITIES BY SEX BY AGE",
     "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE"
-  ))
-
-GQ_NONINST <- GQ %>%
-  filter(Concept %in% c(
+    "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE",
     "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE" #hold constant in projections
+    "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE"
   ))
 
-#save(GQ, GQ_INST, GQ_NONINST, file="Output/GQData.Rdata") #add GQE, too
-#load("Output/GQData.Rdata")
+GQ_Military <- GQ %>%
+  filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE")
+
 
 #calculate ratio of GQ pop to total pop in 2010
-GQratios <- GQ %>%
-  filter(Sex != "County") %>%
-  #filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE") %>%
+GQratios <- GQ_Non_Military %>%
+  filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
   group_by(Region, Age, Sex) %>%
   summarize(GQpop = sum(Value)) %>%
   mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
@@ -109,9 +101,8 @@ GQratios <- GQratios %>%
   left_join(pop2010, by = c("Age","Sex","Region")) %>%
   mutate(GQratio = GQpop / (GQpop + nonGQpop)) %>%
   ungroup() %>%
-  select(-GQpop, -nonGQpop)
+  select(-GQpop, -nonGQpop) %>%
+  na.omit()
 
-#take out military and hold as a constant number
-
-save(GQ, GQ_INST, GQ_NONINST, GQratios, file="Output/GQData.Rdata")
+#save(GQ, GQ_Military, GQ_Non_Military, GQratios, file="Output/GQData.Rdata")
 

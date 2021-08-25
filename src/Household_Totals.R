@@ -45,7 +45,6 @@ if(startyear == baseyear2) {
   Mig_Proj_Pop$year <- as.double(Mig_Proj_Pop$year)
 
   # update population with projections from migration code
-  #Head_of_HH$Year = Mig_Proj_Pop$year
   Head_of_HH$Population_Female <- Mig_Proj_Pop$Female
   Head_of_HH$Population_Male <- Mig_Proj_Pop$Male
 

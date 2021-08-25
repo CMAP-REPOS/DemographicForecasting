@@ -61,6 +61,8 @@ GQ_Ratios <- GQratios
 
 Headship_Rates <- full_join(Base_Year, GQ_Ratios, by=c("Sex", "Age", "Region")) %>%
   mutate(GQ_Estimates = round(Population*GQratio,0)) %>%
+  left_join(GQ_Military_Pop, by=c("Region", "Age", "Sex")) %>%
+  mutate(GQ_Estimates = (GQ_Estimates+GQpop)) %>% select(-GQpop) %>%
   mutate(HH_Pop = Population-GQ_Estimates)
 
 # Pull in 2019 PUMS headship rate calculations

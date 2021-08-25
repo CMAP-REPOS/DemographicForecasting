@@ -4,12 +4,13 @@ library(tidyverse)
 library(tidycensus)
 library(readxl)
 
+# This code calculates adjusted headship rates to use for head of household
+# projections 2025-2060
+
+
 # Parameters ---------------------------------------------------------
 
-#tables <- load_variables(2019, "acs1", cache = TRUE)
-
-#load("Output/Mig_Proj_FINAL.Rdata") #Mig_Proj_FINAL
-load("Output/Migration_Projections.Rdata") #temp
+load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/PopData.Rdata")
 load("Output/GQData.Rdata") #GQratios
 load("Output/PUMS_HeadshipRates.Rdata") #HEADSHIP_RATES
@@ -63,8 +64,7 @@ Headship_Rates <- full_join(Base_Year, GQ_Ratios, by=c("Sex", "Age", "Region")) 
   mutate(HH_Pop = Population-GQ_Estimates)
 
 # Pull in 2019 PUMS headship rate calculations
-# UNDO FILTER !!!
-Headship_Rates <- Headship_Rates %>% right_join(HEADSHIP_RATES, by=c("Age", "Region")) %>% filter(Region == 'CMAP Region')
+Headship_Rates <- Headship_Rates %>% right_join(HEADSHIP_RATES, by=c("Age", "Region"))
 
 #only need for base year
 Headship_Rates <- Headship_Rates %>% group_by(Age, Region) %>% pivot_wider(names_from = "Sex", values_from=c("Population", "GQratio", "GQ_Estimates", "HH_Pop", "HeadshipRate")) %>%

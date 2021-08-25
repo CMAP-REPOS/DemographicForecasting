@@ -4,9 +4,9 @@ baseyr2 <- 2019
 startyr2 <- 2019
 endyear <- 2050
 
-projnums <- 6
+projnums <- 7
 
-series <- c(2019, 2025, 2030, 2035, 2040, 2045, 2050) #code to use when 2020 PEP available
+series <- c(2019, 2025, 2030, 2035, 2040, 2045, 2050, 2060) #code to use when 2020 PEP available
 
 HH_PROJ <- list()
 for(years in series){
@@ -20,13 +20,13 @@ while(i <= projnums){
   projstart <- series[i]
   projend <- series[i+1]
   projyears <- seq(from=projstart,
-                   to=projend - 1)
+                   to=projend-1)
 
   print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "))
 
   source("src/Household_Totals.R")
 
-  HH_PROJ[[as.character(projend)]] <- Head_of_HH
+  HH_PROJ[[as.character(projstart)]] <- Head_of_HH
 
   save(HH_PROJ, file="Output/HH_Proj.Rdata")
 
@@ -39,12 +39,12 @@ i=1
 for(item in HH_PROJ){
   print(item)
   temp2 <- item
-  temp2$year <- names(HH_PROJ)[i]
+  temp2$Year <- names(HH_PROJ)[i]
   export2 <- bind_rows(export2, temp2)
   i <- i + 1
 }
 
-export2 <- export2 %>% select(-Year) %>% rename(Year = year)
+#export2 <- export2 %>% select(-Year) %>% rename(Year = year)
 
 View(export2)
 

@@ -3,7 +3,7 @@
 library(tidyverse)
 library(tidycensus)
 
-load("Output/PumaRegions.Rdata") #"puma_region" - key for identifying CMAP region PUMAs
+load("Output/PumaRegions.Rdata") #"puma_region" - key for identifying CMAP region PUMAs. Created in Age_0_4_PUMS_Breakdown.R script
 
 # Get PUMS person-level age data ------------------------------------------
 

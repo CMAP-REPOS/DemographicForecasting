@@ -11,7 +11,7 @@ library(readxl)
 # Parameters ---------------------------------------------------------
 
 load("Output/Migration_Projections.Rdata") #Mig_Proj
-load("Output/PopData.Rdata")
+load("Output/PopData.Rdata") #POP
 load("Output/GQData.Rdata") #GQratios
 load("Output/PUMS_HeadshipRates.Rdata") #HEADSHIP_RATES
 

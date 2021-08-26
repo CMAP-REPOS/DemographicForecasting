@@ -65,11 +65,11 @@ source("src/MigrationProjections.R")
 #save the final population projection
 
 POPPROJ[[as.character(projend)]] <- Projections
-save(POPPROJ, file="Output/PopProj.Rdata")
+#save(POPPROJ, file="Output/PopProj.Rdata")
 
 #save the Net Migration rates
 NETMIGPROJ[[as.character(projend)]] <- Migration
-save(NETMIGPROJ, file="Output/NMProj.Rdata")
+#save(NETMIGPROJ, file="Output/NMProj.Rdata")
 
 
 #save the Components of Change (optional)

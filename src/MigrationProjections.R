@@ -43,7 +43,7 @@ if(startyr == baseyr){
   print(paste("USING", tNMfile, "TARGET MIGRATION VALUES"))
 
 #Load in population data
-  load("Output/PopProj.Rdata")
+  load("Output/PopProj.Rdata") #initial creation in projection_control for first cycle then updated each additional cycle
 
   baseyearpoptable <- POPPROJ[[startyr]]
   names(baseyearpoptable) <- c("Age","Region","Sex","baseyrpop")

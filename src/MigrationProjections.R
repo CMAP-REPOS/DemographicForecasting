@@ -139,6 +139,8 @@ expectedpop <- expectedpop %>%
                                   TRUE ~ ProjectedPop.x), .keep = "unused")
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
+NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
 NMperiods <- tail(NMperiods, 2)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" "))

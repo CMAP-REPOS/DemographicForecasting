@@ -1,38 +1,43 @@
 #Employment data
 
-#this script reads in the baseline employment data from the consultant report and formats it for graphing
+#this script reads in the baseline employment data from the consultant report and formats it for easy ggplot graphing
 
+########### Preparation
+
+# load libraries
 library(dplyr)
 library(tidyverse)
 library(readxl)
 
+#define necessary variables
 localindustries <- c("44-45", "71", "72", "81") #local industries that do not drive in-migration (Berger assumption)
+multijob_adjustment <- 1.049 #Berger's assumption (from https://fred.stlouisfed.org/series/LNS12026620 data) to address workers that hold multiple jobs
 
-#read in detailed employment forecast data
+#read in detailed baseline employment forecast data and create definition of "Local" and "Non-Local" industries according to NAICS codes in line 11
 baseline <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/employment_report/Scenario_Detailed_Forecasts_2021-08-05/baseline_detailed.xlsx",
                        na = "0.0") %>%
   mutate(locsplit = case_when(industry_code %in% localindustries ~ "local",
                               TRUE ~ "non-local"))
 
-#borrow the fips-to-county-and-region key from the PEP2020 input data and join to baseline
+#borrow the fips-to-county-and-region PEP2020 input data to serve as a key, join it to baseline
 pepdata <- read_excel("Input/PEP2020.xlsx") %>%
   select(1:3, 8) %>%
   unique() %>%
   mutate(GEOID = as.character(GEOID))
 
+########### Creating the summary tables for each forecast by Region and by Local/Non-Local industries
+
+#Baseline summed employment data:
 baseline <- baseline %>%
   left_join(pepdata, by = c("area_fips" = "GEOID"))
-
-#copied out OLD baseline here
-#oldbaseline <- baseline (OPE)
 
 baseline_all <- baseline %>% #total number of jobs by region and year
   pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
   group_by(Region, Year) %>%
   summarize(total_jobs = sum(Employment)) %>%
   mutate(Year = str_sub(Year, 5,8)) %>%
-  mutate(total_jobs = total_jobs * 1.049) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
-  mutate(type = "all_job_industries", forecast = "baseline") %>%
+  mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
+  mutate(type = "all_job_industries", forecast = "baseline")
 
 baseline_noloc <- baseline %>% #total number of jobs by region and year NOT INCLUDING the local employment NAICS codes
   pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
@@ -40,28 +45,56 @@ baseline_noloc <- baseline %>% #total number of jobs by region and year NOT INCL
   group_by(Region, Year) %>%
   summarize(total_jobs = sum(Employment)) %>%
   mutate(Year = str_sub(Year, 5,8)) %>%
-  mutate(total_jobs = total_jobs * 1.049) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
+  mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
   mutate(type = "jobs_minus_local_industries", forecast = "baseline")
 
-#let's combine the two and plot to see what it looks like
 
-p <- bind_rows(baseline_all, baseline_noloc) %>% ggplot(aes(x=Year, y = total_jobs, color = type, group = type)) + geom_point() + geom_line() + facet_wrap(~Region, scales = "free") + ggtitle("Number of Jobs, 2010-2050 \n baseline forecast")
-p
+#Upside summed employment data:
+upside <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/employment_report/Scenario_Detailed_Forecasts_2021-08-05/upside_detailed.xlsx",
+                       na = "0.0") %>%
+  mutate(locsplit = case_when(industry_code %in% localindustries ~ "local",
+                              TRUE ~ "non-local"))
+upside <- upside %>%
+  left_join(pepdata, by = c("area_fips" = "GEOID"))
 
+upside_all <- upside %>% #total number of jobs by region and year
+  pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
+  group_by(Region, Year) %>%
+  summarize(total_jobs = sum(Employment)) %>%
+  mutate(Year = str_sub(Year, 5,8)) %>%
+  mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
+  mutate(type = "all_job_industries", forecast = "upside")
 
-#let's try to join it with the workers data, and then graph it
-workersandjobs <- left_join(workers, baseline2, by=c("Region", "year" = "Year")) %>%
-  select(-workers, -totemp) %>%
-  pivot_longer(cols = c(3:4), names_to = "type", values_to = "num")
+upside_noloc <- upside %>% #total number of jobs by region and year NOT INCLUDING the local employment NAICS codes
+  pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
+  filter(locsplit == "non-local") %>%
+  group_by(Region, Year) %>%
+  summarize(total_jobs = sum(Employment)) %>%
+  mutate(Year = str_sub(Year, 5,8)) %>%
+  mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
+  mutate(type = "jobs_minus_local_industries", forecast = "upside")
 
+#Slowgrowth summed employment data:
+slowgrowth <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/employment_report/Scenario_Detailed_Forecasts_2021-08-05/slowgrowth_detailed.xlsx",
+                     na = "0.0") %>%
+  mutate(locsplit = case_when(industry_code %in% localindustries ~ "local",
+                              TRUE ~ "non-local"))
+slowgrowth <- slowgrowth %>%
+  left_join(pepdata, by = c("area_fips" = "GEOID"))
 
-q <- workersandjobs %>% ggplot(aes(x=year, y=num, color = type, group = type)) + geom_point() + geom_line() +  facet_wrap(~Region, scales = "free") + ggtitle("Jobs and Workers, 2010-2050 \n Local industries INcluded")
-q
+slowgrowth_all <- slowgrowth %>% #total number of jobs by region and year
+  pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
+  group_by(Region, Year) %>%
+  summarize(total_jobs = sum(Employment)) %>%
+  mutate(Year = str_sub(Year, 5,8)) %>%
+  mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
+  mutate(type = "all_job_industries", forecast = "slow_growth")
 
-
-
-export3 <- export %>%
-  pivot_wider(names_from = year, values_from = ProjectedPop_final)
-write.csv(export3, file = "C:/Users/amcadams/Documents/R/projections_wide.csv")
-
-write.csv(target_NM, file = "C:/Users/amcadams/Documents/R/targetNMs.csv")
+slowgrowth_noloc <- slowgrowth %>% #total number of jobs by region and year NOT INCLUDING the local employment NAICS codes
+  pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
+  filter(locsplit == "non-local") %>%
+  group_by(Region, Year) %>%
+  summarize(total_jobs = sum(Employment)) %>%
+  mutate(Year = str_sub(Year, 5,8)) %>%
+  mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
+  mutate(type = "jobs_minus_local_industries", forecast = "slow_growth")

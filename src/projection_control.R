@@ -1,11 +1,15 @@
 # CMAP | Alexis McAdams, Mary Weber | 8/11/2021
 
 
-         ###########  Projections control file  ###############
-#The idea: run a loop to cycle through the MigrationProjections script over
+         ###########  Projections control file info  ###############
+#The concept: run a loop to cycle through the MigrationProjections script over
 #and over to get population projections in 5 year increments up to 2050.
-#Projection period output will be exported at end of each loop,
-#and certain pieces will be used as input for the next cycle.
+#For each projection period, the Population projection and Net Migration
+#are saved in lists (POPPROJ and NETMIGPROJ, respectively) and are used as
+#input for the subsequent projection period.
+#When the loop is complete, the POPPROJ list is reformatted into a table
+#called "Mig_Proj".
+
 
 
 ########set overarching variables
@@ -21,6 +25,14 @@ series <- seq(from=startyear,
               by= 5)
 series
 
+#set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
+target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
+  mutate(Year = as.character(Year))
+#name which net migration values you're using (important for documentation!)
+tNMfile <- "flat_average"
+
+
+
 ########set up where the projection files will go
 #create new file
 POPPROJ <- list()
@@ -35,8 +47,7 @@ for(years in series){
 #import in NetMigration periods
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 
-
-#input baseyear into POPPROJ - can omit if confusing
+#input baseyear into POPPROJ - can omit if confusing (come back to this Alexis)
 load("Output/PopData.Rdata")
 
 POPPROJ[[as.character(baseyear)]] <- POP[[as.character(baseyear)]] %>%

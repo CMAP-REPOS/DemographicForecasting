@@ -103,7 +103,7 @@ for(item in POPPROJ){
 Mig_Proj <- export %>% filter(year != 2020)
 
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")
-write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
+#write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
 
 exporttemp <- tibble()
 i=1
@@ -115,29 +115,4 @@ for(item in POP){
   i <- i + 1
 }
 
-### Generate some graphs!
-source("src/workforce.R")
-#source("src/employment.R")
-
-
-
-
-
-###### scratchpad
-
-exporttemp2 <- exporttemp %>%
-  select(-GEOID, -County, -State, -Year) %>%
-  group_by(Region, Age, Sex, year) %>%
-    summarize(totpop = sum(Population))
-
-export <- export %>% select(-baseyrpop)
-export_totals <- export %>% group_by(Region, Sex, year) %>% summarize(total_population = sum(ProjectedPop_final))
-p <- export_totals %>% ggplot(aes(x=year, y=total_population, color=Sex, group = Sex)) + geom_point() + geom_line() + facet_wrap(~Region, scales="free") + ggtitle("Total Population, 2025-2050")
-p
-
-export_allpop <- bind_rows(rename(export, population = ProjectedPop_final), rename(exporttemp2, population = totpop))
-export_allpop$year <- as.integer(export_allpop$year)
-
-
-write.csv(export_allpop, file = "C:/Users/amcadams/Documents/R/projections_exportallpops_23AUG.csv")
 

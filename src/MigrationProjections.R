@@ -10,17 +10,6 @@ library(readxl)
 load("Output/Mort_Proj.Rdata")    #named Mort_Proj
 load("Output/ASFR.Rdata")         #named ASFR_projections
 load("Output/BirthRatios.Rdata")  #named bRatios
-<<<<<<< Updated upstream
-#load("Output/targetNM.Rdata")     #named target_NM
-target_NM <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Desktop/NetMigrationflataverages.xlsx") %>%
-  mutate(Year = as.character(Year))
-=======
-load("Output/targetNM.Rdata")     #named target_NM
-
-target_NM <- target_NM
-#target_NM <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Desktop/NetMigration_CMAP_workersjobsbalance.xlsx") %>%
-#  mutate(Year = as.character(Year))
->>>>>>> Stashed changes
 
 #load in variables from projection_control
 baseyr = as.character(baseyear)    #"2020"
@@ -33,6 +22,7 @@ lastyear = as.character(max(cycleyears))
 
 if(startyr == baseyr){
   print(paste("GENERATING", baseyr, "PROJECTION"))
+  print(paste("USING", tNMfile, "TARGET MIGRATION VALUES"))
 
 #Load in and reformat population data
   load("Output/PopData.Rdata")  # named POP
@@ -50,6 +40,7 @@ if(startyr == baseyr){
 
 }else{
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))
+  print(paste("USING", tNMfile, "TARGET MIGRATION VALUES"))
 
 #Load in population data
   load("Output/PopProj.Rdata")

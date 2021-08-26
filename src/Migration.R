@@ -9,9 +9,9 @@ source("src/Mortality.R")
 
 # Parameters ---------------------------------------------------------
 
-load("Output/PopData.Rdata")
-load("Output/ASFR.Rdata")
-load("Output/LifeTables.Rdata")
+load("Output/PopData.Rdata") #POP
+load("Output/ASFR.Rdata") #ASFR_projections
+load("Output/LifeTables.Rdata") #LifeTable
 
 MIG_YEARS <- c(2013:2014, 2018:2019)
 

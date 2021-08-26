@@ -59,8 +59,7 @@ LT_Age <- tibble(Age = unique(Deaths_Abg$Age)) %>%
   add_column(Ax = c(0.34,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
 
 
-# Join pop to abridged deaths data
-
+# Join pop to abridged deaths data (just combines 0-1 and 1-4)
 MORT_DATA2 <- MORT_POP %>%
   full_join(Deaths_Abg, by=c('GEOID', 'Age', 'Sex', 'Year', 'Region')) %>%
   group_by(Age, Sex, Region) %>%
@@ -68,6 +67,7 @@ MORT_DATA2 <- MORT_POP %>%
             Mortality = sum(Mortality),
             .groups = "drop")
 
+#Join population and deaths to abridged life table
 LT_Abg <- MORT_DATA2 %>%
   left_join(LT_Age, by="Age") %>%
   select(Region, Sex, Age, Mortality, Population, x, Ax) %>%
@@ -95,11 +95,11 @@ LT_Abg <- MORT_DATA2 %>%
 
 # Base Period Migration Rates Table ---------------------------------------------------------
 
-
+#Pull in 2014 0-4 births
 Base_Mig <- MIG_POP %>% filter(Year == '2014') %>% select(Region, Age, Sex, Year) %>%
   left_join(Births, by=c("Age", "Region", "Sex")) %>% arrange(Region, desc(Sex))
 
-# Pull in 2014 population counts
+# Pull in rest of 2014 population counts
 Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')) %>%
                          mutate(Births = case_when(Age != c('0 to 4 years', '85 years and over') ~ lag(Pop_Avg),
                                                    Age == '85 years and over' ~ Pop_Avg+lag(Pop_Avg),

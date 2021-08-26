@@ -21,10 +21,3 @@ NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)
 # Calculate target Net Migrants for each region
 target_NM <- NetMig %>% filter(Age == 'Total' & Sex == 'Both') %>% select(-Period) %>%
   group_by(Region) %>% summarise(NetMigration = round (mean(NetMigration),-3)) #round to nearest thousand
-
-# Import CMAP Net Migration numbers
-target_NM <- read_excel("Input/NetMigration_CMAP.xlsx") %>%
-  mutate(Year = as.character(Year))
-
-# Export target Net Migrant values
-save(target_NM, file = "Output/targetNM.Rdata")

@@ -141,7 +141,6 @@ expectedpop <- expectedpop %>%
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
-
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
 NMperiods <- tail(NMperiods, 2)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" "))
@@ -265,27 +264,27 @@ Projections <- Projections %>% mutate(projNetMigrants = (NMs_Living_Abs/sum_NM_A
 
 #calculate Total Migration by Sex and +/-55, add to NetMig table
 
-tempNetMig1 <- Projections %>%
-  group_by(Region,Sex) %>%
-  summarise(NetMigration = round(sum(projNetMigrants),0)) %>%
-  mutate(agegrp = "Total")
+#tempNetMig1 <- Projections %>%
+#  group_by(Region,Sex) %>%
+#  summarise(NetMigration = round(sum(projNetMigrants),0)) %>%
+#  mutate(agegrp = "Total")
 
-tempNetMig2 <- tempNetMig1 %>%
-  group_by(Region) %>%
-  summarise(NetMigration = sum(NetMigration)) %>%
-  mutate(Sex = "Both", agegrp = "Total")
+#tempNetMig2 <- tempNetMig1 %>%
+#  group_by(Region) %>%
+#  summarise(NetMigration = sum(NetMigration)) %>%
+#  mutate(Sex = "Both", agegrp = "Total")
 
-totNM <- Projections %>%
-  filter(Age %in% over55) %>%
-  mutate(agegrp = "55+") %>%
-  group_by(Region,Sex,agegrp) %>%
-  summarise(NetMigration = round(sum(projNetMigrants),0)) %>%
-  bind_rows(tempNetMig1) %>%
-  bind_rows(tempNetMig2) %>%
-  rename(Age = agegrp) %>%
-  mutate(Period = paste(cycleyears[1], cycleyears[5]+1, sep="-"))
+#totNM <- Projections %>%
+#  filter(Age %in% over55) %>%
+#  mutate(agegrp = "55+") %>%
+#  group_by(Region,Sex,agegrp) %>%
+#  summarise(NetMigration = round(sum(projNetMigrants),0)) %>%
+#  bind_rows(tempNetMig1) %>%
+#  bind_rows(tempNetMig2) %>%
+#  rename(Age = agegrp) %>%
+#  mutate(Period = paste(cycleyears[1], cycleyears[5]+1, sep="-"))
 
-NetMig <- NetMig %>% bind_rows(totNM)
+#NetMig <- NetMig %>% bind_rows(totNM)
 
 
 

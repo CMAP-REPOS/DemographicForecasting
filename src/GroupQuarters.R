@@ -88,11 +88,13 @@ GQ_Military <- GQ %>%
 GQratios <- GQ_Non_Military %>%
   filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
   group_by(Region, Age, Sex) %>%
-  summarize(GQpop = sum(Value)) %>%
+  summarize(GQpop = sum(Value), .groups = "keep") %>%
+  ungroup() %>%
   mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
                          TRUE ~ Age))
 
 #import 2010 pop, join to GQratios
+load("Output/PopData.Rdata")  # named POP
 pop2010 <- POP[["2010"]] %>%
   group_by(Region, Age, Sex) %>%
   summarize(nonGQpop = sum(Population))
@@ -104,5 +106,5 @@ GQratios <- GQratios %>%
   select(-GQpop, -nonGQpop) %>%
   na.omit()
 
-#save(GQ, GQ_Military, GQ_Non_Military, GQratios, file="Output/GQData.Rdata")
+save(GQ, GQ_Military, GQ_Non_Military, GQratios, file="Output/GQData.Rdata")
 

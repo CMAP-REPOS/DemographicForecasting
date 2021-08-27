@@ -121,6 +121,15 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
   pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "ProjectedPop") %>% mutate(Age = "0 to 4 years")
 
+earlyDeaths <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "Sex", values_to = "Births") %>%
+  group_by(Region, Sex) %>%
+  summarize(totbirths = sum(Births)) %>%
+  mutate(Sex = case_when(Sex == "fBirths" ~ "Female",
+                         TRUE ~ "Male")) %>%
+  left_join(projectedBirths_0to4surviving, by=c("Region","Sex")) %>%
+  mutate(earlyDeaths = round(totbirths - ProjectedPop ,0)) %>%
+  select(Region, Sex, Age, earlyDeaths)
+
 
 # Step 4: apply Survival Rates and calculate Expected 2025 population
 
@@ -138,6 +147,12 @@ expectedpop <- expectedpop %>%
   left_join(projectedBirths_0to4surviving, by = c("Region","Sex","Age")) %>%
   mutate(ProjectedPop = case_when(is.na(ProjectedPop.x) ~ ProjectedPop.y,
                                   TRUE ~ ProjectedPop.x), .keep = "unused")
+
+olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>%
+  mutate(deaths = case_when(Age == "0 to 4 years" ~ 0.0,
+                            Age == "85 years and over" ~ (baseyrpop + lag(baseyrpop)) - ProjectedPop,
+                            TRUE ~ deaths)) %>%
+  select(Age,Region,Sex,deaths)
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
@@ -296,7 +311,34 @@ Migration <- Migration
 
 
 
-# Step 9: Assemble Components of Change to check work (Optional)
+# Step 9: Assemble Components of Change for each Region (Optional)
+
+#Births (by Sex)
+projectedBirths_reformat <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "Sex", values_to = "Births") %>%
+  group_by(Region, Sex) %>%
+  summarize(totbirths = round(sum(Births),0)) %>%
+  mutate(Sex = case_when(Sex == "fBirths" ~ "Female",
+                         TRUE ~ "Male"))
+
+#Deaths (by Sex, by age)
+projectedDeaths <- left_join(olderDeaths, earlyDeaths, by=c("Region", "Sex", "Age")) %>%
+  mutate(Deaths = round(case_when(deaths == 0.0 ~ earlyDeaths,
+                            TRUE ~ deaths),0), .keep = "unused")
+
+
+
+
+#Natural Increase (Births - Deaths) (tot)
+
+#Total Change (Projected Pop - Base year Pop) (by sex and age)
+
+#Total Migrants
+
+#Net Migration (Total Change - Natural Increase) (by sex and age)
+
+
+
+
 
 #Births_2020 <- projectedBirths_bySex %>% select(-Year) %>% group_by(Region) %>%
 #mutate(fBirths = sum(fBirths), mBirths = sum(mBirths)) %>% distinct()

@@ -9,8 +9,14 @@
 #When the loop is complete, the POPPROJ list is reformatted into a table
 #called "Mig_Proj".
 
+########load libraries
+library(dplyr)
+library(tidyverse)
+library(readxl)
+library(ggplot2)
 
-########set overarching variables
+
+########set total projection control variables
 baseyear <- 2020
 startyear <- 2020
 endyear <- 2050
@@ -24,10 +30,14 @@ series <- seq(from=startyear,
 series
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
+<<<<<<< HEAD
 target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
+=======
+target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
+>>>>>>> bbdd68bf863bf7c4939dbbdd18a712c46a485d38
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <- "zeronetmig"
+tNMfile <- "workerjobmatch_attempt5"
 
 
 ######## set up the population projection and migration projection lists
@@ -39,6 +49,11 @@ for(years in series){
 NETMIGPROJ <- list()
 for(years in series){
   NETMIGPROJ[[as.character(years)]] <- tibble()
+}
+
+COMPONENTS <- list()
+for(years in series){
+  COMPONENTS[[as.character(years)]] <- tibble()
 }
 
 #import in Base Net Migration data (includes allocation by Sex and by +/- 55 years old for first 2 allocation periods)

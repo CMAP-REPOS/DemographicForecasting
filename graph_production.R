@@ -17,23 +17,23 @@ source("src/workforce.R") # for Worker calculation graphs, is built off of Proje
 
 #Graph of the baseline jobs (all and non-local) from employment.R
 
-p <- bind_rows(baseline_all, baseline_noloc) %>%
+n <- bind_rows(baseline_all, baseline_noloc) %>%
   ggplot(aes(x=Year, y = total_jobs, color = type, group = type)) +
   geom_point() + geom_line() + facet_wrap(~Region, scales = "free") +
   ggtitle("Number of Jobs, 2010-2050 \n Baseline Forecast") +
   theme(legend.position = "bottom")
-p
+n
 
 #graph of all 3 of the job forecasts (all and non-local) from employment.R
 alljobforecasts <- bind_rows(upside_all, upside_noloc, baseline_all, baseline_noloc, slowgrowth_all, slowgrowth_noloc) %>%
   ungroup() %>% mutate(Year = as.numeric(Year))
-q <- alljobforecasts %>% ungroup() %>%
+o <- alljobforecasts %>% ungroup() %>%
   mutate(category = paste(forecast,type,sep="_")) %>%
   ggplot(aes(x=Year, y=total_jobs, group = category, color=forecast, shape = type)) +
   geom_point() + geom_line() + facet_wrap(~Region, scales = "free") +
   ggtitle("Number of Jobs, 2010-2050 \n   All Forecasts (upside, baseline, and slow growth) \n    and All Jobs and Non-Local Industry Jobs") +
   theme(legend.position = "bottom")
-q
+o
 
 
 ######## GRAPHS OF POPULATION FORECASTS
@@ -62,22 +62,12 @@ q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape
 q
 
 
-
-export_allpop <- bind_rows(rename(export, population = ProjectedPop_final), rename(exporttemp2, population = totpop))
-export_allpop$year <- as.integer(export_allpop$year)
-
-
-write.csv(export_allpop, file = "C:/Users/amcadams/Documents/R/projections_exportallpops_23AUG.csv")
-
-
-
-
 ######## GRAPHS OF WORKERS AND JOBS
 
 #plot the number of workers
-p <- workers %>% ggplot(aes(x=Year, y=workers, group = Region, shape = type)) + geom_point() + geom_line() +
-  facet_wrap(~Region, scales="free") + ggtitle("Number of Workers, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
-p
+#p <- workers %>% ggplot(aes(x=Year, y=workers, group = Region, shape = type)) + geom_point() + geom_line() +
+#  facet_wrap(~Region, scales="free") + ggtitle("Number of Workers, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
+#p
 
 #plot the number of workers WITH the jobs forecasts
 tempworkers <- workers %>%

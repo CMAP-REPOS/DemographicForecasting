@@ -15,6 +15,7 @@ unemp <- read.csv("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for 
   mutate(Year = as.character(Year))
 
 #load in and format known population data (2010-2020)
+load("Output/PopData.Rdata") #POP
 POPrecent <- list()
 POPrecent[["2010"]] <- POP[["2010"]]
 POPrecent[["2015"]] <- POP[["2015"]]

@@ -9,8 +9,14 @@
 #When the loop is complete, the POPPROJ list is reformatted into a table
 #called "Mig_Proj".
 
+########load libraries
+library(dplyr)
+library(tidyverse)
+library(readxl)
+library(ggplot2)
 
-########set overarching variables
+
+########set total projection control variables
 baseyear <- 2020
 startyear <- 2020
 endyear <- 2050

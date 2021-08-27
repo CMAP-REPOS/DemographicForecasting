@@ -22,12 +22,13 @@ POPrecent[["2020"]] <- POP[["2020"]]
 for(i in names(POPrecent)){
   POPrecent[[i]] <- POPrecent[[i]] %>%
     group_by(Region, Sex, Age) %>%
-    summarize(Population = sum(Population))
+    summarize(Population = sum(Population)) %>%
+    ungroup()
 }
 
-#load in and format projected population data (2025-2050, calculated on 16 Aug 2021)
+#load in and format projected population data (2025-2050)
 POPPROJcopy <- POPPROJ
-POPPROJcopy[[1]] <- NULL  #remove the blank 2020 from POPPROJ (investigate that later)
+POPPROJcopy[['2020']] <- NULL  #remove the blank 2020 from POPPROJ (investigate that later)
 for(i in names(POPPROJcopy)){
   POPPROJcopy[[i]] <- POPPROJcopy[[i]] %>%
     rename(Population = ProjectedPop_final)
@@ -74,15 +75,13 @@ for(item in laborforce){
 
 #total up laborforce, join with unemployment rate, calculate number of workers
 workers <- workers %>%
-  #select(-starts_with("LFPR")) %>%
+  #select(-starts_with("LFPR")) %>% #filter out to select an employment forecast
   group_by(Region, year) %>%
   summarize(totlaborforce = sum(laborforce)) %>%
   left_join(unemp, by=c("year" = "Year")) %>%
-  mutate(workers = round(totlaborforce * (1 - (Unemployment.Rate / 100)),0)) %>%
+  mutate(workers = totlaborforce * (1 - (Unemployment.Rate / 100))) %>%
   select(-totlaborforce, -Unemployment.Rate) %>%
-  mutate(workers2 = workers * 1.00113) %>%
-  select(-workers)
-
-#let's plot to see what that looks like
-#p <- workers %>% ggplot(aes(x=year, y=workers2, group = Region)) + geom_point() + geom_line() + facet_wrap(~Region, scales="free") + ggtitle("Number of Workers, 2010-2050")
-#p
+  mutate(workers = round(workers * 1.00113,0)) %>% #constant to account for jobs held by people commuting from out of region (Berger's #)
+  mutate(Year = as.numeric(year)) %>% select(-year) %>%
+  mutate(type = case_when(Year < 2021 ~ "PEPestimate",
+                          TRUE ~ "Projection"))

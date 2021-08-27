@@ -106,5 +106,5 @@ GQratios <- GQratios %>%
   select(-GQpop, -nonGQpop) %>%
   na.omit()
 
-save(GQ, GQ_Military, GQ_Non_Military, GQratios, file="Output/GQData.Rdata")
+#save(GQ, GQ_Military, GQ_Non_Military, GQratios, file="Output/GQData.Rdata")
 

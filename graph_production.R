@@ -25,7 +25,8 @@ p <- bind_rows(baseline_all, baseline_noloc) %>%
 p
 
 #graph of all 3 of the job forecasts (all and non-local) from employment.R
-alljobforecasts <- bind_rows(upside_all, upside_noloc, baseline_all, baseline_noloc, slowgrowth_all, slowgrowth_noloc)
+alljobforecasts <- bind_rows(upside_all, upside_noloc, baseline_all, baseline_noloc, slowgrowth_all, slowgrowth_noloc) %>%
+  ungroup() %>% mutate(Year = as.numeric(Year))
 q <- alljobforecasts %>% ungroup() %>%
   mutate(category = paste(forecast,type,sep="_")) %>%
   ggplot(aes(x=Year, y=total_jobs, group = category, color=forecast, shape = type)) +
@@ -40,7 +41,7 @@ q
 #~~~build graphs of total male and female population projections for each region and year
 pop_proj <- export
 pop_proj_totals <- pop_proj %>% group_by(Region, Sex, year) %>% summarize(total_population = sum(ProjectedPop_final))
-p <- export_totals %>% ggplot(aes(x=year, y=total_population, color=Sex, group = Sex)) + geom_point() + geom_line() +
+p <- pop_proj_totals %>% ggplot(aes(x=year, y=total_population, color=Sex, group = Sex)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Total Population, 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
 p
 
@@ -73,13 +74,6 @@ write.csv(export_allpop, file = "C:/Users/amcadams/Documents/R/projections_expor
 
 ######## GRAPHS OF WORKERS AND JOBS
 
-#join employment baseline forecast with workers data, and graph # IN PROGRESS
-workersandjobs <- left_join(workers, baseline2, by=c("Region", "year" = "Year")) %>%
-  select(-workers, -totemp) %>%
-  pivot_longer(cols = c(3:4), names_to = "type", values_to = "num")
-q <- workersandjobs %>% ggplot(aes(x=year, y=num, color = type, group = type)) + geom_point() + geom_line() +  facet_wrap(~Region, scales = "free") + ggtitle("Jobs and Workers, 2010-2050 \n Local industries INcluded")
-q
-
 #plot the number of workers
 p <- workers %>% ggplot(aes(x=Year, y=workers, group = Region, shape = type)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Number of Workers, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
@@ -90,8 +84,31 @@ tempworkers <- workers %>%
   rename(value = workers) %>%
   mutate(valuename = "workers")
 workersandjobs <- alljobforecasts %>%
-  #filter(forecast == "") %>%
+  filter(forecast == "baseline") %>% #choose which forecast you want to graph with the workers
   rename(value = total_jobs) %>%
-  mutate(valuename = "jobs")
+  mutate(valuename = "jobs") %>%
+  bind_rows(tempworkers)
+
+workersandjobs_graph <- workersandjobs %>%
+  mutate(forecast = case_when(is.na(forecast) ~ "workers",
+                              TRUE ~ forecast)) %>%
+  mutate(forecast = case_when(valuename == "jobs" ~ paste(forecast,type,sep="_"),
+                              TRUE ~ forecast))
+r <- workersandjobs_graph %>% ggplot(aes(x=Year, y= value, group = forecast, color = forecast)) +
+  geom_point() + geom_line() +
+  facet_wrap(~Region, scales="free") +
+  ggtitle("Projected Workers and Jobs, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(legend.position = "bottom")
+r
+
+#calculate the # difference and % difference between the # of workers and jobs, graph percent difference as bar chart
+workerjobdiff <- alljobforecasts %>%
+  filter(forecast == "baseline" | type == "all_job_industries") %>% #choose which forecast  and industries you want to
+  left_join(workers, by=c("Region", "Year")) %>%
+  mutate(diff = total_jobs - workers) %>%
+  mutate(percentdiff = (abs(diff)* 100 / ((total_jobs + workers) /2)))
+
+s <- workerjobdiff %>% ggplot(aes(x=Year, y=percentdiff, fill=type.y)) + geom_col() + facet_wrap(~Region, scales="free")
+s
 
 

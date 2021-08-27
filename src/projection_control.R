@@ -30,11 +30,8 @@ series <- seq(from=startyear,
 series
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
-<<<<<<< HEAD
-target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
-=======
+
 target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
->>>>>>> bbdd68bf863bf7c4939dbbdd18a712c46a485d38
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
 tNMfile <- "workerjobmatch_attempt5"

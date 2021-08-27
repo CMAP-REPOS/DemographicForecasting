@@ -116,3 +116,12 @@ s <- workerjobdiff %>% ggplot(aes(x=Year, y=percentdiff, fill=type.y)) + geom_co
 s
 
 
+############### GRAPHS OF COMPONENTS OF CHANGE
+summary_components <- components_all %>%
+  group_by(Region, year, componentType) %>% summarize(summaryvalue = sum(componentValue))
+t <- summary_components %>% ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
+  geom_point() + geom_line() +
+  facet_wrap( ~ Region, scales = "free") +
+  ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
+t
+

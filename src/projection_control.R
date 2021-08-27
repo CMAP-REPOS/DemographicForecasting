@@ -103,7 +103,7 @@ for(item in POPPROJ){
   export <- bind_rows(export, temp)
   i <- i + 1
 }
-Mig_Proj <- export %>%  # we should think about renaming this variable - it's not really a migration projection, it's a population projection with migration included
+Mig_Proj <- export %>% unique() %>% # we should think about renaming this variable - it's not really a migration projection, it's a population projection with migration included
   mutate(TNMtype = tNMfile) #add column that documents WHICH SET of target net migrant values were used for this projection
 
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")

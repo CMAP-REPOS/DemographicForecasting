@@ -199,11 +199,11 @@ NM_Change_Prior_over55 <- full_join(TM_55, NM_55Plus, by=c('Region', 'Sex')) %>%
 
 #Expected Populations of Current Period
 expectedpop_under55 <- expectedpop %>% filter(Age %in% under55) %>%
-                      group_by(Region, Sex) %>% mutate(ProjectedPop = sum(na.omit(ProjectedPop))) %>% select(-baseyrpop, -Mort) %>% distinct() %>%
+                      group_by(Region, Sex) %>% mutate(ProjectedPop = sum(na.omit(ProjectedPop))) %>% distinct() %>%
                       mutate(Age = 'Under 55')
 
 expectedpop_over55 <- expectedpop %>% filter(Age %in% over55) %>%
-                      group_by(Region, Sex, Age) %>% mutate(ProjectedPop = sum(ProjectedPop)) %>% select(-Age, -baseyrpop) %>% distinct() %>%
+                      group_by(Region, Sex) %>% mutate(ProjectedPop = sum(na.omit(ProjectedPop))) %>% distinct() %>%
                       mutate(Age = 'Over 55')
 
 #Change in Net Migration Rates (K) from Prior Period

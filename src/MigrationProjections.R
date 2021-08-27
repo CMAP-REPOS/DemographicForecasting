@@ -109,7 +109,7 @@ Mort_0to4 <- Mort_MidPoint %>%
 names(Mort_0to4) <- make.names(names(Mort_0to4))
 
 # Step 3 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
-endyearBirths <- projectedBirths_bySex$Year %>% str_subset(lastyear) %>% unique()
+endyearBirths <- projectedBirths_bySex$Year %>% str_subset(lastyear)
 
 projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   left_join(Mort_0to4, by="Region") %>%
@@ -126,7 +126,7 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
 
 expectedpop <- baseyearpoptable %>%
   arrange(Region, desc(Sex)) %>%
-  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex'))
+  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% unique()
 
 names(expectedpop) <- c("Age", "Region", "Sex", "baseyrpop", "Mort")
 
@@ -171,7 +171,7 @@ TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male
   mutate(SexProp = NetTotal2/Sum_NM) %>%
   mutate(TargetTM_55Plus = TargetTM*SexProp) %>%
   mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>%
-  ungroup() %>% select(-Period) %>% unique()
+  ungroup() %>% unique()
 
 
 TM_Sex <- TM_Sex %>% ungroup() %>% select(-Period) %>% unique() %>% select(Region, Sex, Age, TargetTM)

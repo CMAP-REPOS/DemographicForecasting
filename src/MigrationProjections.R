@@ -148,7 +148,7 @@ print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
 #filter out the correct Target Net Migrant numbers from the list and apply to the projection
-target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year)
+target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year) %>% rename(RegionNMT = NetMigration)
 
 
 
@@ -156,13 +156,11 @@ target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year)
 TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region, Period) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration)
 
-
 TM_Sex <- TM_Sex %>%
   group_by(Region, Sex) %>% mutate(Sum_NM = sum(NetTotal)) %>% group_by(Region, Period) %>%
   mutate(SexProp = Sum_NM / sum(Sum_NM)) %>%
-  full_join(target_NMlocal, by='Region') %>% mutate(TargetTM = SexProp*NetMigration)
-
-
+  full_join(target_NMlocal, by='Region') %>% mutate(TargetTM = SexProp*RegionNMT) %>%
+  select(-RegionNMT) %>% rename(Agegrp = Age)
 
 #Target TM <55 / 55+ by sex
 TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male', 'Female')) %>%
@@ -173,8 +171,9 @@ TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male
   mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>%
   ungroup() %>% unique()
 
+TM_Sex <- TM_Sex %>% ungroup() %>%
+  select(Region, Sex, Agegrp, TargetTM) %>% unique()
 
-TM_Sex <- TM_Sex %>% ungroup() %>% select(-Period) %>% unique() %>% select(Region, Sex, Age, TargetTM)
 
 #Net Migrants from prior5-year period
 
@@ -188,11 +187,11 @@ NM_Under55 <- NetMig %>% filter(Period == NMperiods[2], Age == 'Total', Sex %in%
   mutate(Age = 'Under 55')
 
 #Change in net migrants from prior 5-year period
-NM_Change_Prior_under55 <- full_join(TM_55, NM_Under55, by=c('Region', 'Sex')) %>%
-  mutate(NM_Change_U55 = TargetTM_U55 - NM_U55) %>% select(Period, Region, Sex, Age, NM_Change_U55)
+NM_Change_Prior_under55 <- inner_join(TM_55, NM_Under55, by=c('Region', 'Sex', 'Period')) %>%
+  mutate(NM_Change_U55 = TargetTM_U55 - NM_U55) %>% select(Period, Region, Sex, NM_Change_U55) %>% mutate(Age = "Under 55")
 
-NM_Change_Prior_over55 <- full_join(TM_55, NM_55Plus, by=c('Region', 'Sex')) %>%
-  mutate(NM_Change_U55 = TargetTM_55Plus - NM_O55) %>% select(Period, Region, Sex, Age, NM_Change_U55) %>%
+NM_Change_Prior_over55 <- inner_join(TM_55, NM_55Plus, by=c('Region', 'Sex','Period')) %>%
+  mutate(NM_Change_U55 = TargetTM_55Plus - NM_O55) %>% select(Period, Region, Sex, NM_Change_U55) %>%
   mutate(Age = 'Over 55')
 
 
@@ -253,7 +252,7 @@ Projections <- Migration %>% left_join(expectedpop, by=c("Region", "Age", "Sex")
 
 sum_NM <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM = sum(NMs_Living))
 sum_NM_Abs <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
-Target_TM_U55 <- TM_55 %>% select(-TargetTM_55Plus)
+Target_TM_U55 <- TM_55 %>% select(Region, Sex, TargetTM_U55) %>% unique()
 
 Projections <- Projections %>% left_join(sum_NM, by=c('Region', 'Sex')) %>% left_join(sum_NM_Abs, by=c("Region", "Sex")) %>%
   left_join(Target_TM_U55 , by=c('Region', 'Sex'))

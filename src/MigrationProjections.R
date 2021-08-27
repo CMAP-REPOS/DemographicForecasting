@@ -299,8 +299,6 @@ Migration <- Migration
 
 # Step 9: Assemble Components of Change to check work (Optional)
 
-
-
 #Births_2020 <- projectedBirths_bySex %>% select(-Year) %>% group_by(Region) %>%
 #mutate(fBirths = sum(fBirths), mBirths = sum(mBirths)) %>% distinct()
 

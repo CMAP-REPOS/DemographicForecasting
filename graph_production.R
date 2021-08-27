@@ -27,6 +27,7 @@ n
 #graph of all 3 of the job forecasts (all and non-local) from employment.R
 alljobforecasts <- bind_rows(upside_all, upside_noloc, baseline_all, baseline_noloc, slowgrowth_all, slowgrowth_noloc) %>%
   ungroup() %>% mutate(Year = as.numeric(Year))
+
 o <- alljobforecasts %>% ungroup() %>%
   mutate(category = paste(forecast,type,sep="_")) %>%
   ggplot(aes(x=Year, y=total_jobs, group = category, color=forecast, shape = type)) +
@@ -61,6 +62,19 @@ q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape
   theme(legend.position = "bottom")
 q
 
+#build population pyramid  ####**** STILL NEED TO FIX AGE GROUP SORT (factors!)
+pp <- export %>% filter(Region == "CMAP Region") %>%
+  #filter(year == 2025) %>%
+  ggplot(aes(x = Age, fill = Sex,
+             y = ifelse(test = Sex == "Male",
+                        yes = -ProjectedPop_final, no = ProjectedPop_final))) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = abs, limits = max(export$ProjectedPop_final) * c(-1,1)) +
+  coord_flip() +
+  facet_wrap(year ~ Region)
+pp
+
+
 
 ######## GRAPHS OF WORKERS AND JOBS
 
@@ -73,7 +87,7 @@ q
 tempworkers <- workers %>%
   rename(value = workers) %>%
   mutate(valuename = "workers")
-workersandjobs <- alljobforecasts %>%
+workersandjobs <- alljobforecasts %>% #need "alljobforecasts" from above!
   filter(forecast == "baseline") %>% #choose which forecast you want to graph with the workers
   rename(value = total_jobs) %>%
   mutate(valuename = "jobs") %>%

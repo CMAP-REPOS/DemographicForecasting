@@ -33,7 +33,7 @@ series
 target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <- "workerjobmatch_wildguess"
+tNMfile <- "workerjobmatch_attempt5"
 
 
 ######## set up the population projection and migration projection lists
@@ -45,6 +45,11 @@ for(years in series){
 NETMIGPROJ <- list()
 for(years in series){
   NETMIGPROJ[[as.character(years)]] <- tibble()
+}
+
+COMPONENTS <- list()
+for(years in series){
+  COMPONENTS[[as.character(years)]] <- tibble()
 }
 
 #import in Base Net Migration data (includes allocation by Sex and by +/- 55 years old for first 2 allocation periods)

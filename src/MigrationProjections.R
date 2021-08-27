@@ -322,22 +322,27 @@ projectedBirths_reformat <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), 
   mutate(Sex = case_when(Sex == "fBirths" ~ "Female",
                          TRUE ~ "Male"))
 #Total Migrants
-Migrants
+Migrants <- Migrants
 
-migrantDeaths <- left_join(Migrants, Mort_MidPoint, by=c("Region", "Sex", "Age"))
+migrantDeaths <- left_join(Migrants, Mort_MidPoint, by=c("Region", "Sex", "Age")) %>%
+  rename(Mort = starts_with("Mort")) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(Region, Sex, x) %>% select(-x) %>%
+  mutate(Mort = case_when(is.na(Mort) ~ lead(Mort),  #ballparking the 0-4 migrant survival rate - using 5 to 9 rate instead
+                          TRUE ~ Mort)) %>%
+  mutate(migdeaths = case_when(Age == "0 to 4 years" ~ round((projNetMigrants/((Mort+1)/2) - projNetMigrants),0),
+                                TRUE ~ round((projNetMigrants/((lag(Mort)+1)/2) - projNetMigrants),0)    )) %>%
+  select(Region, Age, Sex, migdeaths)
 
-#Deaths (by Sex, by age)
-projectedDeaths <- left_join(olderDeaths, earlyDeaths, by=c("Region", "Sex", "Age")) %>%
+#Resident Deaths (by Sex, by age, and including deaths of Net Migrants)
+projectedDeaths <- left_join(olderDeaths, earlyDeaths,by=c("Region", "Sex", "Age")) %>%
   mutate(Deaths = round(case_when(deaths == 0.0 ~ earlyDeaths,
-                            TRUE ~ deaths),0), .keep = "unused")
-
-
+                            TRUE ~ deaths),0), .keep = "unused") %>%
+  left_join(migrantDeaths, by=c("Region", "Sex", "Age")) %>%
+  mutate(Deaths = Deaths + migdeaths, .keep = "unused")
 
 #Natural Increase (Births - Deaths) (tot)
 
 #Total Change (Projected Pop - Base year Pop) (by sex and age)
-
-
 
 #Net Migration (Total Change - Natural Increase) (by sex and age)
 

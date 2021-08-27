@@ -24,7 +24,7 @@ series <- seq(from=startyear,
 series
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
-target_NM <- read_excel("target_netmigration/TNM_zeronetmigration.xlsx") %>%
+target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
 tNMfile <- "zeronetmig"

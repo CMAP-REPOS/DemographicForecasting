@@ -31,10 +31,10 @@ series
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
-target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
+target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <- "workerjobmatch_attempt5"
+tNMfile <-  "flataverages"
 
 
 ######## set up the population projection and migration projection lists
@@ -71,27 +71,30 @@ projyears <- seq(from=projstart,
 
 print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "))
 
-#run the migration code
+#run the projection code
 source("src/MigrationProjections.R")
 
-#save the final population projection
+#save the MigrationProjections.R outputs in list format
 
 POPPROJ[[as.character(projend)]] <- Projections
-save(POPPROJ, file="Output/PopProj.Rdata")
 
 #save the Net Migration rates
 NETMIGPROJ[[as.character(projend)]] <- Migration
-save(NETMIGPROJ, file="Output/NMProj.Rdata")
 
-
-#save the Components of Change (optional)
+#save the Components of Change
+COMPONENTS[[as.character(projend)]] <- Components
 
 #-------
   i <- i+1
 }
 
 
-######## Final Step: unlist the population projections, last bits of formatting
+######## Final Steps: unlist the population projections, last bits of formatting
+#upload the finished projection lists to GitHub
+save(POPPROJ, file="Output/PopProj.Rdata")
+save(NETMIGPROJ, file="Output/NMProj.Rdata")
+save(COMPONENTS, file="Output/ComponentsOfChange.Rdata")
+
 
 #export projections
 export <- tibble()
@@ -103,6 +106,16 @@ for(item in POPPROJ){
   export <- bind_rows(export, temp)
   i <- i + 1
 }
+
+components_all <- tibble()
+i=1
+for(item in COMPONENTS){
+  temp <- item
+  temp$year <- names(COMPONENTS)[i]
+  components_all <- bind_rows(components_all, temp)
+  i <- i + 1
+}
+
 Mig_Proj <- export %>% unique() %>% # we should think about renaming this variable - it's not really a migration projection, it's a population projection with migration included
   mutate(TNMtype = tNMfile) #add column that documents WHICH SET of target net migrant values were used for this projection
 

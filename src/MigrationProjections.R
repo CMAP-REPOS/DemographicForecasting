@@ -272,8 +272,10 @@ Target_TM_U55 <- TM_55 %>% select(Region, Sex, TargetTM_U55) %>% unique()
 Projections <- Projections %>% left_join(sum_NM, by=c('Region', 'Sex')) %>% left_join(sum_NM_Abs, by=c("Region", "Sex")) %>%
   left_join(Target_TM_U55 , by=c('Region', 'Sex'))
 
-Projections <- Projections %>% mutate(projNetMigrants = (NMs_Living_Abs/sum_NM_Abs)*(TargetTM_U55-sum_NM)+NMs_Living) %>%
+Projections <- Projections %>% mutate(projNetMigrants = round((NMs_Living_Abs/sum_NM_Abs)*(TargetTM_U55-sum_NM)+NMs_Living),0) %>%
   mutate(ProjectedPop_final = round(ProjectedPop + projNetMigrants,0))
+
+Migrants <- Projections %>% select(Region, Age, Sex, projNetMigrants)
 
 
 #calculate Total Migration by Sex and +/-55, add to NetMig table
@@ -319,6 +321,10 @@ projectedBirths_reformat <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), 
   summarize(totbirths = round(sum(Births),0)) %>%
   mutate(Sex = case_when(Sex == "fBirths" ~ "Female",
                          TRUE ~ "Male"))
+#Total Migrants
+Migrants
+
+migrantDeaths <- left_join(Migrants, Mort_MidPoint, by=c("Region", "Sex", "Age"))
 
 #Deaths (by Sex, by age)
 projectedDeaths <- left_join(olderDeaths, earlyDeaths, by=c("Region", "Sex", "Age")) %>%
@@ -327,12 +333,11 @@ projectedDeaths <- left_join(olderDeaths, earlyDeaths, by=c("Region", "Sex", "Ag
 
 
 
-
 #Natural Increase (Births - Deaths) (tot)
 
 #Total Change (Projected Pop - Base year Pop) (by sex and age)
 
-#Total Migrants
+
 
 #Net Migration (Total Change - Natural Increase) (by sex and age)
 

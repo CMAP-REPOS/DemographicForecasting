@@ -318,19 +318,23 @@ Migration <- Migration
 #Births (by Sex)
 projectedBirths_reformat <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "Sex", values_to = "Births") %>%
   group_by(Region, Sex) %>%
-  summarize(totbirths = round(sum(Births),0)) %>%
+  summarize(componentValue = round(sum(Births),0)) %>%
   mutate(Sex = case_when(Sex == "fBirths" ~ "Female",
-                         TRUE ~ "Male"))
+                         TRUE ~ "Male"),
+         Age = NA,
+         componentType = "Births")
+
 #Total Migrants
-Migrants <- Migrants
+Migrants <- Migrants %>%
+  rename(NetMigrants = projNetMigrants)
 
 migrantDeaths <- left_join(Migrants, Mort_MidPoint, by=c("Region", "Sex", "Age")) %>%
   rename(Mort = starts_with("Mort")) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(Region, Sex, x) %>% select(-x) %>%
   mutate(Mort = case_when(is.na(Mort) ~ lead(Mort),  #ballparking the 0-4 migrant survival rate - using 5 to 9 rate instead
                           TRUE ~ Mort)) %>%
-  mutate(migdeaths = case_when(Age == "0 to 4 years" ~ round((projNetMigrants/((Mort+1)/2) - projNetMigrants),0),
-                                TRUE ~ round((projNetMigrants/((lag(Mort)+1)/2) - projNetMigrants),0)    )) %>%
+  mutate(migdeaths = case_when(Age == "0 to 4 years" ~ round((NetMigrants/((Mort+1)/2) - NetMigrants),0),
+                                TRUE ~ round((NetMigrants/((lag(Mort)+1)/2) - NetMigrants),0)    )) %>%
   select(Region, Age, Sex, migdeaths)
 
 #Resident Deaths (by Sex, by age, and including deaths of Net Migrants)
@@ -340,40 +344,8 @@ projectedDeaths <- left_join(olderDeaths, earlyDeaths,by=c("Region", "Sex", "Age
   left_join(migrantDeaths, by=c("Region", "Sex", "Age")) %>%
   mutate(Deaths = Deaths + migdeaths, .keep = "unused")
 
-#Natural Increase (Births - Deaths) (tot)
-
-#Total Change (Projected Pop - Base year Pop) (by sex and age)
-
-#Net Migration (Total Change - Natural Increase) (by sex and age)
-
-
-
-
-
-#Births_2020 <- projectedBirths_bySex %>% select(-Year) %>% group_by(Region) %>%
-#mutate(fBirths = sum(fBirths), mBirths = sum(mBirths)) %>% distinct()
-
-
-#Births2020 <- tibble(Region = c("CMAP Region", "CMAP Region", "External IL", "External IL", "External WI", "External WI", "External WI", "External WI"),
-#                      Sex = c("Male", "Female", "Male", "Female", "Male", "Female", "Male", "Female"),
-#                      Births = c(263558, 252240, 24441, 22974, 23565, 19616, 14202, 13301))
-
-#Projections <- Projections %>% left_join(Births2020, by=c('Region','Sex'))%>%  arrange(Region, Sex) %>%
-#                    mutate(Deaths = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ round(lag(Pop2020) - Pop2025,0),
-#                                               Age == '85 years and over' ~ round((Pop2020 + lag(Pop2020))- Pop2025,0),
-#                                               Age == '0 to 4 years' ~ round(Births - Pop2025,0)))
-
-# OK to use the survival rate for ages 1-4 in first part of equation, rather than recalculating 0-4.
-#Mort_MidPoint <- Mort_MidPoint %>% mutate(Age = case_when(Age == '1 to 4 years' ~ '0 to 4 years',
-#                                                          TRUE ~ Age)) %>% rename(Mort_Calc = Mort2022.5)
-
-#Projections <- Projections %>% left_join(Mort_MidPoint, by=c("Sex", "Region", "Age"))
-
-#Projections <- Projections %>% mutate(Migrant_Deaths = round((net_migrants25/((Mort_Calc+1)/2)-net_migrants25),0)) %>%
-#                               mutate(Resident_Deaths = Deaths + Migrant_Deaths) %>%
-#                               select(-sum_NM, -sum_NM_Abs, -TargetTM_U55, -Births, -Mort_Calc)
-
-
-
-
+#put births, deaths and migration all together in long table in order to save it in COMPONENT list
+Components <- left_join(Migrants, projectedDeaths, by = c("Region", "Sex", "Age")) %>%
+  pivot_longer(cols = c(4:5), names_to = "componentType", values_to = "componentValue") %>%
+  bind_rows(projectedBirths_reformat)
 

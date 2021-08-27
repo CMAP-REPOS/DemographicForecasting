@@ -27,7 +27,7 @@ series
 target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <- "workerjobmatch_step1"
+tNMfile <- "workerjobmatch_wildguess"
 
 
 ######## set up the population projection and migration projection lists

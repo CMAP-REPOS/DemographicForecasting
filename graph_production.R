@@ -109,11 +109,11 @@ workersandjobs_graph <- workersandjobs %>%
                               TRUE ~ forecast)) %>%
   mutate(forecast = case_when(valuename == "jobs" ~ paste(forecast,type,sep="_"),
                               TRUE ~ forecast))
-r <- workersandjobs_graph %>% ggplot(aes(x=Year, y= value, group = forecast, color = forecast)) +
+r <- workersandjobs_graph %>%   filter(Region == "CMAP Region") %>%ggplot(aes(x=Year, y= value, group = forecast, color = forecast)) +
   geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") +
-  ggtitle("Projected Workers and Jobs, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
-  theme(legend.position = "bottom")
+  ggtitle("Projected Workers and Jobs, 2010-2050 (Baseline Economic Forecast)", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(legend.position = "bottom", legend.direction = "vertical") + ylab("Number of People") + labs(tag = "1", color = NULL)
 r
 
 #calculate the # difference and % difference between the # of workers and jobs, graph percent difference as bar chart
@@ -132,7 +132,7 @@ s
 #add up all of the components of change and graph them together (1 graph per region)
 summary_components <- components_all %>%
   group_by(Region, year, componentType) %>% summarize(summaryvalue = sum(componentValue))
-t <- summary_components %>% ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
+t <- summary_components %>%   filter(Region == "CMAP Region") %>% ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
   geom_point() + geom_line() +
   facet_wrap( ~ Region, scales = "free") +
   ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))

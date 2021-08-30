@@ -55,6 +55,7 @@ recentdata <- bind_rows(POP[['2010']], POP[['2015']], pop2020) %>%
 pop_proj <- export %>% rename(Population = ProjectedPop_final) %>% mutate(Year = as.numeric(year), type = "Projection") %>% select(-year)
 
 pop_recandproj <- bind_rows(recentdata, pop_proj) ###population, recent and projected
+pop_totals_check <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(totpop = sum(Population))
 
 pop_totals <- pop_recandproj %>% group_by(Region, Sex, Year, type) %>% summarize(totpop = sum(Population))
 q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape = type)) + geom_point() + geom_line() +

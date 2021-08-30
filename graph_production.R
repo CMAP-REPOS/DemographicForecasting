@@ -78,6 +78,16 @@ pp
 
 ######## GRAPHS OF WORKERS AND JOBS
 
+#plot the number of working-age people in the region
+workingage <- export %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  filter(x >= 20 & x < 65) %>% select(-x) %>% #filter for population aged 20-64
+  group_by(Region, year, Sex) %>%
+  summarize(workingage = sum(ProjectedPop_final)) %>%
+  ungroup()
+wk <- workingage %>% ggplot(aes(x=year, y=workingage)) + geom_col(aes(fill = Sex), width = 0.7) +
+  facet_wrap(~Region, scales = "free")
+wk
+
 #plot the number of workers
 #p <- workers %>% ggplot(aes(x=Year, y=workers, group = Region, shape = type)) + geom_point() + geom_line() +
 #  facet_wrap(~Region, scales="free") + ggtitle("Number of Workers, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
@@ -117,6 +127,7 @@ s
 
 
 ############### GRAPHS OF COMPONENTS OF CHANGE
+
 #add up all of the components of change and graph them together (1 graph per region)
 summary_components <- components_all %>%
   group_by(Region, year, componentType) %>% summarize(summaryvalue = sum(componentValue))
@@ -156,7 +167,7 @@ w <- deaths_graphs %>%
   ggtitle("Age Distribution of Projected Deaths", subtitle = paste("Target Net Migration values: ", tNMfile))
 w
 
-#combine population with components
+#combine population with components (Alexis' note: I forgot why I wanted to do this..)
 comp_pop <- export %>% rename(componentValue = ProjectedPop_final) %>%
   mutate(componentType = "PopulationProjection") %>%
   bind_rows(components_all)

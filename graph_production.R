@@ -151,7 +151,7 @@ u
 netmig_graphs <- components_all %>% filter(componentType == "NetMigrants") %>%
   mutate(category = paste(year, Sex, sep="_"))
 v <- netmig_graphs %>%
-  filter(Region == "External WI") %>% #filter to focus on one region
+  #filter(Region == "External WI") %>% #filter to focus on one region
   ggplot(aes(x=Age, y=componentValue, shape = Sex, color = year, group = category)) +
   geom_point() + geom_line() + facet_wrap(~ Region, scales = "free") +
   ggtitle("Age Distribution of Net Migration", subtitle = paste("Target Net Migration values: ", tNMfile))

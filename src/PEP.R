@@ -67,6 +67,6 @@ POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020.xlsx")
 
 POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
-#save(POP, file="Output/PopData.Rdata")
+save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")
 

@@ -81,7 +81,10 @@ GQ_Non_Military <- GQ %>%
   ))
 
 GQ_Military <- GQ %>%
-  filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE")
+  filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE") %>%
+  filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
+  mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
+                       TRUE ~ Age))
 
 
 #calculate ratio of GQ pop to total pop in 2010

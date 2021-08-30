@@ -15,7 +15,7 @@ load("Output/PopData.Rdata") #POP
 load("Output/GQData.Rdata") #GQratios
 load("Output/PUMS_HeadshipRates.Rdata") #HEADSHIP_RATES
 
-#lines 15-22 are duplicate from PEP code....should consolidate
+# Lines 15-22 are duplicate from PEP code....should consolidate
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 
 COUNTIES <- list(
@@ -26,14 +26,13 @@ COUNTIES <- list(
 )
 
 
-HH_Year = 2019
+HH_Year = 2019 #base year
 
 # Extract 2019 household totals estimates
 household_totals <- tibble()
 
 
 for (STATE in names(COUNTIES)) {
-  #use variables argument
   household_temp <- get_acs(geography = "county", table="B25002", year = HH_Year, county = COUNTIES[[STATE]], state = STATE, survey='acs1',
                             breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE, output='wide') %>%
     rename(Households = B25002_001E) %>%
@@ -59,24 +58,37 @@ Base_Year  <- Base_Year  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[
 # Load GQ ratios
 GQ_Ratios <- GQratios
 
+GQ_Military <- GQ_Military %>% group_by(Region, Sex,Age) %>% mutate(Value = sum(Value)) %>%
+  select(Value, Sex, Age, Region) %>% filter(!Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years')) %>% unique()
+
+# Join base year population data and gq ratios
 Headship_Rates <- full_join(Base_Year, GQ_Ratios, by=c("Sex", "Age", "Region")) %>%
-  mutate(GQ_Estimates = round(Population*GQratio,0)) %>%
-  left_join(GQ_Military_Pop, by=c("Region", "Age", "Sex")) %>%
-  mutate(GQ_Estimates = (GQ_Estimates+GQpop)) %>% select(-GQpop) %>%
-  mutate(HH_Pop = Population-GQ_Estimates)
+  filter(!Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years')) %>%
+  mutate(GQ_Estimates = round(Population*GQratio,0)) %>% # Estimate GQ population by multiplying population using 2010 GQ ratios (GQratio excludes Military)
+  left_join(GQ_Military, by=c("Region", "Sex", "Age")) %>% # carry forward military as a constant
+  select(Region, Age, Sex, Year, Population, GQratio, GQ_Estimates, Value) %>%
+  mutate(GQ_Estimates = (GQ_Estimates+Value)) %>% # Add in military as a constant
+  mutate(HH_Pop = Population-GQ_Estimates) %>%
+  rename(Military_Pop = Value)
+
 
 # Pull in 2019 PUMS headship rate calculations
-Headship_Rates <- Headship_Rates %>% right_join(HEADSHIP_RATES, by=c("Age", "Region"))
+Headship_Rates <- Headship_Rates %>% right_join(HEADSHIP_RATES, by=c("Age", "Region")) %>% unique() #HEADSHIP_RATES not available at Sex level
 
 #only need for base year
-Headship_Rates <- Headship_Rates %>% group_by(Age, Region) %>% pivot_wider(names_from = "Sex", values_from=c("Population", "GQratio", "GQ_Estimates", "HH_Pop", "HeadshipRate")) %>%
+Headship_Rates <- Headship_Rates %>% group_by(Age, Region) %>%
+  pivot_wider(names_from = "Sex", values_from=c("Population", "GQratio", "GQ_Estimates", "Military_Pop", "HH_Pop", "HeadshipRate"))%>%
   rename(Headship_Rate = HeadshipRate_Male) %>% select(-HeadshipRate_Female) %>%
   mutate(Head_HH = round((HH_Pop_Male*Headship_Rate)+(HH_Pop_Female*Headship_Rate),0)) %>%
   left_join(HH_total, by='Region')
 
-Head_HH_Total <- sum(Headship_Rates$Head_HH)
 
-Head_of_HH <- Headship_Rates %>% mutate(Head_HH_Adjust = round((Head_HH/Head_HH_Total)*Households,0)) %>%
+Head_HH_Total <- Headship_Rates %>% group_by(Region) %>% select(Region, Head_HH) %>% mutate(Sum_HH = sum(Head_HH)) %>%
+                 select(Region, Sum_HH)
+
+
+Head_of_HH <- Headship_Rates %>% bind_cols(Head_HH_Total) %>%
+  mutate(Head_HH_Adjust = round((Head_HH/Sum_HH)*Households,0)) %>%
   mutate(Ratio_Adj = Head_HH_Adjust/(HH_Pop_Male + HH_Pop_Female))
 
 #save(Head_of_HH, file="Output/Head_of_HH.Rdata")

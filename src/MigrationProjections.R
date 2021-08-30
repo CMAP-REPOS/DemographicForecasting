@@ -27,13 +27,10 @@ if(startyr == baseyr){
 #Load in and reformat population data
   load("Output/PopData.Rdata")  # named POP
 
-#Import the ORIGINAL PEP 2020 estimate (alternate option below)
-# baseyearpoptable <- POP[[baseyr]] %>%
-#    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
-#    ungroup()
-
-#Import DAVID E-R's adjusted estimates for our 4 regions (using preliminary Census 2020 data)
-  baseyearpoptable <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Socioeconomic Forecasting/Data/PEP/Adjusted2020/adjPopEstimate_2020.xlsx")
+#Import the baseyear population data (2020)
+baseyearpoptable <- POP[[baseyr]] %>%
+  group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
+  ungroup()
 
   #sort population by age group
   baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)

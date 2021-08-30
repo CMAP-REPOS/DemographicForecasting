@@ -31,6 +31,7 @@ if(startyr == baseyr){
 baseyearpoptable <- POP[[baseyr]] %>%
   group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
   ungroup()
+print(baseyearpoptable[1:3,])
 
   #sort population by age group
   baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)

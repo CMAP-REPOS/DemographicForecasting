@@ -54,7 +54,8 @@ if(startyear == baseyear2) { #DO NOT NEED THIS STEP CALCULATIONS DONE IN 'Adjust
     mutate(GQ_Estimates_Female = Population_Female * GQratio_Female) %>%
     mutate(HH_Pop_Male = Population_Male - GQ_Estimates_Male)%>%
     mutate(HH_Pop_Female = Population_Female - GQ_Estimates_Female) %>%
-    mutate(Head_HH = round((HH_Pop_Male*Ratio_Adj)+(HH_Pop_Female*Ratio_Adj),0))
+    mutate(Head_HH = round((HH_Pop_Male*Ratio_Adj)+(HH_Pop_Female*Ratio_Adj),0)) %>%
+    select(-Year, -Sum_HH)
 
   }
 

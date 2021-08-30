@@ -31,7 +31,7 @@ lastyear = as.character(max(cycleyears))
 
 Head_of_HH <- Head_of_HH %>% select(-Headship_Rate, -Head_HH, -Households, -Head_HH_Adjust)
 
-if(startyear == baseyear2) {
+if(startyear == baseyear2) { #DO NOT NEED THIS STEP CALCULATIONS DONE IN 'Adjusted_Headship_Rates.R'
 
   print(paste("GENERATING", baseyr2, "PROJECTION"))
 

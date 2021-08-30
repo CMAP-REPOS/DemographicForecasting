@@ -28,7 +28,7 @@ if(startyr == baseyr){
   load("Output/PopData.Rdata")  # named POP
 
 #Import the ORIGINAL PEP 2020 estimate (alternate option below)
-#  baseyearpoptable <- POP[[baseyr]] %>%
+# baseyearpoptable <- POP[[baseyr]] %>%
 #    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
 #    ungroup()
 

@@ -31,10 +31,10 @@ series
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
-target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
+target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <-  "flataverages"
+tNMfile <-  "workerjobbalance_adj2020"
 
 
 ######## set up the population projection and migration projection lists

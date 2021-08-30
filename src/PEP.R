@@ -62,10 +62,11 @@ for(YEAR in PEP_YEARS) {
 
 POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")
 POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
-POP[["2020"]] <- read_excel("Input/PEP2020.xlsx")
+#POP[["2020"]] <- read_excel("Input/PEP2020.xlsx")
+POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020.xlsx")
 
 POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
-#save(POP, file="Output/PopData.Rdata")
+save(POP, file="Output/PopData.Rdata")
 #load("Output/PopData.Rdata")
 

@@ -93,7 +93,7 @@ b <- b %>% filter(State == "Illinois" & Region == 'CMAP Region') %>%  #select(-Y
   group_by(Age, Sex) %>% mutate(Population = sum(Population)) %>% ungroup()
 View(b)
 
-write.csv(b, "/Users/mweber/Desktop/Total_POP.csv")
+#write.csv(b, "/Users/mweber/Desktop/Total_POP.csv")
 
 
 # Upload POP to GitHub  --------------------------------

@@ -27,10 +27,13 @@ if(startyr == baseyr){
 #Load in and reformat population data
   load("Output/PopData.Rdata")  # named POP
 
-  baseyearpoptable <- POP[[baseyr]] %>%
-    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
-    ungroup()
-  #sort the population by age group
+#Import the baseyear population data (2020)
+baseyearpoptable <- POP[[baseyr]] %>%
+  group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
+  ungroup()
+print(baseyearpoptable[1:3,])
+
+  #sort population by age group
   baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
 #Load in and reformat base year migration rate data

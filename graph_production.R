@@ -173,5 +173,10 @@ comp_pop <- export %>% rename(componentValue = ProjectedPop_final) %>%
   mutate(componentType = "PopulationProjection") %>%
   bind_rows(components_all)
 
+#graph the target net migration
+x <- target_NM %>% ggplot(aes(x=Year, y= NetMigration)) + geom_col() + facet_wrap(~Region, scales = "free") +
+  ggtitle("Target Net Migration Values", subtitle = paste("Name of file containing the values: ", tNMfile))
+x
+
 
 

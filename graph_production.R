@@ -109,7 +109,8 @@ workersandjobs_graph <- workersandjobs %>%
                               TRUE ~ forecast)) %>%
   mutate(forecast = case_when(valuename == "jobs" ~ paste(forecast,type,sep="_"),
                               TRUE ~ forecast))
-r <- workersandjobs_graph %>%   filter(Region == "CMAP Region") %>%ggplot(aes(x=Year, y= value, group = forecast, color = forecast)) +
+r <- workersandjobs_graph %>%   #filter(Region == "CMAP Region") %>%
+  ggplot(aes(x=Year, y= value, group = forecast, color = forecast)) +
   geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") +
   ggtitle("Projected Workers and Jobs, 2010-2050 (Baseline Economic Forecast)", subtitle = paste("Target Net Migration values: ", tNMfile)) +
@@ -173,10 +174,17 @@ comp_pop <- export %>% rename(componentValue = ProjectedPop_final) %>%
   mutate(componentType = "PopulationProjection") %>%
   bind_rows(components_all)
 
-#graph the target net migration
+#graph the target net migration (forecast periods only)
 x <- target_NM %>% ggplot(aes(x=Year, y= NetMigration)) + geom_col() + facet_wrap(~Region, scales = "free") +
   ggtitle("Target Net Migration Values", subtitle = paste("Name of file containing the values: ", tNMfile))
 x
-
-
-
+#import past net migration values
+pastNM <- read_excel("Input/past_NetMigration.xlsx") %>% rename(Year = PeriodEnd) %>% mutate(Year = as.character(Year))
+allNM <- bind_rows(target_NM, pastNM) %>%
+  mutate(Source = case_when(is.na(Source) ~ "Forecast",
+                            TRUE ~ Source))
+y <- allNM %>% ggplot(aes(x=Year, y= NetMigration, fill = Source)) + geom_col(width = 0.7) + facet_wrap(~Region, scales = "free") +
+  ggtitle("Net Migration, past and forecast", subtitle = paste("Target Net Migration values: ", tNMfile))
+y
+z <- allNM %>% filter(Source != "Forecast") %>% ggplot(aes(x=Year, y= NetMigration, color = Region, group = Region)) + geom_point() + geom_line() + facet_wrap(~Region, scales = "free")
+z

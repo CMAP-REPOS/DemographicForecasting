@@ -50,4 +50,4 @@ for(item in HH_PROJ){
 }
 
 View(export2)
-
+write.csv(export2, "/Users/mweber/Desktop/export2.csv")

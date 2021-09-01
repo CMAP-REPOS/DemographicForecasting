@@ -87,7 +87,7 @@ Head_HH_Total <- Headship_Rates %>% group_by(Region) %>% select(Region, Head_HH)
                  select(Region, Sum_HH)
 
 
-Head_of_HH <- Headship_Rates %>% bind_cols(Head_HH_Total) %>%
+Head_of_HH <- Headship_Rates %>% left_join(Head_HH_Total, by='Region') %>% unique() %>%
   mutate(Head_HH_Adjust = round((Head_HH/Sum_HH)*Households,0)) %>%
   mutate(Ratio_Adj = Head_HH_Adjust/(HH_Pop_Male + HH_Pop_Female)) %>%
   select(-Region...17) %>% rename(Region = Region...1)

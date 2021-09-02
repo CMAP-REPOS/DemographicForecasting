@@ -6,7 +6,7 @@
 library(tidyverse)
 library(tidycensus)
 library(readxl)
-#load("Output/PopData.Rdata") #must load, following code dependent on POP[[]]
+load("Output/PopData.Rdata") #must load, following code dependent on POP[[]]
 
 # Set parameters ----------------------------------------------------------
 
@@ -67,6 +67,5 @@ POP[["2020"]] <- read_excel("Input/PEP2020.xlsx")
 
 POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
-save(POP, file="Output/PopData.Rdata")
-#load("Output/PopData.Rdata")
+#save(POP, file="Output/PopData.Rdata")
 

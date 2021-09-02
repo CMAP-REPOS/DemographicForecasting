@@ -5,6 +5,7 @@ library(tidyverse)
 library(tidycensus)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
+load("Output/PopData.Rdata")
 
 # Set parameters ----------------------------------------------------------
 
@@ -97,7 +98,6 @@ GQratios <- GQ_Non_Military %>%
                          TRUE ~ Age))
 
 #import 2010 pop, join to GQratios
-load("Output/PopData.Rdata")  # named POP
 pop2010 <- POP[["2010"]] %>%
   group_by(Region, Age, Sex) %>%
   summarize(nonGQpop = sum(Population))

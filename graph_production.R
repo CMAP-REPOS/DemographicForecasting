@@ -156,7 +156,8 @@ v <- netmig_graphs %>%
   #filter(Region == "External WI") %>% #filter to focus on one region
   ggplot(aes(x=Age, y=componentValue, shape = Sex, color = year, group = category)) +
   geom_point() + geom_line() + facet_wrap(~ Region, scales = "free") +
-  ggtitle("Age Distribution of Net Migration", subtitle = paste("Target Net Migration values: ", tNMfile))
+  ggtitle("Age Distribution of Net Migration", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
 v
 
 #deaths age distribution

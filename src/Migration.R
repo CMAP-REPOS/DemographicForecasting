@@ -120,4 +120,4 @@ Base_Mig <- Base_Mig %>% mutate(SurvMigrants2018 = (PopActuals2018 - ExpectedPop
 
 #save(Base_Mig, file="Output/Base_Migration.Rdata")
 
-write.csv(Base_Mig, "/Users/mweber/Desktop/BaseMigRates.csv")
+#write.csv(Base_Mig, "/Users/mweber/Desktop/BaseMigRates.csv")

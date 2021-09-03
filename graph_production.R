@@ -189,3 +189,8 @@ y <- allNM %>% ggplot(aes(x=Year, y= NetMigration, fill = Source)) + geom_col(wi
 y
 z <- allNM %>% filter(Source != "Forecast") %>% ggplot(aes(x=Year, y= NetMigration, color = Region, group = Region)) + geom_point() + geom_line() + facet_wrap(~Region, scales = "free")
 z
+
+#graph Base Migration rates (data from 2013-14 and 2018-19, Migration.R)
+a <- Base_Mig %>% ggplot(aes(x=Age, y = NetRates, color = Sex, group = Sex)) + geom_point() + geom_line() +
+  facet_wrap(~Region)
+a

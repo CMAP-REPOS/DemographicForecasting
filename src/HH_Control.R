@@ -3,6 +3,11 @@
 # This code calculates Households and GQ population estimates for all
 # specified population years, past and forecast.
 
+# This code runs off of the projection outputs that are saved to GitHub, so if you're
+# working from a new Projection, make sure the projected population data is saved to GitHub!
+
+#--------------------
+
 library(tidyverse)
 library(tidycensus)
 library(readxl)
@@ -12,7 +17,6 @@ load("Output/Head_of_HH.Rdata") # Headship
 load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/PopData.Rdata") #POP
 
-
 startyear = 2010
 projectionstart = 2020
 endyear = 2050
@@ -21,7 +25,7 @@ series <- c(2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)
 
 cycles <- ((endyear - startyear) / 5) + 1 #number of 5-year projection cycles to complete
 
-#--------------------
+#-------------------- Start of loop
 
 HH_PROJ <- list()
 for(years in series){
@@ -49,7 +53,10 @@ while(i <= cycles){
   i <- i+1
 }
 
+#---------------------- End of loop
 
+
+### De-list and reformat the outputs, generate summary tables
 Households <- tibble()
 i=1
 for(item in HH_PROJ){
@@ -58,6 +65,7 @@ for(item in HH_PROJ){
   Households <- bind_rows(Households, temp2)
   i <- i + 1
 }
+
 Households  <- Households  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>% select(-x) %>% arrange(Region, Year)
 

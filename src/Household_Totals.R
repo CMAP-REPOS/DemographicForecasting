@@ -6,22 +6,12 @@ library(readxl)
 
 # Parameters ---------------------------------------------------------
 
-#lines 15-22 are duplicate from PEP code.... should consolidate
-CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
-
-COUNTIES <- list(
-  IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
-         7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
-  IN = c(89, 91, 127),                       # Indiana counties
-  WI = c(59, 101, 127)                       # Wisconsin counties
-)
-
 startyear = as.character(projstart)  #"2020"
 
 Head_of_HH <- Head_of_HH %>% select(-Headship_Rate, -Head_HH, -Households, -Head_HH_Adjust)
 
 # if/else statement decides if population is pulled from POP or MIG_PROJ and formats data accordingly
-if(startyear <= baseyear2) {
+if(startyear <= projectionstart) {
 
   basepop <- POP[[startyear]] %>%
     group_by(Sex, Age, Region) %>%
@@ -36,7 +26,6 @@ if(startyear <= baseyear2) {
     select(Sex, Age, Region, Population) %>%
     ungroup()
 }
-
 
 # Joins GQ ratios to Population, calculates GQ totals
 GQ_Pop <- full_join(basepop, GQratios, by=c("Sex", "Age", "Region")) %>%

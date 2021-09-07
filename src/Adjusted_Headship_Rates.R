@@ -61,6 +61,7 @@ Base_Year  <- Base_Year  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[
 GQ_Pop <- full_join(Base_Year, GQratios, by=c("Sex", "Age", "Region")) %>%
   mutate(across(starts_with("GQ"), ~.*Population)) %>% #multiply every GQ column by Population
   left_join(GQ_Military, by=c("Region", "Sex", "Age")) %>% rename(GQ_NonInst_Military = Value) %>% #join the Military values
+  rowwise() %>%
   mutate(Inst_GQ = round(sum(across(starts_with("GQ_Inst"))), 0),
          nonInst_GQ = round(sum(across(starts_with("GQ_NonInst"))),0) ) %>%
   mutate(totalGQ = sum(across(ends_with("GQ"))))

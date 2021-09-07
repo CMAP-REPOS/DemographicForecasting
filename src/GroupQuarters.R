@@ -5,7 +5,7 @@ library(tidyverse)
 library(tidycensus)
 #census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
 
-load("Output/PopData.Rdata")
+load("Output/PopData.Rdata") # POP, imported because we need the 2010 population values
 
 # Set parameters ----------------------------------------------------------
 
@@ -30,7 +30,7 @@ GQ_VARS <- SF1_VARS %>%
     Category = str_replace_all(Category, "!!", " ")
   )
 
-# Download data for selected variables in all counties
+# Download census GQ data for selected variables in all counties
 GQ_DATA <- tibble()
 for (STATE in names(COUNTIES)) {
   TEMP <- get_decennial(geography = "county", variables = GQ_VARS$name,
@@ -39,7 +39,7 @@ for (STATE in names(COUNTIES)) {
   GQ_DATA <- bind_rows(GQ_DATA, TEMP)
 }
 
-# Assemble final table
+# Assemble final table of GQ population data, rename cols and reformat values
 GQ <- GQ_DATA %>%
   left_join(GQ_VARS, by = c("variable" = "name")) %>%
   select(-label) %>%
@@ -59,8 +59,7 @@ GQ <- GQ_DATA %>%
                        State == "Wisconsin" ~ "External WI")
   )
 
-
-# Adds columns for Sex and Age, but retains Category column
+# Adds columns for Sex and Age, but retain Category column
 GQ <- GQ %>%
   separate(Category, into=c("Sex", "Age"), sep = " ", extra = "merge", remove = FALSE) %>%
   mutate(
@@ -69,45 +68,52 @@ GQ <- GQ %>%
                     Sex =="County" ~ "All",
                     TRUE ~ Sex))
 
+# Remove the rows for Population Totals, sum up the GQ populations by GQ type age and sex, fix 0-4 Age value
 
-# Split out Military vs Non-Military; Military help constant in future projections
-GQ_Non_Military <- GQ %>%
-  filter(Concept %in% c(
-    "GROUP QUARTERS POPULATION IN CORRECTIONAL FACILITIES FOR ADULTS BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN JUVENILE FACILITIES BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN OTHER INSTITUTIONAL FACILITIES BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN NURSING FACILITIES/SKILLED-NURSING FACILITIES BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN COLLEGE/UNIVERSITY STUDENT HOUSING BY SEX BY AGE",
-    "GROUP QUARTERS POPULATION IN OTHER NONINSTITUTIONAL FACILITIES BY SEX BY AGE"
-  ))
-
-GQ_Military <- GQ %>%
-  filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE") %>%
-  filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
+GQlong <- GQ %>% filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
+  group_by(Region, Sex, Age, Concept) %>%
+  summarize(Population = sum(Value)) %>%
   mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
-                       TRUE ~ Age))
+                         TRUE ~ Age)) %>%
+  ungroup()
 
-
-#calculate ratio of GQ pop to total pop in 2010
-GQratios <- GQ_Non_Military %>%
-  filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
-  group_by(Region, Age, Sex) %>%
-  summarize(GQpop = sum(Value), .groups = "keep") %>%
-  ungroup() %>%
-  mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
-                         TRUE ~ Age))
-
-#import 2010 pop, join to GQratios
+# import the 2010 Census Population (these values are the NON GQ population)
 pop2010 <- POP[["2010"]] %>%
   group_by(Region, Age, Sex) %>%
   summarize(nonGQpop = sum(Population))
 
-GQratios <- GQratios %>%
-  left_join(pop2010, by = c("Age","Sex","Region")) %>%
-  mutate(GQratio = GQpop / (GQpop + nonGQpop)) %>%
-  ungroup() %>%
-  select(-GQpop, -nonGQpop) %>%
-  na.omit()
+# Join the GQ sums to 2010 population, calculate the GQ ratios for every GQ type
+# GQ ratio = GQ pop / (GQ pop + nonGQ pop)
+GQratios <- left_join(GQlong, pop2010, by=c("Region", "Age", "Sex")) %>%
+  mutate(ratio = Population / (Population + nonGQpop)) %>%
+  mutate(Concept = word(Concept, start = 5, end = 6 )) %>% #shorten the Concept col values (types of GQs)
+  select(-Population, -nonGQpop) %>%
+  pivot_wider(names_from = Concept, values_from = ratio)
+names(GQratios) <- make.names(names(GQratios)) #fix column names
 
-#save(GQ, GQ_Military, GQ_Non_Military, GQratios, file="Output/GQData.Rdata")
+# Clean up names, remove Military population ratio
+GQratios <- GQratios %>%
+  rename(GQ_Inst_Corr = CORRECTIONAL.FACILITIES,
+         GQ_Inst_Juv = JUVENILE.FACILITIES,
+         GQ_Inst_Nurs = NURSING.FACILITIES.SKILLED.NURSING,
+         GQ_Inst_Other = OTHER.INSTITUTIONAL,
+         GQ_NonInst_College = COLLEGE.UNIVERSITY.STUDENT,
+         GQ_NonInst_Other = OTHER.NONINSTITUTIONAL) %>%
+  select(-MILITARY.QUARTERS)
+
+# split out Military population total by age and sex - this value is held constant in future projections
+GQ_Military <- GQ %>%
+  filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE") %>%
+  filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
+  mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
+                       TRUE ~ Age)) %>%
+  group_by(Region, Sex, Age) %>%
+  mutate(Value = sum(Value)) %>%
+  select(Value, Sex, Age, Region) %>%
+  #filter(!Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years')) %>% #Decided to keep these age groups in for consistency (Alexis note)
+  unique() %>%
+  ungroup()
+
+#save(GQ, GQ_Military, GQratios, file="Output/GQData.Rdata")
+save(GQ, GQ_Military, GQratios, file="Output/GQData2.Rdata")
 

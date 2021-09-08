@@ -67,7 +67,8 @@ for(item in HH_PROJ){
 }
 
 Households  <- Households  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
-  arrange(x) %>% select(-x) %>% arrange(Region, Year)
+  arrange(x) %>% select(-x) %>% arrange(Region, Year)%>%
+  filter(Year != "2010" & Year != "2015")
 
 HouseholdSummary <- Households %>%
   group_by(Year, Region) %>%
@@ -84,11 +85,25 @@ for(item in GQ_PROJ){
   i <- i + 1
 }
 GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
-  arrange(x) %>% select(-x) %>% arrange(Region, Year, desc(Sex))
+  arrange(x) %>% select(-x) %>% arrange(Region, Year, desc(Sex)) %>%
+  filter(Year != "2010" & Year != "2015")
 
 GQ_summary <- GQ_full %>% group_by(Region, Sex, Age, Year) %>%
-  summarize(totalGQpop = sum(totalGQ))
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  arrange(x) %>%
+  mutate(Agegroup = case_when(x < 15 ~ "14 and Under",
+                              x >= 65 ~ "65 and Over",
+                              TRUE ~ "15 - 64" )) %>%
+  arrange(x) %>% select(-x) %>% arrange(Region, Year, Sex) %>%
+  group_by(Region, Year, Agegroup) %>%
+  summarize(GQ_NonInst_Military = sum(GQ_NonInst_Military),
+            GQ_NonInst_College = sum(GQ_NonInst_College),
+            GQ_NonInst_Other = sum(GQ_NonInst_Other))
 
+write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
+write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/export_HouseholdsSummary.csv")
+write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
+write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 
 
 

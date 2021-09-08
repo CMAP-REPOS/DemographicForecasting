@@ -180,7 +180,7 @@ TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('M
 
 TM_Sex <- TM_Sex %>%
   group_by(Region, Sex) %>% mutate(Sum_NM = sum(NetTotal)) %>% group_by(Region, Period) %>%
-  mutate(SexProp = Sum_NM / sum(Sum_NM)) %>%
+  mutate(SexProp = abs(Sum_NM / sum(abs(Sum_NM)))) %>%
   full_join(target_NMlocal, by='Region') %>% mutate(TargetTM = SexProp*RegionNMT) %>%
   select(-RegionNMT) %>% rename(Agegrp = Age)
 

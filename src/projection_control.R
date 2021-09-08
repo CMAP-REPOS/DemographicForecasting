@@ -54,7 +54,8 @@ for(years in series){
 }
 
 #import in Base Net Migration data (includes allocation by Sex and by +/- 55 years old for first 2 allocation periods)
-NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+#NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+NetMig <- read_excel("Input/NetMigration_Berger_Full.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 
 
 ######## run the loop

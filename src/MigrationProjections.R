@@ -37,9 +37,14 @@ print(baseyearpoptable[1:3,])
   baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
 #Load in and reformat base year migration rate data
-  load("Output/Base_Migration.Rdata") # named Base_Mig
+  #load("Output/Base_Migration.Rdata") # named Base_Mig
+  #Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
 
-  Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
+  # Load in 1991-95 base net migration rates (Berger)
+  Base_Mig <- read.csv("C:/Users/amcadams/Documents/R/base_mig_91-95.csv") %>%
+    select(-NetRates) %>%
+    rename(NetRates = NetRates_91.95)
+
 
 }else{
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))

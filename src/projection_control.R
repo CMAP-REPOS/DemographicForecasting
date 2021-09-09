@@ -108,6 +108,21 @@ for(item in POPPROJ){
   i <- i + 1
 }
 
+load("Output/Base_Migration.Rdata") # named Base_Mig
+Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates) %>% rename(NMRs = NetRates)
+NETMIGPROJ[[1]] <- Base_Mig
+
+projectedNetMigrationrates <- tibble()
+i=1
+for(item in NETMIGPROJ){
+  print(item)
+  temp <- item
+  temp$year <- names(NETMIGPROJ)[i]
+  projectedNetMigrationrates <- bind_rows(projectedNetMigrationrates, temp)
+  i <- i + 1
+}
+
+
 components_all <- tibble()
 i=1
 for(item in COMPONENTS){

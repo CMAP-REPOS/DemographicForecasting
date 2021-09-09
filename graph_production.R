@@ -22,7 +22,7 @@ n <- bind_rows(baseline_all, baseline_noloc) %>%
   geom_point() + geom_line() + facet_wrap(~Region, scales = "free") +
   ggtitle("Number of Jobs, 2010-2050 \n Baseline Forecast") +
   theme(legend.position = "bottom")
-n
+
 
 #graph of all 3 of the job forecasts (all and non-local) from employment.R
 alljobforecasts <- bind_rows(upside_all, upside_noloc, baseline_all, baseline_noloc, slowgrowth_all, slowgrowth_noloc) %>%
@@ -34,7 +34,7 @@ o <- alljobforecasts %>% ungroup() %>%
   geom_point() + geom_line() + facet_wrap(~Region, scales = "free") +
   ggtitle("Number of Jobs, 2010-2050 \n   All Forecasts (upside, baseline, and slow growth) \n    and All Jobs and Non-Local Industry Jobs") +
   theme(legend.position = "bottom")
-o
+
 
 
 ######## GRAPHS OF POPULATION FORECASTS
@@ -151,6 +151,7 @@ u
 
 #Net Migration age distribution
 netmig_graphs <- components_all %>% filter(componentType == "NetMigrants") %>%
+  #filter(Region == "External WI") %>%
   mutate(category = paste(year, Sex, sep="_"))
 v <- netmig_graphs %>%
   #filter(Region == "External WI") %>% #filter to focus on one region
@@ -194,3 +195,39 @@ z
 a <- Base_Mig %>% ggplot(aes(x=Age, y = NetRates, color = Sex, group = Sex)) + geom_point() + geom_line() +
   facet_wrap(~Region)
 a
+
+#see how total actual Migration stacks up to the target Net Migration
+target_NM <- target_NM %>% mutate(category = "target")
+netmig_stackup <- components_all %>%
+  filter(componentType == "NetMigrants") %>%
+  group_by(year, Region) %>%
+  summarize(NetMigration = sum(componentValue)) %>%
+  mutate(category = "forecast") %>%
+  rename(Year = year) %>%
+  bind_rows(target_NM)
+b <- netmig_stackup %>%
+  ggplot(aes(x=Year, y= NetMigration, group = category, color = category)) + geom_point() + geom_line() +
+  facet_wrap(~Region, scales = "free") +
+  ggtitle("Target vs Calculated Net Migration", subtitle = paste("Name of file containing the values: ", tNMfile))
+b
+
+#Net Migration age distribution
+netmig_graphs <- components_all %>% filter(componentType == "NetMigrants") %>%
+  #filter(Region == "External WI") %>%
+  mutate(category = paste(year, Sex, sep="_"))
+v <- netmig_graphs %>%
+  #filter(Region == "External WI") %>% #filter to focus on one region
+  ggplot(aes(x=Age, y=componentValue, shape = Sex, color = year, group = category)) +
+  geom_point() + geom_line() + facet_wrap(~ Region, scales = "free") +
+  ggtitle("Age Distribution of Net Migration", subtitle = paste("Target Net Migration values: ", tNMfile)) #+
+  #theme(axis.text.x = element_text(angle = 45, hjust=1))
+v
+
+#take a look at how the net migration rates change
+c <- projectedNetMigrationrates %>%
+  mutate(category = paste(year, Sex, sep="_")) %>%
+  ggplot(aes(x=Age, y=NMRs, shape = Sex, color = year, group = category)) +
+  geom_point() + geom_line() + facet_wrap(Sex ~ Region,  ncol = 2, scales = "free") +
+  ggtitle("Net Migration Rates by Age", subtitle = paste("Target Net Migration values: ", tNMfile)) #+
+  #theme(axis.text.x = element_text(angle = 45, hjust=1))
+c

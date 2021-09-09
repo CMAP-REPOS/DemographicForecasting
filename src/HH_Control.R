@@ -66,9 +66,12 @@ for(item in HH_PROJ){
   i <- i + 1
 }
 
-Households  <- Households  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>% select(-x) %>% arrange(Region, Year)%>%
-  filter(Year != "2010" & Year != "2015")
+  filter(Year != "2010" & Year != "2015") %>%
+  relocate(Year, .after = Age) %>%
+  relocate(totalGQ, Inst_GQ, nonInst_GQ, .after = Population) %>%
+  relocate(starts_with("GQ_Inst"), .after = Inst_GQ)
 
 HouseholdSummary <- Households %>%
   group_by(Year, Region) %>%
@@ -86,7 +89,10 @@ for(item in GQ_PROJ){
 }
 GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>% select(-x) %>% arrange(Region, Year, desc(Sex)) %>%
-  filter(Year != "2010" & Year != "2015")
+  filter(Year != "2010" & Year != "2015") %>%
+  relocate(c(Year, totalGQ, Inst_GQ, nonInst_GQ), .after = Population) %>%
+  relocate(starts_with("GQ_Inst_"), .after = Inst_GQ) %>%
+  relocate(GQ_NonInst_Military, .before = GQ_NonInst_Other)
 
 GQ_summary <- GQ_full %>% group_by(Region, Sex, Age, Year) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
@@ -100,11 +106,33 @@ GQ_summary <- GQ_full %>% group_by(Region, Sex, Age, Year) %>%
             GQ_NonInst_College = sum(GQ_NonInst_College),
             GQ_NonInst_Other = sum(GQ_NonInst_Other))
 
+GQ_Other  <- GQ_full %>% #break down the GQ_NonInst_Other into the age group totals required by the travel model (16-64, 65+)
+  select(Sex, Age, Region, Year, GQ_NonInst_Other) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
+  filter(x > 10) %>% # remove Age groups 10-14 and below
+  mutate(Agegroup = case_when(x == 15 ~ "GQ_NonInst_Other_15_to_19",
+                              x >= 65 ~ "GQ_NonInst_Other_65_plus",
+                              TRUE ~ "GQ_NonInst_Other_20_to_64" ) ) %>%
+  group_by(Region, Sex, Year, Agegroup) %>%
+  summarize(Othertot = sum(GQ_NonInst_Other)) %>%
+  pivot_wider(names_from = Agegroup, values_from = Othertot) %>%
+  mutate(GQ_NonInst_Other_16_to_64 = round(GQ_NonInst_Other_20_to_64 + 0.8 * GQ_NonInst_Other_15_to_19,0),
+         GQ_NonInst_Other_65_plus = round(GQ_NonInst_Other_65_plus,0)) %>%
+  select(Sex, Region, Year, GQ_NonInst_Other_16_to_64,GQ_NonInst_Other_65_plus)
+
+GQ_summary_collegemil <- GQ_full %>% group_by(Region, Year, Sex) %>%
+  summarize(GQ_Military = sum(GQ_NonInst_Military),
+            GQ_College = round(sum(GQ_NonInst_College)))
+
+GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Region", "Year", "Sex"))
+
+
+
 write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
 write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/export_HouseholdsSummary.csv")
 write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
 write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
-
+write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
 
 
 #save(HH_PROJ, file="Output/HH_Proj.Rdata")

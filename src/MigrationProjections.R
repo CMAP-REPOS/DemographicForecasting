@@ -164,7 +164,7 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 NetMig <- read_excel("Input/NetMigration_Berger_Full.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
-NMperiods <- tail(NMperiods, 2)
+NMperiods <- head(NMperiods, 2)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" "))
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
@@ -188,8 +188,9 @@ TM_Sex <- TM_Sex %>%
 TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region) %>% mutate(NetTotal2 = sum(NetMigration)) %>%
   group_by(Period, Region) %>% left_join(TM_Sex, by=c('Region', 'Period', 'Sex')) %>%
-  mutate(SexProp = NetTotal2/Sum_NM) %>%
-  mutate(TargetTM_55Plus = TargetTM*SexProp) %>%
+  mutate(Sex55plusProp = abs(NetTotal2)/abs(Sum_NM)) %>%
+  mutate(TargetTM_55Plus = TargetTM*Sex55plusProp) %>%
+  mutate(SexU55Prop = 1-Sex55plusProp) %>%
   mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>%
   ungroup() %>% unique()
 

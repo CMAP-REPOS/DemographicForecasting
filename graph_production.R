@@ -13,6 +13,8 @@ source("src/employment.R") # for Job Forecast graphs
 source("src/workforce.R") # for Worker calculation graphs, is built off of Projection results
 
 
+export$Age <- factor(export$Age, levels = c())
+
 ######### GRAPHS OF JOB FORECASTS
 
 #Graph of the baseline jobs (all and non-local) from employment.R
@@ -36,15 +38,16 @@ o <- alljobforecasts %>% ungroup() %>%
   theme(legend.position = "bottom")
 
 
-
 ######## GRAPHS OF POPULATION FORECASTS
+
+#~~~graph of total population
 
 #~~~build graphs of total male and female population projections for each region and year
 pop_proj <- export
 pop_proj_totals <- pop_proj %>% group_by(Region, Sex, year) %>% summarize(total_population = sum(ProjectedPop_final))
 p <- pop_proj_totals %>% ggplot(aes(x=year, y=total_population, color=Sex, group = Sex)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Total Population, 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
-p
+
 
 #pull in data from 2010,2015,2020 and add to total population graphs for each region and year
 pop2020 <- POP[['2020']] %>%
@@ -56,7 +59,16 @@ pop_proj <- export %>% rename(Population = ProjectedPop_final) %>% mutate(Year =
 
 pop_recandproj <- bind_rows(recentdata, pop_proj) ###population, recent and projected
 pop_totals_check <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(totpop = sum(Population))
+pop_totals_check
 
+#Graphing total population by region (including Census)
+pop_totals <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(totpop = sum(Population))
+pp <- pop_totals %>% ggplot(aes(x=Year, y=totpop, group = Region, shape = type)) + geom_point() + geom_line() +
+  facet_wrap(~Region, scales="free") + ggtitle("Total Population, estimated and projected, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(legend.position = "bottom")
+pp
+
+#graphing total population by sex and region
 pop_totals <- pop_recandproj %>% group_by(Region, Sex, Year, type) %>% summarize(totpop = sum(Population))
 q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape = type)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Total Population, estimated and projected, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
@@ -64,18 +76,17 @@ q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape
 q
 
 #build population pyramid  ####**** STILL NEED TO FIX AGE GROUP SORT (factors!)
-pp <- export %>% filter(Region == "CMAP Region") %>%
-  #filter(year == 2025) %>%
-  ggplot(aes(x = Age, fill = Sex,
+pp <- export %>% #filter(Region == "CMAP Region") %>%
+  filter(year == 2025 | year == 2050) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
+  ggplot(aes(x = x, fill = Sex,
              y = ifelse(test = Sex == "Male",
                         yes = -ProjectedPop_final, no = ProjectedPop_final))) +
   geom_bar(stat = "identity") +
-  scale_y_continuous(labels = abs, limits = max(export$ProjectedPop_final) * c(-1,1)) +
+  scale_y_continuous(labels = abs) + #, limits = max(export$ProjectedPop_final) * c(-1,1)) +
   coord_flip() +
-  facet_wrap(year ~ Region)
+  facet_wrap(Region ~ year, ncol = 4, scales = "free")
 pp
-
-
 
 ######## GRAPHS OF WORKERS AND JOBS
 
@@ -87,7 +98,7 @@ workingage <- export %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])
   ungroup()
 wk <- workingage %>% ggplot(aes(x=year, y=workingage)) + geom_col(aes(fill = Sex), width = 0.7) +
   facet_wrap(~Region, scales = "free")
-wk
+
 
 #plot the number of workers
 #p <- workers %>% ggplot(aes(x=Year, y=workers, group = Region, shape = type)) + geom_point() + geom_line() +
@@ -125,7 +136,7 @@ workerjobdiff <- alljobforecasts %>%
   mutate(percentdiff = (abs(diff)* 100 / ((total_jobs + workers) /2)))
 
 s <- workerjobdiff %>% ggplot(aes(x=Year, y=percentdiff, fill=type.y)) + geom_col() + facet_wrap(~Region, scales="free")
-s
+
 
 
 ############### GRAPHS OF COMPONENTS OF CHANGE
@@ -133,7 +144,8 @@ s
 #add up all of the components of change and graph them together (1 graph per region)
 summary_components <- components_all %>%
   group_by(Region, year, componentType) %>% summarize(summaryvalue = sum(componentValue))
-t <- summary_components %>%   filter(Region == "CMAP Region") %>% ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
+t <- summary_components %>%  # filter(Region == "CMAP Region") %>%
+  ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
   geom_point() + geom_line() +
   facet_wrap( ~ Region, scales = "free") +
   ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
@@ -146,20 +158,8 @@ summary_components_bysex <- components_all %>%
 u <- summary_components_bysex %>% ggplot(aes(x=year, y=summaryvalue,  color = componentType, shape = Sex, group = category)) +
   geom_point() + geom_line() +
   facet_wrap( ~ Region, scales = "free") +
-  ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
+  ggtitle("Components of Population Change by Sex 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
 u
-
-#Net Migration age distribution
-netmig_graphs <- components_all %>% filter(componentType == "NetMigrants") %>%
-  #filter(Region == "External WI") %>%
-  mutate(category = paste(year, Sex, sep="_"))
-v <- netmig_graphs %>%
-  #filter(Region == "External WI") %>% #filter to focus on one region
-  ggplot(aes(x=Age, y=componentValue, shape = Sex, color = year, group = category)) +
-  geom_point() + geom_line() + facet_wrap(~ Region, scales = "free") +
-  ggtitle("Age Distribution of Net Migration", subtitle = paste("Target Net Migration values: ", tNMfile)) +
-  theme(axis.text.x = element_text(angle = 45, hjust=1))
-v
 
 #deaths age distribution
 deaths_graphs <- components_all %>% filter(componentType == "Deaths") %>%
@@ -169,7 +169,7 @@ w <- deaths_graphs %>%
   ggplot(aes(x=Age, y=componentValue, shape = Sex, color = year, group = category)) +
   geom_point() + geom_line() + facet_wrap(~ Region, scales = "free") +
   ggtitle("Age Distribution of Projected Deaths", subtitle = paste("Target Net Migration values: ", tNMfile))
-w
+
 
 #combine population with components (Alexis' note: I forgot why I wanted to do this..)
 comp_pop <- export %>% rename(componentValue = ProjectedPop_final) %>%
@@ -179,7 +179,7 @@ comp_pop <- export %>% rename(componentValue = ProjectedPop_final) %>%
 #graph the target net migration (forecast periods only)
 x <- target_NM %>% ggplot(aes(x=Year, y= NetMigration)) + geom_col() + facet_wrap(~Region, scales = "free") +
   ggtitle("Target Net Migration Values", subtitle = paste("Name of file containing the values: ", tNMfile))
-x
+
 #import past net migration values
 pastNM <- read_excel("Input/past_NetMigration.xlsx") %>% rename(Year = PeriodEnd) %>% mutate(Year = as.character(Year))
 allNM <- bind_rows(target_NM, pastNM) %>%
@@ -189,11 +189,15 @@ y <- allNM %>% ggplot(aes(x=Year, y= NetMigration, fill = Source)) + geom_col(wi
   ggtitle("Net Migration, past and forecast", subtitle = paste("Target Net Migration values: ", tNMfile))
 y
 z <- allNM %>% filter(Source != "Forecast") %>% ggplot(aes(x=Year, y= NetMigration, color = Region, group = Region)) + geom_point() + geom_line() + facet_wrap(~Region, scales = "free")
-z
+
 
 #graph Base Migration rates (data from 2013-14 and 2018-19, Migration.R)
-a <- Base_Mig %>% ggplot(aes(x=Age, y = NetRates, color = Sex, group = Sex)) + geom_point() + geom_line() +
-  facet_wrap(~Region)
+a <- NETMIGPROJ[[1]] %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  ggplot(aes(x=reorder(Age,x), y = NMRs, color = Sex, group = Sex)) + geom_point() + geom_line() +
+  facet_wrap(~Region) +
+  ggtitle("Base Net Migration Rate", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
 a
 
 #see how total actual Migration stacks up to the target Net Migration
@@ -216,18 +220,22 @@ netmig_graphs <- components_all %>% filter(componentType == "NetMigrants") %>%
   #filter(Region == "External WI") %>%
   mutate(category = paste(year, Sex, sep="_"))
 v <- netmig_graphs %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   #filter(Region == "External WI") %>% #filter to focus on one region
-  ggplot(aes(x=Age, y=componentValue, shape = Sex, color = year, group = category)) +
+  ggplot(aes(x=reorder(Age,x), y=componentValue, shape = Sex, color = year, group = category)) +
   geom_point() + geom_line() + facet_wrap(~ Region, scales = "free") +
-  ggtitle("Age Distribution of Net Migration", subtitle = paste("Target Net Migration values: ", tNMfile)) #+
-  #theme(axis.text.x = element_text(angle = 45, hjust=1))
+  ggtitle("Age Distribution of Net Migration", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
 v
 
 #take a look at how the net migration rates change
 c <- projectedNetMigrationrates %>%
   mutate(category = paste(year, Sex, sep="_")) %>%
-  ggplot(aes(x=Age, y=NMRs, shape = Sex, color = year, group = category)) +
-  geom_point() + geom_line() + facet_wrap(Sex ~ Region,  ncol = 2, scales = "free") +
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  ggplot(aes(x=reorder(Age,x), y=NMRs, shape = Sex, color = year, group = category)) +
+  geom_point() + geom_line() + facet_wrap(Region ~ Sex,  ncol = 2, scales = "free") +
   ggtitle("Net Migration Rates by Age", subtitle = paste("Target Net Migration values: ", tNMfile)) #+
   #theme(axis.text.x = element_text(angle = 45, hjust=1))
 c
+
+#import the full Berger NMRs and compare them

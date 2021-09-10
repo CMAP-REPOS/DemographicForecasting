@@ -19,7 +19,6 @@ endyr = as.character(projend)  #"2025"
 cycleyears = projyears # c(2020,2021,2022,2023,2024)
 lastyear = as.character(max(cycleyears))
 
-
 if(startyr == baseyr){
   print(paste("GENERATING", baseyr, "PROJECTION"))
   print(paste("USING", tNMfile, "TARGET MIGRATION VALUES"))
@@ -37,13 +36,15 @@ print(baseyearpoptable[1:3,])
   baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
 #Load in and reformat base year migration rate data
-  load("Output/Base_Migration.Rdata") # named Base_Mig
-  Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
+  #load("Output/Base_Migration.Rdata") # named Base_Mig
+  #Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
 
   # Load in 1991-95 base net migration rates (Berger)
-  #Base_Mig <- read.csv("C:/Users/amcadams/Documents/R/base_mig_91-95.csv") %>%
-  #  select(-NetRates) %>%
-  #  rename(NetRates = NetRates_91.95)
+  Base_Mig <- read.csv("C:/Users/amcadams/Documents/R/base_mig_91-95.csv") %>%
+    select(-NetRates) %>%
+    rename(NetRates = NetRates_91.95)
+
+  start_Base_Mig <- Base_Mig
 
 
 }else{
@@ -137,7 +138,6 @@ earlyDeaths <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "S
   mutate(earlyDeaths = round(totbirths - ProjectedPop ,0)) %>%
   select(Region, Sex, Age, earlyDeaths)
 
-
 # Step 4: apply Survival Rates and calculate Expected 2025 population
 
 expectedpop <- baseyearpoptable %>%
@@ -164,7 +164,7 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 NetMig <- read_excel("Input/NetMigration_Berger_Full.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
-NMperiods <- head(NMperiods, 2)
+NMperiods <- tail(NMperiods, 2)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" "))
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
@@ -180,7 +180,7 @@ TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('M
 
 TM_Sex <- TM_Sex %>%
   group_by(Region, Sex) %>% mutate(Sum_NM = sum(NetTotal)) %>% group_by(Region, Period) %>%
-  mutate(SexProp = abs(Sum_NM / sum(abs(Sum_NM)))) %>%
+  mutate(SexProp = Sum_NM / sum(Sum_NM)) %>%
   full_join(target_NMlocal, by='Region') %>% mutate(TargetTM = SexProp*RegionNMT) %>%
   select(-RegionNMT) %>% rename(Agegrp = Age)
 
@@ -188,9 +188,9 @@ TM_Sex <- TM_Sex %>%
 TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region) %>% mutate(NetTotal2 = sum(NetMigration)) %>%
   group_by(Period, Region) %>% left_join(TM_Sex, by=c('Region', 'Period', 'Sex')) %>%
-  mutate(Sex55plusProp = abs(NetTotal2)/abs(Sum_NM)) %>%
+  mutate(Sex55plusProp = NetTotal2/Sum_NM) %>%
   mutate(TargetTM_55Plus = TargetTM*Sex55plusProp) %>%
-  mutate(SexU55Prop = 1-Sex55plusProp) %>%
+  #mutate(SexU55Prop = 1-Sex55plusProp) %>%
   mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>%
   ungroup() %>% unique()
 
@@ -356,4 +356,6 @@ projectedDeaths <- left_join(olderDeaths, earlyDeaths,by=c("Region", "Sex", "Age
 Components <- left_join(Migrants, projectedDeaths, by = c("Region", "Sex", "Age")) %>%
   pivot_longer(cols = c(4:5), names_to = "componentType", values_to = "componentValue") %>%
   bind_rows(projectedBirths_reformat)
+
+
 

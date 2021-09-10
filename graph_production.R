@@ -13,8 +13,6 @@ source("src/employment.R") # for Job Forecast graphs
 source("src/workforce.R") # for Worker calculation graphs, is built off of Projection results
 
 
-export$Age <- factor(export$Age, levels = c())
-
 ######### GRAPHS OF JOB FORECASTS
 
 #Graph of the baseline jobs (all and non-local) from employment.R
@@ -76,17 +74,50 @@ q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape
 q
 
 #build population pyramid  ####**** STILL NEED TO FIX AGE GROUP SORT (factors!)
-pp <- export %>% #filter(Region == "CMAP Region") %>%
+pp1 <- export %>% filter(Region == "CMAP Region") %>%
   filter(year == 2025 | year == 2050) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
   ggplot(aes(x = x, fill = Sex,
              y = ifelse(test = Sex == "Male",
                         yes = -ProjectedPop_final, no = ProjectedPop_final))) +
   geom_bar(stat = "identity") +
-  scale_y_continuous(labels = abs) + #, limits = max(export$ProjectedPop_final) * c(-1,1)) +
+  scale_y_continuous(labels = abs, limits = max(export$ProjectedPop_final) * c(-1,1)) +
   coord_flip() +
   facet_wrap(Region ~ year, ncol = 4, scales = "free")
-pp
+pp1
+pp2 <- export %>% filter(Region == "External IL") %>%
+  filter(year == 2025 | year == 2050) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
+  ggplot(aes(x = x, fill = Sex,
+             y = ifelse(test = Sex == "Male",
+                        yes = -ProjectedPop_final, no = ProjectedPop_final))) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = abs, limits = max(export %>% filter( Region == "External IL") %>% select(ProjectedPop_final)) * c(-1,1)) +
+  coord_flip() +
+  facet_wrap(Region ~ year, ncol = 4, scales = "free")
+pp2
+pp3 <- export %>% filter(Region == "External IN") %>%
+  filter(year == 2025 | year == 2050) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
+  ggplot(aes(x = x, fill = Sex,
+             y = ifelse(test = Sex == "Male",
+                        yes = -ProjectedPop_final, no = ProjectedPop_final))) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = abs, limits = max(export %>% filter( Region == "External IN") %>% select(ProjectedPop_final)) * c(-1,1)) +
+  coord_flip() +
+  facet_wrap(Region ~ year, ncol = 4, scales = "free")
+pp3
+pp4 <- export %>% filter(Region == "External WI") %>%
+  filter(year == 2025 | year == 2050) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
+  ggplot(aes(x = x, fill = Sex,
+             y = ifelse(test = Sex == "Male",
+                        yes = -ProjectedPop_final, no = ProjectedPop_final))) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = abs, limits = max(export %>% filter( Region == "External WI") %>% select(ProjectedPop_final)) * c(-1,1)) +
+  coord_flip() +
+  facet_wrap(Region ~ year, ncol = 4, scales = "free")
+pp4
 
 ######## GRAPHS OF WORKERS AND JOBS
 

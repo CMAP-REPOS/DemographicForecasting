@@ -47,7 +47,7 @@ print(baseyearpoptable[1:3,])
   start_Base_Mig <- Base_Mig
 
 
-} else if(startyr == "2040"){
+} else if(startyr == "2030" | startyr == "2040"){
   load("Output/Base_Migration.Rdata") # named Base_Mig
   Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
 

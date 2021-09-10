@@ -36,16 +36,21 @@ print(baseyearpoptable[1:3,])
   baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
 #Load in and reformat base year migration rate data
-  #load("Output/Base_Migration.Rdata") # named Base_Mig
-  #Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
+  load("Output/Base_Migration.Rdata") # named Base_Mig
+  Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
 
   # Load in 1991-95 base net migration rates (Berger)
-  Base_Mig <- read.csv("C:/Users/amcadams/Documents/R/base_mig_91-95.csv") %>%
-    select(-NetRates) %>%
-    rename(NetRates = NetRates_91.95)
+  #Base_Mig <- read.csv("C:/Users/amcadams/Documents/R/base_mig_91-95.csv") %>%
+  #  select(-NetRates) %>%
+  #  rename(NetRates = NetRates_91.95)
 
   start_Base_Mig <- Base_Mig
 
+
+#} else if(startyr == "2040"){
+#  Base_Mig <- read.csv("C:/Users/amcadams/Documents/R/base_mig_91-95.csv") %>%
+#    select(-NetRates) %>%
+#    rename(NetRates = NetRates_91.95)
 
 }else{
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))
@@ -164,7 +169,7 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 NetMig <- read_excel("Input/NetMigration_Berger_Full.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
-NMperiods <- head(NMperiods, 2)
+NMperiods <- tail(NMperiods, 2)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" "))
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups

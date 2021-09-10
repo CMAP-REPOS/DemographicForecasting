@@ -47,10 +47,9 @@ print(baseyearpoptable[1:3,])
   start_Base_Mig <- Base_Mig
 
 
-#} else if(startyr == "2040"){
-#  Base_Mig <- read.csv("C:/Users/amcadams/Documents/R/base_mig_91-95.csv") %>%
-#    select(-NetRates) %>%
-#    rename(NetRates = NetRates_91.95)
+} else if(startyr == "2040"){
+  load("Output/Base_Migration.Rdata") # named Base_Mig
+  Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
 
 }else{
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))
@@ -67,9 +66,7 @@ print(baseyearpoptable[1:3,])
   Base_Mig <- NETMIGPROJ[[startyr]]
   names(Base_Mig) <- c("Region","Age","Sex","NetRates")
 
-
 }
-
 
 ###### other definitions
 
@@ -169,14 +166,13 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 NetMig <- read_excel("Input/NetMigration_Berger_Full.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
-NMperiods <- tail(NMperiods, 2)
-print(paste("Net Migration Allocation Periods:", NMperiods[1],"and", NMperiods[2] ,sep=" "))
+NMperiods <- tail(NMperiods, 3)
+print(paste("Net Migration Allocation Periods:", NMperiods[1],NMperiods[2], "and", NMperiods[3] ,sep=" "))
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
 #filter out the correct Target Net Migrant numbers from the list and apply to the projection
 target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year) %>% rename(RegionNMT = NetMigration)
-
 
 
 #Target TM by sex - updated this code 8/27 to fix calculation errors
@@ -185,7 +181,7 @@ TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('M
 
 TM_Sex <- TM_Sex %>%
   group_by(Region, Sex) %>% mutate(Sum_NM = sum(NetTotal)) %>% group_by(Region, Period) %>%
-  mutate(SexProp = Sum_NM / sum(Sum_NM)) %>%
+  mutate(SexProp = abs(Sum_NM) / sum(abs(Sum_NM))) %>%
   full_join(target_NMlocal, by='Region') %>% mutate(TargetTM = SexProp*RegionNMT) %>%
   select(-RegionNMT) %>% rename(Agegrp = Age)
 

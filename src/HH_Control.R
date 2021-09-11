@@ -14,7 +14,7 @@ library(readxl)
 
 load("Output/GQData2.Rdata") # GQratios, GQ_Military
 load("Output/Head_of_HH.Rdata") # Headship
-load("Output/Migration_Projections.Rdata") #Mig_Proj
+#load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/PopData.Rdata") #POP
 
 startyear = 2010
@@ -56,7 +56,10 @@ while(i <= cycles){
 #---------------------- End of loop
 
 
-### De-list and reformat the outputs, generate summary tables
+###     De-list and reformat the outputs, generate summary tables
+
+### HOUSEHOLDS
+
 Households <- tibble()
 i=1
 for(item in HH_PROJ){
@@ -66,18 +69,44 @@ for(item in HH_PROJ){
   i <- i + 1
 }
 
-GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
-  arrange(x) %>% select(-x) %>% arrange(Region, Year)%>%
-  filter(Year != "2010" & Year != "2015") %>%
-  relocate(Year, .after = Age) %>%
-  relocate(totalGQ, Inst_GQ, nonInst_GQ, .after = Population) %>%
-  relocate(starts_with("GQ_Inst"), .after = Inst_GQ)
+Households <- Households %>%
+  rowwise() %>%
+  mutate(TotalPop = sum(Population_Female, Population_Male), .after = Region) %>%
+  mutate(TotalHHPop = sum(HH_Pop_Female, HH_Pop_Male), .after = Population_Male)
 
 HouseholdSummary <- Households %>%
   group_by(Year, Region) %>%
   summarize(FemaleHHPop = sum(HH_Pop_Female),
             MaleHHPop = sum(HH_Pop_Male),
-            HH_total = sum(Head_HH))
+            HH_total = sum(Head_HH)) %>%
+  rowwise() %>% mutate(TotHHPop = FemaleHHPop + MaleHHPop, .after = Region)
+
+#calculate the household Size (HHpop / HH) for each region and year
+
+HouseholdSize <- Households %>% group_by(Region, Year) %>%
+  summarise(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH)) %>% #sum up HHpop and Heads(aka # Households) by Region&Year
+  rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
+
+#calculate the HHpop, total Household Heads, and household size by Travel Model age group (<35, 35-65, 65+)
+#NOTE: household size really only useful for 65+
+travelModelHHs <- Households %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  mutate(agegroup = case_when(x < 35 ~ "a_lessthan35",
+                              x >= 65 ~ "c_over65",           #define age groups
+                              TRUE ~ "b_between35_65")) %>%   # a,b,c is for table sorting only
+  group_by(Region, agegroup, Year) %>%
+  summarize(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH)) %>%
+  rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
+
+#calculate the HHpop, total Household Heads, and household size by <65 and 65+
+
+HHs_65split <- Households %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  mutate(agegroup = case_when(x >= 65 ~ "b_over65",
+                              TRUE ~ "a_lessthan65")) %>%
+  group_by(Region, agegroup, Year) %>%
+  summarize(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH)) %>%
+  rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
+
+### GROUP QUARTERS
 
 GQ_full <- tibble()
 i=1
@@ -124,15 +153,27 @@ GQ_summary_collegemil <- GQ_full %>% group_by(Region, Year, Sex) %>%
   summarize(GQ_Military = sum(GQ_NonInst_Military),
             GQ_College = round(sum(GQ_NonInst_College)))
 
-GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Region", "Year", "Sex"))
+GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Region", "Year", "Sex")) %>%
+  group_by(Region,Year) %>%
+  summarize(GQ_Military = sum(GQ_Military),
+            GQ_College = sum(GQ_College),
+            GQ_NonInst_Other_16_to_64 = sum(GQ_NonInst_Other_16_to_64),
+            GQ_NonInst_Other_65_plus = sum(GQ_NonInst_Other_65_plus))
 
 
 
 write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
 write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/export_HouseholdsSummary.csv")
+write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
+write.csv(travelModelHHs, file = "C:/Users/amcadams/Documents/R/export_travelmodelHHs.csv")
+write.csv(HHs_65split, file = "C:/Users/amcadams/Documents/R/export_Households_Age65split.csv")
+
 write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
 write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
+write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
+
+
 
 
 #save(HH_PROJ, file="Output/HH_Proj.Rdata")

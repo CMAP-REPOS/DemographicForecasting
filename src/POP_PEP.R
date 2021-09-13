@@ -35,8 +35,6 @@ PEP_remove <- c("Under 18 years", "16 years and over", "18 years and over", "65 
             "Median age", "All ages")
 
 
-
-
 # Extract Decennial Census variables from SF1 and join to decennial pop data ---------------------------------
 
 POP_DATA <- tibble()
@@ -62,7 +60,9 @@ for (YEAR in POP_YEARS) {
   POP[[as.character(YEAR)]] <- POP_DATA %>%
     left_join(POP_VARS, by = c("variable" = "name")) %>%
     select(-variable, -label, -concept) %>%
+    separate(NAME, c("County", "State"), sep = "\\, ") %>%
     separate(Category, c("Sex", "Age"), sep = " ", extra = "merge") %>%
+    rename(Population = value) %>%
     mutate(
       Year = YEAR,
       Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
@@ -110,7 +110,7 @@ for (STATE in names(COUNTIES)) {
 for(YEAR in PEP_YEARS) {
 
   POP[[as.character(YEAR)]] <- PEP_DATA %>%
-    filter(Year == YEAR, !(Age %in% remove)) %>% # Restrict to specific year and age groupings
+    filter(Year == YEAR, !(Age %in% PEP_remove)) %>% # Restrict to specific year and age groupings
     arrange(GEOID)
 }
 
@@ -124,6 +124,9 @@ POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
 POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020.xlsx")
 
 POP <- POP[as.character(sort(as.numeric(names(POP))))]
+
+
+#save(POP, file="Output/POP_PEP.Rdata")
 
 write.csv(POP, "/Users/mweber/Desktop/POP_New.csv")
 

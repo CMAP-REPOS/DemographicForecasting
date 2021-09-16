@@ -209,9 +209,6 @@ NM_Under55 <- NetMig %>% filter(Period == NMperiods[3], Age == 'Total', Sex %in%
   select(-Age.x, -Age.y, -NetMigration, -NM_O55) %>%
   mutate(Age = 'Under 55')
 
-## ERROR OCCURS HERE ##
-
-
 #Change in net migrants from prior 5-year period
 NM_Change_Prior_under55 <- inner_join(TM_55, NM_Under55, by=c('Region', 'Sex', 'Period')) %>%
   mutate(NM_Change_U55 = case_when((TargetTM_U55 && NM_U55 < 0) ~ TargetTM_U55 - NM_U55,

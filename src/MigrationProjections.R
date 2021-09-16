@@ -176,7 +176,7 @@ target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year) %>% rena
 
 
 #Target TM by sex - updated this code 8/27 to fix calculation errors
-TM_Sex <- NetMig %>% filter(Period %in% NMperiods, Age == 'Total', Sex %in% c('Male', 'Female')) %>%
+TM_Sex <- NetMig %>% filter(Period %in% NMperiods[2:3], Age == 'Total', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region, Period) %>% mutate(NetTotal = sum(NetMigration)) %>% select(-NetMigration)
 
 TM_Sex <- TM_Sex %>%
@@ -186,12 +186,11 @@ TM_Sex <- TM_Sex %>%
   select(-RegionNMT) %>% rename(Agegrp = Age)
 
 #Target TM <55 / 55+ by sex
-TM_55 <- NetMig %>% filter(Period %in% NMperiods, Age == '55+', Sex %in% c('Male', 'Female')) %>%
+TM_55 <- NetMig %>% filter(Period %in% NMperiods[2:3], Age == '55+', Sex %in% c('Male', 'Female')) %>%
   group_by(Sex, Region) %>% mutate(NetTotal2 = sum(NetMigration)) %>%
   group_by(Period, Region) %>% left_join(TM_Sex, by=c('Region', 'Period', 'Sex')) %>%
   mutate(Sex55plusProp = NetTotal2/Sum_NM) %>%
   mutate(TargetTM_55Plus = TargetTM*Sex55plusProp) %>%
-  #mutate(SexU55Prop = 1-Sex55plusProp) %>%
   mutate(TargetTM_U55 = TargetTM - TargetTM_55Plus) %>%
   ungroup() %>% unique()
 
@@ -201,23 +200,33 @@ TM_Sex <- TM_Sex %>% ungroup() %>%
 
 #Net Migrants from prior5-year period
 
-NM_55Plus <-  NetMig %>% filter(Period == NMperiods[2], Age == '55+', Sex %in% c('Male', 'Female')) %>%
+NM_55Plus <-  NetMig %>% filter(Period == NMperiods[3], Age == '55+', Sex %in% c('Male', 'Female')) %>%
   group_by(Region, Sex) %>% rename(NM_O55 = NetMigration)
 
-NM_Under55 <- NetMig %>% filter(Period == NMperiods[2], Age == 'Total', Sex %in% c('Male', 'Female')) %>%
+NM_Under55 <- NetMig %>% filter(Period == NMperiods[3], Age == 'Total', Sex %in% c('Male', 'Female')) %>%
   group_by(Region, Sex) %>% full_join(NM_55Plus, by=c('Region', 'Period', 'Sex')) %>%
   mutate(NM_U55 = NetMigration - NM_O55) %>%
   select(-Age.x, -Age.y, -NetMigration, -NM_O55) %>%
   mutate(Age = 'Under 55')
 
+## ERROR OCCURS HERE ##
+
+
 #Change in net migrants from prior 5-year period
 NM_Change_Prior_under55 <- inner_join(TM_55, NM_Under55, by=c('Region', 'Sex', 'Period')) %>%
-  mutate(NM_Change_U55 = TargetTM_U55 - NM_U55) %>% select(Period, Region, Sex, NM_Change_U55) %>% mutate(Age = "Under 55")
+  mutate(NM_Change_U55 = case_when((TargetTM_U55 && NM_U55 < 0) ~ TargetTM_U55 - NM_U55,
+                                   (TargetTM_U55 && NM_U55 > 0) ~ NM_U55 - TargetTM_U55,
+                                   (TargetTM_U55 > 0 && NM_U55 < 0) ~ (TargetTM_U55 - NM_U55)*-1,
+                                   (TargetTM_U55 < 0 && NM_U55 > 0) ~ abs(TargetTM_U55 - NM_U55))) %>%
+                                    select(Period, Region, Sex, NM_Change_U55) %>% mutate(Age = "Under 55")
 
 NM_Change_Prior_over55 <- inner_join(TM_55, NM_55Plus, by=c('Region', 'Sex','Period')) %>%
-  mutate(NM_Change_U55 = TargetTM_55Plus - NM_O55) %>% select(Period, Region, Sex, NM_Change_U55) %>%
-  mutate(Age = 'Over 55')
-
+  mutate(NM_Change_55Plus = case_when((TargetTM_55Plus && NM_O55 < 0) ~ TargetTM_55Plus - NM_O55,
+            (TargetTM_55Plus && NM_O55 > 0) ~ NM_O55 - TargetTM_55Plus,
+            (TargetTM_55Plus > 0 && NM_O55 < 0) ~ (TargetTM_55Plus - NM_O55)*-1,
+            (TargetTM_55Plus < 0 && NM_O55 > 0) ~ abs(TargetTM_55Plus - NM_O55))) %>%
+            select(Period, Region, Sex, NM_Change_55Plus) %>%
+            mutate(Age = 'Over 55')
 
 
 #Expected Populations of Current Period
@@ -234,7 +243,7 @@ K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Regio
   mutate(kfactor = NM_Change_U55/ProjectedPop) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
 
 K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(kfactor = NM_Change_U55/ProjectedPop) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
+  mutate(kfactor = NM_Change_55Plus/ProjectedPop) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
 
 K_factors <- bind_rows(K_Under55, K_Over55) %>%
   select(-Period) %>%

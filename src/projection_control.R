@@ -31,10 +31,10 @@ series
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
-target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
+target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <-  "worker/jobs balance, run #1"
+tNMfile <-  "flat averages, run #1"
 
 
 ######## set up the population projection and migration projection lists
@@ -136,4 +136,4 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
   mutate(TNMtype = tNMfile) #add column that documents WHICH SET of target net migrant values were used for this projection
 
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")
-#write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
+write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")

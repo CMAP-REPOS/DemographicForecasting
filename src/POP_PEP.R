@@ -83,10 +83,7 @@ for (YEAR in POP_YEARS) {
 }
 
 
-View(POP[["2010"]])
-
-
-
+# Pull PEP data, save in POP list ------------------------
 PEP_DATA <- tibble()
 
 for (STATE in names(COUNTIES)) {
@@ -114,10 +111,7 @@ for(YEAR in PEP_YEARS) {
     arrange(GEOID)
 }
 
-View(POP[["2013"]])
-
-
-# Upload Excel files and save final POP data file -------------------------------
+# Import Excel files for select years and save final POP data file -------------------------------
 
 POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")
 POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
@@ -128,5 +122,5 @@ POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
 #save(POP, file="Output/POP_PEP.Rdata")
 
-write.csv(POP, "/Users/mweber/Desktop/POP_New.csv")
+#write.csv(POP, "/Users/mweber/Desktop/POP_New.csv")
 

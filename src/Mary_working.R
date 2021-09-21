@@ -169,7 +169,7 @@ print(paste("Net Migration Allocation Periods:", NMperiods[1],NMperiods[2],NMper
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
 #filter out the correct Target Net Migrant numbers from the list and apply to the projection; update in projection_control.R
-target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year) %>% rename(RegionNMT = NetMigration)
+target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year) # %>% rename(RegionNMT = NetMigration)
 
 #NM by Sex (Excel rows 14-21)
 NM_By_Sex <- NetMig %>% filter(Period %in% NMperiods[1:2], Sex %in% c('Male', 'Female'))
@@ -181,8 +181,8 @@ BaseYears_NM <- NM_By_Sex %>% select(-Age) %>% group_by(Region, Sex, Period) %>%
   select(-NetMigration, -Period) %>% distinct() %>%
   group_by(Region) %>%
   mutate(Prop_NM = Sum_BaseYears / sum(Sum_BaseYears))%>%
-  left_join(target_NM, by = ('Region')) %>%
-  mutate(target_next_cycle = Prop_NM * NetMigration) %>% select(-Year) %>% distinct()
+  left_join(target_NMlocal, by = ('Region')) %>%
+  mutate(target_next_cycle = Prop_NM * NetMigration) #%>% select(-Year) %>% distinct()
 
 #Sum NM by Sex (Excel rows 23-27)
 Sum_NM_Sex <- NM_By_Sex %>%
@@ -208,8 +208,9 @@ NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[2])
 NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex", "Age")) %>%
   select(Region, Sex, Age, TargetNM, NetMigration.x) %>%
   rename(NetMigration = NetMigration.x) %>%
-  mutate(NM_Change = case_when((TargetNM && NetMigration < 0) ~ NetMigration - TargetNM,
-                               (TargetNM && NetMigration > 0) ~ TargetNM - NetMigration,
+  rowwise() %>%
+  mutate(NM_Change = case_when((TargetNM < 0 && NetMigration < 0) ~ NetMigration - TargetNM,
+                               (TargetNM > 0 && NetMigration > 0) ~ TargetNM - NetMigration,
                                (TargetNM > 0 && NetMigration < 0) ~ (TargetNM - NetMigration)*-1,
                                (TargetNM < 0 && NetMigration > 0) ~ abs(TargetNM - NetMigration))) %>%
   select(Region, Sex, Age, NM_Change)

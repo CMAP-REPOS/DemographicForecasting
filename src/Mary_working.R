@@ -65,8 +65,12 @@ if(startyr == baseyr){
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 
 #used for k factor calculations:
-under55 <- c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years')
-over55 <- c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
+group1 <- c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years')
+group2 <- c('25 to 29 years', '30 to 34 years', '35 to 39 years')
+group3 <- c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years')
+group4 <- c('70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
+
+
 
 # Step 1: Age-Sex Specific Survival Rates, 2020-2050, Midpoints of 5-year Intervals
 
@@ -156,7 +160,6 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 
-#Add in additional age groups here
 
 NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
@@ -199,52 +202,36 @@ target_NM_Sex <- full_join(NM_Proportions, BaseYears_NM, by=c('Region', 'Sex')) 
 NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[2])
 
 
+# POSITIVE AND POSITIVE SCENARIO NOT WORKING
 
-# UPDATED TO HERE
-
-
-
-
-
-
-
-#Change in net migrants from prior 5-year period
-NM_Change_Prior_under55 <- inner_join(TM_55, NM_Under55, by=c('Region', 'Sex', 'Period')) %>%
-  mutate(NM_Change_U55 = case_when((TargetTM_U55 && NM_U55 < 0) ~ TargetTM_U55 - NM_U55,
-                                   (TargetTM_U55 && NM_U55 > 0) ~ NM_U55 - TargetTM_U55,
-                                   (TargetTM_U55 > 0 && NM_U55 < 0) ~ (TargetTM_U55 - NM_U55)*-1,
-                                   (TargetTM_U55 < 0 && NM_U55 > 0) ~ abs(TargetTM_U55 - NM_U55))) %>%
-  select(Period, Region, Sex, NM_Change_U55) %>% mutate(Age = "Under 55")
-
-NM_Change_Prior_over55 <- inner_join(TM_55, NM_55Plus, by=c('Region', 'Sex','Period')) %>%
-  mutate(NM_Change_55Plus = case_when((TargetTM_55Plus && NM_O55 < 0) ~ TargetTM_55Plus - NM_O55,
-                                      (TargetTM_55Plus && NM_O55 > 0) ~ NM_O55 - TargetTM_55Plus,
-                                      (TargetTM_55Plus > 0 && NM_O55 < 0) ~ (TargetTM_55Plus - NM_O55)*-1,
-                                      (TargetTM_55Plus < 0 && NM_O55 > 0) ~ abs(TargetTM_55Plus - NM_O55))) %>%
-  select(Period, Region, Sex, NM_Change_55Plus) %>%
-  mutate(Age = 'Over 55')
+#Change in net migrants from prior 5-year period (Excel 45-48)
+NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex", "Age")) %>%
+  select(Region, Sex, Age, TargetNM, NetMigration.x) %>%
+  rename(NetMigration = NetMigration.x) %>%
+  mutate(NM_Change = case_when((TargetNM && NetMigration < 0) ~ NetMigration - TargetNM,
+                               (TargetNM && NetMigration > 0) ~ TargetNM - NetMigration,
+                               (TargetNM > 0 && NetMigration < 0) ~ (TargetNM - NetMigration)*-1,
+                               (TargetNM < 0 && NetMigration > 0) ~ abs(TargetNM - NetMigration))) %>%
+  select(Region, Sex, Age, NM_Change)
 
 
-#Expected Populations of Current Period
-expectedpop_under55 <- expectedpop %>% filter(Age %in% under55) %>%
-  group_by(Region, Sex) %>% mutate(ProjectedPop = sum(na.omit(ProjectedPop))) %>% distinct() %>%
-  mutate(Age = 'Under 55')
+#Expected Populations of Current Period (Excel 51-54)
+#These numbers have changes since initial Excel model
+sum_expectedPop <- expectedpop %>%
+  mutate(Age_Group = case_when(Age %in% group1 ~ '0 to 24 years',
+                               Age %in% group2 ~ '25 to 39 years',
+                               Age %in% group3 ~ '40 - 69 years',
+                               Age %in% group4 ~ '70 years and older')) %>%
+  select(-Age, -baseyrpop) %>%
+  rename(Age = Age_Group) %>%
+  group_by(Region, Sex, Age) %>% mutate(ProjectedPop = sum(na.omit(ProjectedPop))) %>% distinct()
 
-expectedpop_over55 <- expectedpop %>% filter(Age %in% over55) %>%
-  group_by(Region, Sex) %>% mutate(ProjectedPop = sum(na.omit(ProjectedPop))) %>% distinct() %>%
-  mutate(Age = 'Over 55')
 
-#Change in Net Migration Rates (K) from Prior Period
-K_Under55 <- full_join(NM_Change_Prior_under55, expectedpop_under55, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(kfactor = NM_Change_U55/ProjectedPop) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
+#Change in Net Migration Rates (K) from Prior Period (Excel 57-60)
+K_factors <- full_join(sum_expectedPop, NM_Change_Prior, by=c('Region', 'Sex', 'Age')) %>%
+  mutate(kfactor = NM_Change/ProjectedPop)
 
-K_Over55 <- full_join(NM_Change_Prior_over55, expectedpop_over55, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(kfactor = NM_Change_55Plus/ProjectedPop) %>% select(Period, Region, Sex, Age, kfactor) %>% unique()
 
-K_factors <- bind_rows(K_Under55, K_Over55) %>%
-  select(-Period) %>%
-  pivot_wider(names_from = Age, values_from = c('kfactor')) %>%
-  rename_with(make.names)
 
 # Step 6: Apply K factors to NMRs in order to calculate Net Migration
 

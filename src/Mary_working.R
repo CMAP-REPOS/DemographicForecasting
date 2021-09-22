@@ -160,7 +160,6 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 
-
 NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
 NMperiods <- tail(NMperiods, 3)
@@ -202,8 +201,6 @@ target_NM_Sex <- full_join(NM_Proportions, BaseYears_NM, by=c('Region', 'Sex')) 
 NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[2])
 
 
-# POSITIVE AND POSITIVE SCENARIO NOT WORKING
-
 #Change in net migrants from prior 5-year period (Excel 45-48)
 NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex", "Age")) %>%
   select(Region, Sex, Age, TargetNM, NetMigration.x) %>%
@@ -217,7 +214,7 @@ NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex
 
 
 #Expected Populations of Current Period (Excel 51-54)
-#These numbers have changes since initial Excel model
+#Note: These numbers have changed since initial Excel model
 sum_expectedPop <- expectedpop %>%
   mutate(Age_Group = case_when(Age %in% group1 ~ '0 to 24 years',
                                Age %in% group2 ~ '25 to 39 years',
@@ -230,36 +227,39 @@ sum_expectedPop <- expectedpop %>%
 
 #Change in Net Migration Rates (K) from Prior Period (Excel 57-60)
 K_factors <- full_join(sum_expectedPop, NM_Change_Prior, by=c('Region', 'Sex', 'Age')) %>%
-  mutate(kfactor = NM_Change/ProjectedPop)
-
+  mutate(kfactor = NM_Change/ProjectedPop) %>% select(-ProjectedPop, -NM_Change) %>%
+  pivot_wider(names_from = "Age", values_from=c("kfactor"))
 
 
 # Step 6: Apply K factors to NMRs in order to calculate Net Migration
 
 Migration <- Base_Mig %>%
-  left_join(K_factors, by=c('Region', 'Sex')) %>%
-  pivot_wider(names_from = "Sex", values_from=c("NetRates", "Under.55", "Over.55")) %>%
-  rename(K_U55_Female = Under.55_Female, K_O55_Female = Over.55_Female, K_U55_Male = Under.55_Male, K_O55_Male = Over.55_Male) %>%
-  arrange(Region) %>%
+  full_join(K_factors, by=c('Region', 'Sex')) %>%
+  group_by(Region) %>%
+  pivot_wider(names_from = "Sex", values_from=c("NetRates", "0 to 24 years", "25 to 39 years", "40 - 69 years", "70 years and older")) %>%
+  rename(Male_0to24 = '0 to 24 years_Male',
+         Male_25to39 = '25 to 39 years_Male',
+         Male_40to69 = '40 - 69 years_Male',
+         Male_70Plus = '70 years and older_Male',
+         Female_0to24 = '0 to 24 years_Female',
+         Female_25to39 = '25 to 39 years_Female',
+         Female_40to69 = '40 - 69 years_Female',
+         Female_70Plus = '70 years and older_Female')
 
-  mutate(Male_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + K_U55_Male + K_U55_Female)/2,
-                              Age %in% c('15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years') ~ NetRates_Male + K_U55_Male,
-                              Age %in% c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over') ~ NetRates_Male + K_O55_Male)) %>%
+Migration <- Migration %>% group_by(Region) %>%
+  mutate(Male_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + Male_0to24 + Female_0to24)/2,
+                              Age %in% c('15 to 19 years', '20 to 24 years') ~ NetRates_Male + Male_0to24,
+                              Age %in% c('25 to 29 years', '30 to 34 years', '35 to 39 years') ~ NetRates_Male + Male_25to39,
+                              Age %in% c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years') ~ NetRates_Male + Male_40to69,
+                              TRUE ~ NetRates_Male + Male_70Plus)) %>%
+   mutate(Female_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + Male_0to24 + Female_0to24)/2,
+                               Age %in% c('15 to 19 years', '20 to 24 years') ~ NetRates_Female + Female_0to24,
+                               Age %in% c('25 to 29 years', '30 to 34 years', '35 to 39 years') ~ NetRates_Female + Female_25to39,
+                               Age %in% c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years') ~ NetRates_Female + Female_40to69,
+                               TRUE ~ NetRates_Female + Female_70Plus))
 
-  mutate(Male_NMR = case_when(Age == "50 to 54 years" ~ (lead(Male_NMR) + lag(Male_NMR))/2,
-                              TRUE ~ Male_NMR)) %>%
 
-  mutate(Female_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + K_U55_Male + K_U55_Female)/2,
-                                Age %in% c('15 to 19 years', '20 to 24 years', '25 to 29 years', '30 to 34 years', '35 to 39 years', '40 to 44 years', '45 to 49 years', '50 to 54 years') ~ NetRates_Female + K_U55_Female,
-                                Age %in% c('55 to 59 years', '60 to 64 years', '65 to 69 years', '70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over') ~ NetRates_Female + K_O55_Female)) %>%
-
-  mutate(Male_NMR = case_when(Age == "50 to 54 years" ~ (lead(Female_NMR) + lag(Female_NMR))/2,
-                              TRUE ~ Male_NMR)) %>%
-  select(1:2 | ends_with("NMR")) %>%
-  pivot_longer(cols = ends_with("NMR"), names_to = "Sex", values_to = "NMRs") %>%
-  mutate(Sex = case_when(Sex == "Male_NMR" ~ "Male",
-                         TRUE ~ "Female"))
-
+# UPDATED TO HERE
 
 # Step 7: Apply Net Migration to Expected Population in order to calculate Projected Population
 

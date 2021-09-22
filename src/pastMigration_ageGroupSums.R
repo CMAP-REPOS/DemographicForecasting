@@ -1,11 +1,12 @@
-# CMAP | Alexis McAdams, Mary Weber | 9/20/2021
+# CMAP | Alexis McAdams| 9/20/2021
 #
 # This script imports previous Net Migration data and calculates
-# total net migration for different age categories. This process
-# directly informs the K-factor calculations in the MigrationProjections.R script.
+# total net migration sums for different age categories, which are defined in rows 21-26 below.
+# This process directly informs the K-factor calculations in the
+# MigrationProjections.R (or Mary_working.R) script.
 #
 
-#import Berger and Migration.R output
+#import Berger data (copied by AM from "Forecast Model_v09-Trans+Edu Employment.xlsx") and Migration.R output
 pastNetMig <- read_excel("Input/NetMigration_Berger_Full_sexandage.xlsx")     #importing Berger data
 load("Output/Base_Migration.Rdata") # named Base_Mig
 
@@ -17,7 +18,7 @@ recentNetMig <- Base_Mig %>% select(Region, Age, Sex, SurvMigrants2018) %>%   #i
 pastNetMig <- bind_rows(pastNetMig, recentNetMig) %>%
   mutate(endyear = substr(Period, 6,9))
 
-#define age groups
+#define age groups and age group names
 agegroups <- list( c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years'),
                    c('25 to 29 years', '30 to 34 years', '35 to 39 years'),
                    c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years'),
@@ -25,7 +26,7 @@ agegroups <- list( c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19
 
 names(agegroups) <- c("0 to 24 years", "25 to 39 years", "40 to 69 years", "70 years and older")
 
-#assign the agegroupings, then calculate sum totals by age group and sex
+#assign the agegroups to the full dataset, then calculate sum totals by age group and sex
 i <- 1
 for(item in agegroups){
   pastNetMig <- pastNetMig %>%
@@ -43,10 +44,12 @@ netMigSums <- pastNetMig %>% group_by(Region, Period, Sex, Source, agegroup) %>%
 #export
 save(netMigSums, file="Output/pastMigration_ageGroupSums.Rdata")
 
+#copy this line for import:
+# load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums
 
 
 
-# -----------
+# ----------- SIDE ITEMS
 
 #side item - plot out the net migration totals for each age group
 library(ggplot2)

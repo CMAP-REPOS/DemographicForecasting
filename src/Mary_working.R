@@ -70,7 +70,7 @@ group2 <- c('25 to 29 years', '30 to 34 years', '35 to 39 years')
 group3 <- c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years')
 group4 <- c('70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
 
-
+Age_Groups <- list(group1, group2, group3, group4)
 
 # Step 1: Age-Sex Specific Survival Rates, 2020-2050, Midpoints of 5-year Intervals
 
@@ -270,19 +270,73 @@ Projections <- Migration %>% left_join(expectedpop, by=c("Region", "Age", "Sex")
   mutate(NMs_Living =  ProjectedPop * NMRs)  %>%
   mutate(NMs_Living_Abs =  abs(ProjectedPop * NMRs))
 
-sum_NM <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM = sum(NMs_Living))
-sum_NM_Abs <- Projections %>% filter(Age %in% under55) %>% group_by(Region, Sex) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
-Target_TM_U55 <- TM_55 %>% select(Region, Sex, TargetTM_U55) %>% unique()
 
-Projections <- Projections %>% left_join(sum_NM, by=c('Region', 'Sex')) %>% left_join(sum_NM_Abs, by=c("Region", "Sex")) %>%
-  left_join(Target_TM_U55 , by=c('Region', 'Sex'))
+# sum net migrants by broad k-factor age groups
+i <- 1
+NM_by_Age <- tibble()
+temp <- tibble()
+
+while(i <= length(Age_Groups)) {
+
+  temp <- Projections %>% filter(Age %in% Age_Groups[[i]])
+
+  temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
+                                                          Age %in% Age_Groups[[2]] ~ '25 to 39 years',
+                                                          Age %in% Age_Groups[[3]]~ '40 - 69 years',
+                                                          Age %in% Age_Groups[[4]] ~ '70 years and older'))
+
+  temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM = sum(NMs_Living))
+
+  NM_by_Age <- rbind(temp, NM_by_Age)
+
+
+  i = i + 1
+}
+
+#NM_by_Age <- NM_by_Age %>% pivot_wider(names_from = "Age_Group", values_from=c("sum_NM"))
+
+# sum absolute values of net migrants by broad k-factor age groups
+i <- 1
+Abs_NM_by_Age <- tibble()
+temp <- tibble()
+
+while(i <= length(Age_Groups)) {
+
+  temp <- Projections %>% filter(Age %in% Age_Groups[[i]])
+
+  temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
+                                                Age %in% Age_Groups[[2]] ~ '25 to 39 years',
+                                                Age %in% Age_Groups[[3]]~ '40 - 69 years',
+                                                Age %in% Age_Groups[[4]] ~ '70 years and older'))
+
+  temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
+
+  Abs_NM_by_Age <- rbind(temp, Abs_NM_by_Age)
+
+  i = i + 1
+}
+
+NM <- full_join(NM_by_Age, Abs_NM_by_Age, by =c('Region', "Age_Group", "Sex"))
+#Abs_NM_by_Age <- Abs_NM_by_Age %>% pivot_wider(names_from = "Sex", values_from=c("sum_NM_Abs"))
+
+remove(temp)
+remove(i)
+
+# pull in target NM by sex, age group
+target_NM_Sex <- target_NM_Sex %>% select(Region, Sex, Age, TargetNM) %>% rename(Age_Group = Age) %>%
+  full_join(NM, by=c('Region', 'Age_Group', 'Sex'))
+
+#UPDATED TO HERE
+
+# Pull all data together for final calculations
+
+Projections <- Projections %>% left_join(NM_by_Age, by=c('Region', 'Sex')) %>% left_join(Abs_NM_by_Age, by=c("Region", "Sex")) %>%
+  left_join(target_NM_Sex , by=c('Region', 'Sex'))
 
 Projections <- Projections %>% mutate(projNetMigrants = round((NMs_Living_Abs/sum_NM_Abs)*(TargetTM_U55-sum_NM)+NMs_Living),0) %>%
   mutate(ProjectedPop_final = round(ProjectedPop + projNetMigrants,0))
 
 Migrants <- Projections %>% select(Region, Age, Sex, projNetMigrants)
-
-
 
 
 # Step 8: Save Population projection, Net Migration rates, and Total Migration

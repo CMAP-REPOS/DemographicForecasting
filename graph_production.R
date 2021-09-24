@@ -240,7 +240,7 @@ netmig_stackup <- components_all %>%
   mutate(category = "forecast") %>%
   rename(Year = year) %>%
   bind_rows(target_NM)
-b <- netmig_stackup %>%
+b <- netmig_stackup %>% #filter(Region == "CMAP Region") %>%
   ggplot(aes(x=Year, y= NetMigration, group = category, color = category)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales = "free") +
   ggtitle("Target vs Calculated Net Migration", subtitle = paste("Name of file containing the values: ", tNMfile))

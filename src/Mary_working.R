@@ -163,7 +163,7 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 NetMig <- netMigSums %>% select(-Source)
 #NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
-NMperiods <- tail(NMperiods, 2)
+NMperiods <- tail(NMperiods, 3)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],NMperiods[2],NMperiods[3],sep=" "))
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups

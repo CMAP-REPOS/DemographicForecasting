@@ -16,7 +16,9 @@ recentNetMig <- Base_Mig %>% select(Region, Age, Sex, SurvMigrants2018) %>%   #i
   rename(NetMigration = SurvMigrants2018)
 
 pastNetMig <- bind_rows(pastNetMig, recentNetMig) %>%
-  mutate(endyear = substr(Period, 6,9))
+  mutate(endyear = substr(Period, 6,9)) %>%
+  mutate(agegroup = "TEMP")
+
 
 #define age groups and age group names
 agegroups <- list( c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years'),
@@ -39,10 +41,11 @@ netMigSums <- pastNetMig %>% group_by(Region, Period, Sex, Source, agegroup) %>%
   summarize(NetMigration = sum(NetMigration)) %>%
   select(Period,Region,NetMigration, Sex, agegroup, Source) %>%
   mutate(NetMigration = round(NetMigration, 0)) %>%
-  rename(Age = agegroup)
+  rename(Age = agegroup) %>%
+  ungroup()
 
 #export
-save(netMigSums, file="Output/pastMigration_ageGroupSums.Rdata")
+#save(netMigSums, file="Output/pastMigration_ageGroupSums.Rdata")
 
 #copy this line for import:
 # load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums

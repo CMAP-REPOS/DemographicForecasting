@@ -160,9 +160,10 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 
-NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+NetMig <- netMigSums %>% select(-Source)
+#NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
-NMperiods <- tail(NMperiods, 3)
+NMperiods <- tail(NMperiods, 2)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],NMperiods[2],NMperiods[3],sep=" "))
 
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
@@ -171,7 +172,7 @@ print(paste("Net Migration Allocation Periods:", NMperiods[1],NMperiods[2],NMper
 target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year) # %>% rename(RegionNMT = NetMigration)
 
 #NM by Sex (Excel rows 14-21)
-NM_By_Sex <- NetMig %>% filter(Period %in% NMperiods[1:2], Sex %in% c('Male', 'Female'))
+NM_By_Sex <- NetMig %>% filter(Period %in% NMperiods, Sex %in% c('Male', 'Female'))
 
 # NM calculations using base year periods (Excel rows 8-12)
 BaseYears_NM <- NM_By_Sex %>% select(-Age) %>% group_by(Region, Sex, Period) %>%
@@ -218,7 +219,7 @@ NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex
 sum_expectedPop <- expectedpop %>%
   mutate(Age_Group = case_when(Age %in% group1 ~ '0 to 24 years',
                                Age %in% group2 ~ '25 to 39 years',
-                               Age %in% group3 ~ '40 - 69 years',
+                               Age %in% group3 ~ '40 to 69 years',
                                Age %in% group4 ~ '70 years and older')) %>%
   select(-Age, -baseyrpop) %>%
   rename(Age = Age_Group) %>%
@@ -236,14 +237,14 @@ K_factors <- full_join(sum_expectedPop, NM_Change_Prior, by=c('Region', 'Sex', '
 Migration <- Base_Mig %>%
   full_join(K_factors, by=c('Region', 'Sex')) %>%
   group_by(Region) %>%
-  pivot_wider(names_from = "Sex", values_from=c("NetRates", "0 to 24 years", "25 to 39 years", "40 - 69 years", "70 years and older")) %>%
+  pivot_wider(names_from = "Sex", values_from=c("NetRates", "0 to 24 years", "25 to 39 years", "40 to 69 years", "70 years and older")) %>%
   rename(Male_0to24 = '0 to 24 years_Male',
          Male_25to39 = '25 to 39 years_Male',
-         Male_40to69 = '40 - 69 years_Male',
+         Male_40to69 = '40 to 69 years_Male',
          Male_70Plus = '70 years and older_Male',
          Female_0to24 = '0 to 24 years_Female',
          Female_25to39 = '25 to 39 years_Female',
-         Female_40to69 = '40 - 69 years_Female',
+         Female_40to69 = '40 to 69 years_Female',
          Female_70Plus = '70 years and older_Female')
 
 Migration <- Migration %>% group_by(Region) %>%
@@ -281,7 +282,7 @@ while(n <= length(Age_Groups)) {
 
   temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
                                                           Age %in% Age_Groups[[2]] ~ '25 to 39 years',
-                                                          Age %in% Age_Groups[[3]]~ '40 - 69 years',
+                                                          Age %in% Age_Groups[[3]]~ '40 to 69 years',
                                                           Age %in% Age_Groups[[4]] ~ '70 years and older'))
 
   temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM = sum(NMs_Living))
@@ -303,7 +304,7 @@ while(n <= length(Age_Groups)) {
 
   temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
                                                 Age %in% Age_Groups[[2]] ~ '25 to 39 years',
-                                                Age %in% Age_Groups[[3]]~ '40 - 69 years',
+                                                Age %in% Age_Groups[[3]]~ '40 to 69 years',
                                                 Age %in% Age_Groups[[4]] ~ '70 years and older'))
 
   temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
@@ -326,7 +327,7 @@ target_NM_Sex <- target_NM_Sex %>% select(Region, Sex, Age, TargetNM) %>% rename
 
 Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
                                               Age %in% Age_Groups[[2]] ~ '25 to 39 years',
-                                              Age %in% Age_Groups[[3]]~ '40 - 69 years',
+                                              Age %in% Age_Groups[[3]]~ '40 to 69 years',
                                               Age %in% Age_Groups[[4]] ~ '70 years and older'))
 
 

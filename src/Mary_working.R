@@ -262,7 +262,6 @@ Migration <- Migration %>% group_by(Region) %>%
                   mutate(Sex = case_when(Sex == "Male_NMR" ~ "Male",
                                                    TRUE ~ "Female"))
 
-# UPDATED TO HERE
 
 # Step 7: Apply Net Migration to Expected Population in order to calculate Projected Population
 
@@ -272,13 +271,13 @@ Projections <- Migration %>% left_join(expectedpop, by=c("Region", "Age", "Sex")
 
 
 # sum net migrants by broad k-factor age groups
-i <- 1
+n <- 1
 NM_by_Age <- tibble()
 temp <- tibble()
 
-while(i <= length(Age_Groups)) {
+while(n <= length(Age_Groups)) {
 
-  temp <- Projections %>% filter(Age %in% Age_Groups[[i]])
+  temp <- Projections %>% filter(Age %in% Age_Groups[[n]])
 
   temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
                                                           Age %in% Age_Groups[[2]] ~ '25 to 39 years',
@@ -290,19 +289,17 @@ while(i <= length(Age_Groups)) {
   NM_by_Age <- rbind(temp, NM_by_Age)
 
 
-  i = i + 1
+  n = n + 1
 }
 
-#NM_by_Age <- NM_by_Age %>% pivot_wider(names_from = "Age_Group", values_from=c("sum_NM"))
-
 # sum absolute values of net migrants by broad k-factor age groups
-i <- 1
+n <- 1
 Abs_NM_by_Age <- tibble()
 temp <- tibble()
 
-while(i <= length(Age_Groups)) {
+while(n <= length(Age_Groups)) {
 
-  temp <- Projections %>% filter(Age %in% Age_Groups[[i]])
+  temp <- Projections %>% filter(Age %in% Age_Groups[[n]])
 
   temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
                                                 Age %in% Age_Groups[[2]] ~ '25 to 39 years',
@@ -313,28 +310,30 @@ while(i <= length(Age_Groups)) {
 
   Abs_NM_by_Age <- rbind(temp, Abs_NM_by_Age)
 
-  i = i + 1
+  n = n + 1
 }
 
-NM <- full_join(NM_by_Age, Abs_NM_by_Age, by =c('Region', "Age_Group", "Sex"))
-#Abs_NM_by_Age <- Abs_NM_by_Age %>% pivot_wider(names_from = "Sex", values_from=c("sum_NM_Abs"))
-
 remove(temp)
-remove(i)
+remove(n)
+
+NM <- full_join(NM_by_Age, Abs_NM_by_Age, by =c('Region', "Age_Group", "Sex"))
+
 
 # pull in target NM by sex, age group
 target_NM_Sex <- target_NM_Sex %>% select(Region, Sex, Age, TargetNM) %>% rename(Age_Group = Age) %>%
   full_join(NM, by=c('Region', 'Age_Group', 'Sex'))
 
-#UPDATED TO HERE
 
-# Pull all data together for final calculations
+Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
+                                              Age %in% Age_Groups[[2]] ~ '25 to 39 years',
+                                              Age %in% Age_Groups[[3]]~ '40 - 69 years',
+                                              Age %in% Age_Groups[[4]] ~ '70 years and older'))
 
-Projections <- Projections %>% left_join(NM_by_Age, by=c('Region', 'Sex')) %>% left_join(Abs_NM_by_Age, by=c("Region", "Sex")) %>%
-  left_join(target_NM_Sex , by=c('Region', 'Sex'))
 
-Projections <- Projections %>% mutate(projNetMigrants = round((NMs_Living_Abs/sum_NM_Abs)*(TargetTM_U55-sum_NM)+NMs_Living),0) %>%
-  mutate(ProjectedPop_final = round(ProjectedPop + projNetMigrants,0))
+Projections <- Projections %>% left_join(target_NM_Sex, by=c('Region', 'Sex', 'Age_Group'))
+
+Projections <- Projections %>% mutate(projNetMigrants = round((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living),0) %>%
+  mutate(ProjectedPop_final = round(ProjectedPop + projNetMigrants),0)
 
 Migrants <- Projections %>% select(Region, Age, Sex, projNetMigrants)
 
@@ -344,8 +343,8 @@ Migrants <- Projections %>% select(Region, Age, Sex, projNetMigrants)
 Projections <- Projections %>%
   select(Age, Region, Sex, ProjectedPop_final)
 
-Migration <- Migration
 
+#write.csv(Migrants, "/Users/mweber/Desktop/Migrants.csv")
 
 # Step 9: Assemble Components of Change for each Region (Optional)
 
@@ -382,4 +381,6 @@ projectedDeaths <- left_join(olderDeaths, earlyDeaths,by=c("Region", "Sex", "Age
 Components <- left_join(Migrants, projectedDeaths, by = c("Region", "Sex", "Age")) %>%
   pivot_longer(cols = c(4:5), names_to = "componentType", values_to = "componentValue") %>%
   bind_rows(projectedBirths_reformat)
+
+
 

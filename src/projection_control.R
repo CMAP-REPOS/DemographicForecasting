@@ -48,10 +48,10 @@ for(years in series){
   NETMIGPROJ[[as.character(years)]] <- tibble()
 }
 
-COMPONENTS <- list()
+'COMPONENTS <- list()
 for(years in series){
   COMPONENTS[[as.character(years)]] <- tibble()
-}
+}'
 
 #import in Base Net Migration data (includes allocation by Sex and by +/- 55 years old for first 2 allocation periods)
 #NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
@@ -73,7 +73,7 @@ projyears <- seq(from=projstart,
 print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "))
 
 #run the projection code
-source("src/MigrationProjections.R")
+source("src/Mary_working.R")
 
 #save the MigrationProjections.R outputs in list format
 
@@ -95,7 +95,7 @@ COMPONENTS[[as.character(projend)]] <- Components
 save(POPPROJ, file="Output/PopProj.Rdata")
 save(NETMIGPROJ, file="Output/NMProj.Rdata")
 save(COMPONENTS, file="Output/ComponentsOfChange.Rdata")
-
+'
 
 #export projections
 export <- tibble()
@@ -137,3 +137,4 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
 
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")
 write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
+'

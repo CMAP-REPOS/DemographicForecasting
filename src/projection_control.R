@@ -31,10 +31,10 @@ series
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
-target_NM <- read_excel("target_netmigration/TNM_flataverages.xlsx") %>%
+target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <-  "flat averages, run #1"
+tNMfile <-  "Mary's netmig, workerjobbalance, run1"
 
 
 ######## set up the population projection and migration projection lists
@@ -48,14 +48,16 @@ for(years in series){
   NETMIGPROJ[[as.character(years)]] <- tibble()
 }
 
-'COMPONENTS <- list()
+COMPONENTS <- list()
 for(years in series){
   COMPONENTS[[as.character(years)]] <- tibble()
-}'
+}
 
 #import in Base Net Migration data (includes allocation by Sex and by +/- 55 years old for first 2 allocation periods)
 #NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
-NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+#NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums
+NetMig <- netMigSums %>% select(-Source)
 
 
 ######## run the loop
@@ -95,7 +97,7 @@ COMPONENTS[[as.character(projend)]] <- Components
 save(POPPROJ, file="Output/PopProj.Rdata")
 save(NETMIGPROJ, file="Output/NMProj.Rdata")
 save(COMPONENTS, file="Output/ComponentsOfChange.Rdata")
-'
+
 
 #export projections
 export <- tibble()
@@ -136,5 +138,5 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
   mutate(TNMtype = tNMfile) #add column that documents WHICH SET of target net migrant values were used for this projection
 
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")
-write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
-'
+#write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
+

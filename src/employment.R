@@ -14,7 +14,7 @@ localindustries <- c("44-45", "71", "72", "81") #local industries that do not dr
 multijob_adjustment <- 1.049 #Berger's assumption (from https://fred.stlouisfed.org/series/LNS12026620 data) to address workers that hold multiple jobs
 
 #read in detailed baseline employment forecast data and create definition of "Local" and "Non-Local" industries according to NAICS codes in line 11
-baseline <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/employment_report/Scenario_Detailed_Forecasts_2021-08-05/baseline_detailed.xlsx",
+baseline <- read_excel("Input/employmentforecast_baseline_05aug2021.xlsx",
                        na = "0.0") %>%
   mutate(locsplit = case_when(industry_code %in% localindustries ~ "local",
                               TRUE ~ "non-local"))

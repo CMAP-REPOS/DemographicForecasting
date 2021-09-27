@@ -53,10 +53,10 @@ for(years in series){
   COMPONENTS[[as.character(years)]] <- tibble()
 }
 
-#import in Base Net Migration data (includes allocation by Sex and by +/- 55 years old for first 2 allocation periods)
+#import in Base Net Migration data
 #NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 #NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
-load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums
+load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums, derived from pastMigration_ageGroupSums.R
 NetMig <- netMigSums %>% select(-Source)
 
 

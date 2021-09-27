@@ -160,9 +160,7 @@ olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
 
-NetMig <- netMigSums %>% select(-Source)
-#NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
-NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort()
+NMperiods <- NetMig %>% pull(Period) %>% unique() %>% sort() #FYI: "NetMig" comes from line 60 of projection_control
 NMperiods <- tail(NMperiods, 3)
 print(paste("Net Migration Allocation Periods:", NMperiods[1],NMperiods[2],NMperiods[3],sep=" "))
 
@@ -197,10 +195,8 @@ NM_Proportions <- Sum_NM_Sex %>% group_by(Region, Sex) %>%
 target_NM_Sex <- full_join(NM_Proportions, BaseYears_NM, by=c('Region', 'Sex')) %>%
   mutate(TargetNM = SexProp*target_next_cycle)
 
-
 # Net Migrants from prior 5 year period (Excel rows 39-42)
 NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[3])
-
 
 #Change in net migrants from prior 5-year period (Excel 45-48)
 NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex", "Age")) %>%

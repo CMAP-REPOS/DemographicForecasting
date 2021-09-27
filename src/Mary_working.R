@@ -199,7 +199,7 @@ target_NM_Sex <- full_join(NM_Proportions, BaseYears_NM, by=c('Region', 'Sex')) 
 
 
 # Net Migrants from prior 5 year period (Excel rows 39-42)
-NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[2])
+NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[3])
 
 
 #Change in net migrants from prior 5-year period (Excel 45-48)
@@ -210,7 +210,8 @@ NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex
   mutate(NM_Change = case_when((TargetNM < 0 && NetMigration < 0) ~ NetMigration - TargetNM,
                                (TargetNM > 0 && NetMigration > 0) ~ TargetNM - NetMigration,
                                (TargetNM > 0 && NetMigration < 0) ~ (TargetNM - NetMigration)*-1,
-                               (TargetNM < 0 && NetMigration > 0) ~ abs(TargetNM - NetMigration))) %>%
+                               (TargetNM < 0 && NetMigration > 0) ~ abs(TargetNM - NetMigration),
+                               TRUE ~ 0)) %>%
   select(Region, Sex, Age, NM_Change)
 
 

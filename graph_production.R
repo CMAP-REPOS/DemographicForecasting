@@ -73,7 +73,7 @@ q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape
   theme(legend.position = "bottom")
 q
 
-#build population pyramid  ####**** STILL NEED TO FIX AGE GROUP SORT (factors!)
+#build population pyramid  ####
 pp1 <- export %>% filter(Region == "CMAP Region") %>%
   filter(year == 2025 | year == 2050) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
@@ -244,7 +244,7 @@ b <- netmig_stackup %>% #filter(Region == "CMAP Region") %>%
   ggplot(aes(x=Year, y= NetMigration, group = category, color = category)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales = "free") +
   ggtitle("Target vs Calculated Net Migration", subtitle = paste("Name of file containing the values: ", tNMfile))
-b
+
 
 #Net Migration age distribution
 netmig_graphs <- components_all %>% filter(componentType == "NetMigrants") %>%

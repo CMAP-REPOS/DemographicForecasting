@@ -195,8 +195,18 @@ NM_Proportions <- Sum_NM_Sex %>% group_by(Region, Sex) %>%
 target_NM_Sex <- full_join(NM_Proportions, BaseYears_NM, by=c('Region', 'Sex')) %>%
   mutate(TargetNM = SexProp*target_next_cycle)
 
-# Net Migrants from prior 5 year period (Excel rows 39-42)
-NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[3])
+# Net Migrants from prior 5 year period (Excel rows 39-42). For 1st projection period, data comes from data crunched
+# from 2014-2018. Subsequent years come from previous projection period. Totals are summed
+# later in this script (lines XXX - XXXish)
+if(startyr == baseyr){
+  NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[3]) #pulled from pastMigration_ageGroupSums.R
+
+}else{
+  NM_Prior_Period <- NM_Prior_Period2 %>%
+    rename(Age = Age_Group)
+
+}
+
 
 #Change in net migrants from prior 5-year period (Excel 45-48)
 NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex", "Age")) %>%
@@ -330,9 +340,16 @@ Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% Age_Groups[
 
 Projections <- Projections %>% left_join(target_NM_Sex, by=c('Region', 'Sex', 'Age_Group'))
 
-Projections <- Projections %>% mutate(projNetMigrants = round((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living),0) %>%
-  mutate(ProjectedPop_final = round(ProjectedPop + projNetMigrants),0)
+Projections <- Projections %>%
+  mutate(projNetMigrants = round(((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living), digits = 0)) %>%
+  mutate(ProjectedPop_final = round((ProjectedPop + projNetMigrants), digits = 0))
 
+# Save Net Migration Sums by Age Grouping (for the next Projection Period's K factor, see lines 201-207 above)
+NM_Prior_Period2 <- Projections %>%
+  group_by(Region, Sex, Age_Group) %>%
+  summarize(NetMigration = sum(projNetMigrants))
+
+# Save total number of Migrants for Components of Change (see lines 375-376 below)
 Migrants <- Projections %>% select(Region, Age, Sex, projNetMigrants)
 
 
@@ -341,8 +358,6 @@ Migrants <- Projections %>% select(Region, Age, Sex, projNetMigrants)
 Projections <- Projections %>%
   select(Age, Region, Sex, ProjectedPop_final)
 
-
-#write.csv(Migrants, "/Users/mweber/Desktop/Migrants.csv")
 
 # Step 9: Assemble Components of Change for each Region (Optional)
 

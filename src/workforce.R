@@ -1,6 +1,11 @@
 # Labor Force calculation
 #
 
+# load libraries
+library(dplyr)
+library(tidyverse)
+library(readxl)
+
 #get GQ ratios
 load("Output/GQData.Rdata")
 
@@ -8,10 +13,10 @@ load("Output/GQData.Rdata")
 kiddos <- c("0 to 4 years", "5 to 9 years", "10 to 14 years")
 
 #import Labor Force Participation Rate projections
-LFPRs <- read.csv("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Socioeconomic Forecasting/Data/Labor Force/LFPRs.csv")
+LFPRs <- read.csv("Input/LFPRs.csv")
 
 #import unemployment rates (historical and projections)
-unemp <- read.csv("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Socioeconomic Forecasting/Data/Labor Force/unemploymentrates.csv") %>%
+unemp <- read.csv("Input/unemploymentrates.csv") %>%
   mutate(Year = as.character(Year))
 
 #load in and format known population data (2010-2020)

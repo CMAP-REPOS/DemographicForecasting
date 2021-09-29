@@ -161,7 +161,7 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
             GQ_NonInst_Other_65_plus = sum(GQ_NonInst_Other_65_plus))
 
 
-
+'
 write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
 write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/export_HouseholdsSummary.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
@@ -172,7 +172,7 @@ write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
 write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
-
+'
 
 
 

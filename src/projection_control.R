@@ -29,6 +29,8 @@ series <- seq(from=startyear,
               by= 5)
 series
 
+NM_table <- tibble()
+
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
 target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%

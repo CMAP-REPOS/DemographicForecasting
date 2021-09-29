@@ -174,7 +174,7 @@ NM_By_Sex <- NetMig %>% filter(Period %in% NMperiods, Sex %in% c('Male', 'Female
 
 # NM calculations using base year periods (Excel rows 8-12)
 BaseYears_NM <- NM_By_Sex %>% select(-Age) %>% group_by(Region, Sex, Period) %>%
-  mutate(NetMigration = sum(NetMigration)) %>% distinct() %>% group_by(Sex) %>%
+  mutate(NetMigration = sum(NetMigration)) %>% distinct() %>% group_by(Sex, Region) %>%
   mutate(Sum_BaseYears = sum(NetMigration)) %>%
   select(-NetMigration, -Period) %>% distinct() %>%
   group_by(Region) %>%
@@ -330,6 +330,10 @@ NM <- full_join(NM_by_Age, Abs_NM_by_Age, by =c('Region', "Age_Group", "Sex"))
 # pull in target NM by sex, age group
 target_NM_Sex <- target_NM_Sex %>% select(Region, Sex, Age, TargetNM) %>% rename(Age_Group = Age) %>%
   full_join(NM, by=c('Region', 'Age_Group', 'Sex'))
+
+
+temp3 <- target_NM_Sex
+NM_table <- bind_rows(NM_table, temp3)
 
 
 Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',

@@ -269,4 +269,37 @@ c <- projectedNetMigrationrates %>%
   #theme(axis.text.x = element_text(angle = 45, hjust=1))
 c
 
-#import the full Berger NMRs and compare them
+#import the full Berger pop totals and compare them
+bergerpop <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/Bergerdata/berger_population.xlsx") %>%
+  mutate(Source = "Berger")
+
+pop_totals <- pop_recandproj %>% group_by(Region, Year, Sex, type) %>% summarize(totpop = sum(Population))
+both_total <- bergerpop %>% group_by(Region, Year, Sex) %>% summarize(totpop = sum(Population)) %>%
+  mutate(Source = "Berger") %>%
+  bind_rows(pop_totals %>% select(-type) %>% mutate(Source = "CMAP Script"))
+ppp <- both_total %>% ggplot(aes(x=Year, y=totpop, group = Source, color = Source, shape = Source)) + geom_point() + geom_line() +
+  facet_wrap(Region ~ Sex, ncol = 4, scales="free") + ggtitle("Total Population, estimated and projected, CMAP vs Berger 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(legend.position = "bottom")
+ppp
+
+bothtotal2 <- both_total %>% group_by(Region, Year, Source) %>% summarize(totpop = sum(totpop))
+p4 <- bothtotal2 %>% ggplot(aes(x=Year, y=totpop, group = Source, color = Source, shape = Source)) + geom_point() + geom_line() +
+  facet_wrap( ~ Region, ncol = 2, scales="free") + ggtitle("Total Population, estimated and projected, CMAP vs Berger 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(legend.position = "bottom")
+p4
+
+both_all <- pop_recandproj %>% group_by(Region, Year, Sex, Age, type) %>% summarize(Population = round(sum(Population),0)) %>%
+  mutate(Source = "CMAP") %>% select(-type) %>%
+  bind_rows(bergerpop) %>%
+  mutate(age2 = as.numeric(substr(Age, 1, 2))) %>%
+  mutate(age2 = case_when(is.na(age2) ~ 5,
+                       TRUE ~ age2))
+pops <- both_all %>%
+  filter(Region == "CMAP Region") %>%
+  filter(Year %% 10 == 0) %>%
+  ggplot(aes(x=age2, y=Population, group = Source, color = Source)) + geom_point() + geom_line() +
+  facet_wrap(Sex ~ Year, ncol = 5)
+pops
+
+
+

@@ -1,4 +1,7 @@
 
+load("Output/NMProj.Rdata")
+load("Output/PopProj.Rdata")
+load("Output/ComponentsOfChange.Rdata")
 
 
 # load in required packages
@@ -25,8 +28,11 @@ n <- bind_rows(baseline_all, baseline_noloc) %>%
 
 
 #graph of all 3 of the job forecasts (all and non-local) from employment.R
-alljobforecasts <- bind_rows(upside_all, upside_noloc, baseline_all, baseline_noloc, slowgrowth_all, slowgrowth_noloc) %>%
+alljobforecasts <- bind_rows( baseline_all, baseline_noloc) %>%
   ungroup() %>% mutate(Year = as.numeric(Year))
+
+#alljobforecasts <- bind_rows(upside_all, upside_noloc, baseline_all, baseline_noloc, slowgrowth_all, slowgrowth_noloc) %>%
+#  ungroup() %>% mutate(Year = as.numeric(Year))
 
 o <- alljobforecasts %>% ungroup() %>%
   mutate(category = paste(forecast,type,sep="_")) %>%
@@ -288,9 +294,9 @@ p4 <- bothtotal2 %>% ggplot(aes(x=Year, y=totpop, group = Source, color = Source
   theme(legend.position = "bottom")
 p4
 
-both_all <- pop_recandproj %>% group_by(Region, Year, Sex, Age, type) %>% summarize(Population = round(sum(Population),0)) %>%
+both_all <- pop_recandproj %>% group_by(Region, Year, Age, type) %>% summarize(Population = round(sum(Population),0)) %>%
   mutate(Source = "CMAP") %>% select(-type) %>%
-  bind_rows(bergerpop) %>%
+  bind_rows(bergerpop %>% group_by(Region, Age, Year) %>% summarize(Population = round(sum(Population),0)) ) %>%
   mutate(age2 = as.numeric(substr(Age, 1, 2))) %>%
   mutate(age2 = case_when(is.na(age2) ~ 5,
                        TRUE ~ age2))
@@ -298,7 +304,7 @@ pops <- both_all %>%
   filter(Region == "CMAP Region") %>%
   filter(Year %% 10 == 0) %>%
   ggplot(aes(x=age2, y=Population, group = Source, color = Source)) + geom_point() + geom_line() +
-  facet_wrap(Sex ~ Year, ncol = 5)
+  facet_wrap(Region ~ Year, ncol = 5, scales = "free")
 pops
 
 

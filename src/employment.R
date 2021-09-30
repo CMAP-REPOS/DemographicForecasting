@@ -48,17 +48,17 @@ baseline_noloc <- baseline %>% #total number of jobs by region and year NOT INCL
   mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
   mutate(type = "jobs_minus_local_industries", forecast = "baseline")
 
-
+'
 #Upside summed employment data:
-upside <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/employment_report/Scenario_Detailed_Forecasts_2021-08-05/upside_detailed.xlsx",
-                       na = "0.0") %>%
-  mutate(locsplit = case_when(industry_code %in% localindustries ~ "local",
-                              TRUE ~ "non-local"))
-upside <- upside %>%
-  left_join(pepdata, by = c("area_fips" = "GEOID"))
+#upside <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/employment_report/Scenario_Detailed_Forecasts_2021-08-05/upside_detailed.xlsx",
+#                       na = "0.0") %>%
+#  mutate(locsplit = case_when(industry_code %in% localindustries ~ "local",
+#                              TRUE ~ "non-local"))
+#upside <- upside %>%
+#  left_join(pepdata, by = c("area_fips" = "GEOID"))
 
-upside_all <- upside %>% #total number of jobs by region and year
-  pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
+#upside_all <- upside %>% #total number of jobs by region and year
+#  pivot_longer(starts_with("Emp"), names_to = "Year", values_to = "Employment") %>%
   group_by(Region, Year) %>%
   summarize(total_jobs = sum(Employment)) %>%
   mutate(Year = str_sub(Year, 5,8)) %>%
@@ -98,3 +98,4 @@ slowgrowth_noloc <- slowgrowth %>% #total number of jobs by region and year NOT 
   mutate(Year = str_sub(Year, 5,8)) %>%
   mutate(total_jobs = total_jobs * multijob_adjustment) %>% #constant to address multiple-job-holders. The resulting # is "Primary Jobs"
   mutate(type = "jobs_minus_local_industries", forecast = "slow_growth")
+'

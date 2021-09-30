@@ -143,4 +143,4 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")
 #write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
 #write.csv(NM_table, "/Users/mweber/Desktop/NM_table2.csv")
-write.csv(NM_math_check, "/Users/mweber/Desktop/NM_math_check.csv")
+#write.csv(NM_math_check, "/Users/mweber/Desktop/NM_math_check.csv")

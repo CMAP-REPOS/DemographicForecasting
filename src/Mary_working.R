@@ -167,7 +167,7 @@ print(paste("Net Migration Allocation Periods:", NMperiods[1],NMperiods[2],NMper
 #Apportioning Target Net Migrants to Males and Females, Then to Broad Age Groups
 
 #filter out the correct Target Net Migrant numbers from the list and apply to the projection; update in projection_control.R
-target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year) # %>% rename(RegionNMT = NetMigration)
+target_NMlocal <- target_NM %>% filter(Year == endyr) %>% select(-Year)
 
 #NM by Sex (Excel rows 14-21)
 NM_By_Sex <- NetMig %>% filter(Period %in% NMperiods, Sex %in% c('Male', 'Female'))
@@ -178,9 +178,9 @@ BaseYears_NM <- NM_By_Sex %>% select(-Age) %>% group_by(Region, Sex, Period) %>%
   mutate(Sum_BaseYears = sum(NetMigration)) %>%
   select(-NetMigration, -Period) %>% distinct() %>%
   group_by(Region) %>%
-  mutate(Prop_NM = Sum_BaseYears / sum(Sum_BaseYears))%>%
+  mutate(Prop_NM = Sum_BaseYears / sum(Sum_BaseYears)) %>%
   left_join(target_NMlocal, by = ('Region')) %>%
-  mutate(target_next_cycle = Prop_NM * NetMigration) #%>% select(-Year) %>% distinct()
+  mutate(target_next_cycle = Prop_NM * NetMigration)
 
 #Sum NM by Sex (Excel rows 23-27)
 Sum_NM_Sex <- NM_By_Sex %>%
@@ -214,11 +214,16 @@ NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex
   rename(NetMigration = NetMigration.x) %>%
   rowwise() %>%
   mutate(NM_Change = case_when((TargetNM < 0 && NetMigration < 0) ~ NetMigration - TargetNM,
-                               (TargetNM > 0 && NetMigration > 0) ~ TargetNM - NetMigration,
+                               ((TargetNM > 0 && NetMigration > 0) && TargetNM > NetMigration) ~ TargetNM - NetMigration,
+                               ((TargetNM > 0 && NetMigration > 0) && NetMigration > TargetNM) ~ NetMigration - TargetNM,
                                (TargetNM > 0 && NetMigration < 0) ~ (TargetNM - NetMigration)*-1,
                                (TargetNM < 0 && NetMigration > 0) ~ abs(TargetNM - NetMigration),
                                TRUE ~ 0)) %>%
-  select(Region, Sex, Age, NM_Change)
+ select(Region, Sex, Age, NM_Change)
+
+
+temp4 <- NM_Change_Prior
+NM_math_check <- bind_rows(NM_math_check, temp4)
 
 
 #Expected Populations of Current Period (Excel 51-54)
@@ -400,4 +405,6 @@ Components <- left_join(Migrants, projectedDeaths, by = c("Region", "Sex", "Age"
   bind_rows(projectedBirths_reformat)
 
 
+#write.csv(NM_table, "/Users/mweber/Desktop/NM_table2.csv")
+#write.csv(NM_Change_Prior, "/Users/mweber/Desktop/NM_Change_Prior_2020.csv")
 

@@ -30,6 +30,7 @@ series <- seq(from=startyear,
 series
 
 NM_table <- tibble()
+NM_math_check  <- tibble()
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
@@ -141,4 +142,5 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
 
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")
 #write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
-
+#write.csv(NM_table, "/Users/mweber/Desktop/NM_table2.csv")
+write.csv(NM_math_check, "/Users/mweber/Desktop/NM_math_check.csv")

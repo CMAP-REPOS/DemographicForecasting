@@ -1,8 +1,4 @@
 
-load("Output/NMProj.Rdata")
-load("Output/PopProj.Rdata")
-load("Output/ComponentsOfChange.Rdata")
-
 
 # load in required packages
 library(dplyr)

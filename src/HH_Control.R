@@ -160,6 +160,8 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
             GQ_NonInst_Other_16_to_64 = sum(GQ_NonInst_Other_16_to_64),
             GQ_NonInst_Other_65_plus = sum(GQ_NonInst_Other_65_plus))
 
+View(HouseholdSummary)
+
 
 '
 write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")

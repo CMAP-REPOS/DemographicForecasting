@@ -209,7 +209,7 @@ if(startyr == baseyr){
 
 
 #Change in net migrants from prior 5-year period (Excel 45-48)
-NM_Change_Prior2 <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex", "Age")) %>%
+NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex", "Age")) %>%
   select(Region, Sex, Age, TargetNM, NetMigration.x) %>%
   rename(NetMigration = NetMigration.x) %>%
   rowwise() %>%

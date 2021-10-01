@@ -272,7 +272,8 @@ c <- projectedNetMigrationrates %>%
 c
 
 #import the full Berger pop totals and compare them
-bergerpop <- read_excel("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/Bergerdata/berger_population.xlsx") %>%
+
+bergerpop <- read_excel("Input/berger_population.xlsx") %>%
   mutate(Source = "Berger")
 
 pop_totals <- pop_recandproj %>% group_by(Region, Year, Sex, type) %>% summarize(totpop = sum(Population))
@@ -292,15 +293,17 @@ p4
 
 both_all <- pop_recandproj %>% group_by(Region, Year, Age, type) %>% summarize(Population = round(sum(Population),0)) %>%
   mutate(Source = "CMAP") %>% select(-type) %>%
-  bind_rows(bergerpop %>% group_by(Region, Age, Year) %>% summarize(Population = round(sum(Population),0)) ) %>%
+  bind_rows(bergerpop %>% group_by(Region, Age, Year) %>% summarize(Population = round(sum(Population),0)) %>% mutate(Source="Berger") ) %>%
   mutate(age2 = as.numeric(substr(Age, 1, 2))) %>%
   mutate(age2 = case_when(is.na(age2) ~ 5,
                        TRUE ~ age2))
+#Graph our projection vs Berger's projections, only on the tens (2020,2030,etc)
 pops <- both_all %>%
   filter(Region == "CMAP Region") %>%
   filter(Year %% 10 == 0) %>%
   ggplot(aes(x=age2, y=Population, group = Source, color = Source)) + geom_point() + geom_line() +
-  facet_wrap(Region ~ Year, ncol = 5, scales = "free")
+  facet_wrap(Region ~ Year, #ncol = 5,
+             scales = "free")
 pops
 
 

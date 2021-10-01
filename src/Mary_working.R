@@ -140,11 +140,13 @@ earlyDeaths <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "S
 expectedpop <- baseyearpoptable %>%
   arrange(Region, desc(Sex)) %>%
   left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% unique()
+  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>%
+  ungroup()
 
 names(expectedpop) <- c("Age", "Region", "Sex", "baseyrpop", "Mort")
 
 expectedpop <- expectedpop %>%
-  mutate(ProjectedPop = case_when(!Age %in% c('0 to 4 years', '85 years and over') ~ lag(baseyrpop) * Mort, #multiply prior 2020 age group population by survival rate for current age group
+  mutate(ProjectedPop = case_when(!Age %in% c("0 to 4 years", "85 years and over") ~ (lag(baseyrpop) * Mort), #multiply prior 2020 age group population by survival rate for current age group
                                   Age == '85 years and over' ~ (baseyrpop + lag(baseyrpop))* Mort,
                                   TRUE ~ NA_real_) ) %>%
   select(-Mort) %>%
@@ -248,7 +250,6 @@ sum_expectedPop <- expectedpop %>%
 K_factors <- full_join(sum_expectedPop, NM_Change_Prior, by=c('Region', 'Sex', 'Age')) %>%
   mutate(kfactor = NM_Change/ProjectedPop) %>% select(-ProjectedPop, -NM_Change) %>%
   pivot_wider(names_from = "Age", values_from=c("kfactor"))
-
 
 # Step 6: Apply K factors to NMRs in order to calculate Net Migration
 
@@ -354,7 +355,27 @@ Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% Age_Groups[
 Projections <- Projections %>% left_join(target_NM_Sex, by=c('Region', 'Sex', 'Age_Group'))
 
 Projections <- Projections %>%
-  mutate(projNetMigrants = round(((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living), digits = 0)) %>%
+  rowwise() %>%
+  mutate(projNetMigrants = round(((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living), digits = 0))
+
+#----------------MANUAL OVERRIDE
+# This override checks if the number of 70+ in the CMAP region is positive. If it is, it cuts the number by half and makes it negative.
+Projections <- Projections %>%
+  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '70 years and older' && projNetMigrants > 0 ~ (projNetMigrants * -0.5),
+                                     TRUE ~ projNetMigrants))
+# This override checks if the number of <24 is positive. If it is, it increases it by x1.5
+Projections <- Projections %>%
+  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '0 to 24 years' && projNetMigrants > 0 ~ (projNetMigrants * 1.5),
+                                     TRUE ~ projNetMigrants))
+# This override checks decreases the number of 30-39 by one half and adds 5k.
+Projections <- Projections %>%
+  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '25 to 39 years' && Age != "25 to 29 years" ~ (projNetMigrants * 0.5) + 5000,
+                                     TRUE ~ projNetMigrants))
+
+
+
+# apply the number of net migrants to the total population (PROJECTION COMPLETE!)
+Projections <- Projections %>%
   mutate(ProjectedPop_final = round((ProjectedPop + projNetMigrants), digits = 0))
 
 # Save Net Migration Sums by Age Grouping (for the next Projection Period's K factor, see lines 201-207 above)

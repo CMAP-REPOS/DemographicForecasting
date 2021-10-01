@@ -183,6 +183,9 @@ BaseYears_NM <- NM_By_Sex %>% select(-Age) %>% group_by(Region, Sex, Period) %>%
   left_join(target_NMlocal, by = ('Region')) %>%
   mutate(target_next_cycle = Prop_NM * NetMigration)
 
+temp5 <- BaseYears_NM
+base_year_NM_check <- bind_rows(base_year_NM_check, temp5)
+
 #Sum NM by Sex (Excel rows 23-27)
 Sum_NM_Sex <- NM_By_Sex %>%
   group_by(Region, Sex, Age) %>% mutate(Sum_NM = sum(NetMigration)) %>%

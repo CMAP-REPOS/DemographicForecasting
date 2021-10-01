@@ -246,7 +246,7 @@ b <- netmig_stackup %>% #filter(Region == "CMAP Region") %>%
   ggplot(aes(x=Year, y= NetMigration, group = category, color = category)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales = "free") +
   ggtitle("Target vs Calculated Net Migration", subtitle = paste("Name of file containing the values: ", tNMfile))
-
+b
 
 #Net Migration age distribution
 netmig_graphs <- components_all %>% filter(componentType == "NetMigrants") %>%

@@ -76,7 +76,7 @@ q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape
 q
 
 #build population pyramid  ####
-pp1 <- export %>% filter(Region == "CMAP Region") %>%
+'pp1 <- export %>% filter(Region == "CMAP Region") %>%
   filter(year == 2025 | year == 2050) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
   ggplot(aes(x = x, fill = Sex,
@@ -120,7 +120,7 @@ pp4 <- export %>% filter(Region == "External WI") %>%
   coord_flip() +
   facet_wrap(Region ~ year, ncol = 4, scales = "free")
 pp4
-
+'
 ######## GRAPHS OF WORKERS AND JOBS
 
 #plot the number of working-age people in the region

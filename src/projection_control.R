@@ -29,8 +29,7 @@ series <- seq(from=startyear,
               by= 5)
 series
 
-NM_table <- tibble()
-NM_math_check  <- tibble()
+target_NM_Sex_check <- tibble()
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
@@ -142,7 +141,5 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
 
 #save(Mig_Proj, file="Output/Migration_Projections.Rdata")
 #write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
-#write.csv(NM_table, "/Users/mweber/Desktop/NM_table3.csv")
-#write.csv(export, "/Users/mweber/Desktop/export.csv")
+#write.csv(target_NM_Sex_check, "/Users/mweber/Desktop/target_NM_Sex_check.csv")
 
-write.csv(NM_math_check, "/Users/mweber/Desktop/NM.csv")

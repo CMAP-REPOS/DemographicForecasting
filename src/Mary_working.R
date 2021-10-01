@@ -128,7 +128,7 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
 
 earlyDeaths <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "Sex", values_to = "Births") %>%
   group_by(Region, Sex) %>%
-  summarize(totbirths = sum(Births)) %>%
+  summarize(totbirths = sum(Births), .groups = 'drop') %>%
   mutate(Sex = case_when(Sex == "fBirths" ~ "Female",
                          TRUE ~ "Male")) %>%
   left_join(projectedBirths_0to4surviving, by=c("Region","Sex")) %>%
@@ -152,10 +152,11 @@ expectedpop <- expectedpop %>%
   mutate(ProjectedPop = case_when(is.na(ProjectedPop.x) ~ ProjectedPop.y,
                                   TRUE ~ ProjectedPop.x), .keep = "unused")
 
-olderDeaths <- expectedpop %>% mutate(deaths = lag(baseyrpop) - ProjectedPop) %>%
+
+olderDeaths <- expectedpop %>%
   mutate(deaths = case_when(Age == "0 to 4 years" ~ 0.0,
                             Age == "85 years and over" ~ (baseyrpop + lag(baseyrpop)) - ProjectedPop,
-                            TRUE ~ deaths)) %>%
+                            TRUE ~ lag(baseyrpop) - ProjectedPop)) %>%
   select(Age,Region,Sex,deaths)
 
 # Step 5: Calculate K factors from Target Net Migrants value and previous Net Migration totals
@@ -193,7 +194,13 @@ NM_Proportions <- Sum_NM_Sex %>% group_by(Region, Sex) %>%
 
 #Target Net Migrants by sex (Excel rows 33-36)
 target_NM_Sex <- full_join(NM_Proportions, BaseYears_NM, by=c('Region', 'Sex')) %>%
-  mutate(TargetNM = SexProp*target_next_cycle)
+  mutate(TargetNM = case_when(SexProp < 0 & NetMigration > 0 ~ abs(SexProp*target_next_cycle),
+                              TRUE ~ SexProp*target_next_cycle))
+
+
+
+temp4 <- target_NM_Sex
+target_NM_Sex_check <- bind_rows(target_NM_Sex_check, temp4)
 
 # Net Migrants from prior 5 year period (Excel rows 39-42). For 1st projection period, data comes from data crunched
 # from 2014-2018. Subsequent years come from previous projection period. Totals are summed
@@ -220,10 +227,6 @@ NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex
                                (TargetNM < 0 && NetMigration > 0) ~ abs(TargetNM - NetMigration),
                                TRUE ~ 0)) %>%
  select(Region, Sex, Age, NM_Change)
-
-
-temp4 <- NM_Change_Prior
-NM_math_check <- bind_rows(NM_math_check, temp4)
 
 
 #Expected Populations of Current Period (Excel 51-54)
@@ -337,8 +340,6 @@ target_NM_Sex <- target_NM_Sex %>% select(Region, Sex, Age, TargetNM) %>% rename
   full_join(NM, by=c('Region', 'Age_Group', 'Sex'))
 
 
-temp3 <- target_NM_Sex
-NM_table <- bind_rows(NM_table, temp3)
 
 
 Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',

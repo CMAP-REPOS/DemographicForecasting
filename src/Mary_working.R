@@ -139,7 +139,6 @@ earlyDeaths <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "S
 
 expectedpop <- baseyearpoptable %>%
   arrange(Region, desc(Sex)) %>%
-  left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>% unique()
   left_join(Mort_MidPoint, by=c('Region', 'Age','Sex')) %>%
   ungroup()
 

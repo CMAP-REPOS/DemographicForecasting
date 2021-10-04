@@ -303,7 +303,8 @@ pops <- both_all %>%
   filter(Year %% 10 == 0) %>%
   ggplot(aes(x=age2, y=Population, group = Source, color = Source)) + geom_point() + geom_line() +
   facet_wrap(Region ~ Year, #ncol = 5,
-             scales = "free")
+             #scales = "free")
+  )
 pops
 
 

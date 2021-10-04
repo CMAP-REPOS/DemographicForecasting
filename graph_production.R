@@ -307,5 +307,18 @@ pops <- both_all %>%
   )
 pops
 
-
+#calculate age dependency ratio = (0-19 + >65) / (20-64) for each projection and year
+# Census predicts ~ 85 by 2050: https://www.census.gov/prod/2010pubs/p25-1138.pdf
+agedepratio <- both_all %>%
+  mutate(grouping = case_when(age2 <= 15 | age2 >= 65 ~ "Dependent",
+                              TRUE ~ "Productive")) %>%
+  group_by(Region, Year, Source, grouping) %>%
+  summarize(total = sum(Population)) %>%
+  pivot_wider(names_from = grouping, values_from = total) %>%
+  rowwise() %>%
+  mutate(dependency_ratio = (Dependent / Productive) * 100)
+depratio <- agedepratio %>%
+  ggplot(aes(x=Year, y=dependency_ratio, group = Source, color = Source)) + geom_point() + geom_line() +
+  facet_wrap(~ Region, scales = "free")
+#depratio
 

@@ -34,10 +34,10 @@ base_year_NM_check <- tibble()
 
 #set which target net migration values you'd like to use for the projection (see target_netmigration folder for options)
 
-target_NM <- read_excel("target_netmigration/TNM_zeronetmigration.xlsx") %>%
+target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <-  "Mary's netmig, zero net mig"
+tNMfile <-  "Mary's netmig, workerjobbalance"
 
 
 ######## set up the population projection and migration projection lists
@@ -70,7 +70,7 @@ while(i <= projnums){
 
 # TOGGLE OVERRIDE (see Mary_working.R lines 360-370), 1 is ON, 0 is OFF
 
-override = 1
+override = 0
 
 #set up variables that MigrationProjections needs
 projstart <- series[i]

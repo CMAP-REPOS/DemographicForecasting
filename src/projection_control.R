@@ -70,7 +70,7 @@ while(i <= projnums){
 
 # TOGGLE OVERRIDE (see Mary_working.R lines 360-370), 1 is ON, 0 is OFF
 
-override = 0
+override = 1
 
 #set up variables that MigrationProjections needs
 projstart <- series[i]

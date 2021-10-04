@@ -357,7 +357,9 @@ Projections <- Projections %>%
   rowwise() %>%
   mutate(projNetMigrants = round(((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living), digits = 0))
 
-#----------------MANUAL OVERRIDE
+#----------------MANUAL OVERRIDE (feature still being tested...)
+if(override > 0){
+
 # 1 This override checks if the number of 70+ in the CMAP region is positive. If it is, it cuts the number by half and makes it negative.
 Projections <- Projections %>%
   mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '70 years and older' && projNetMigrants > 0 ~ (projNetMigrants * -0.5),
@@ -370,7 +372,9 @@ Projections <- Projections %>%
 Projections <- Projections %>%
   mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '25 to 39 years' && Age != "25 to 29 years" ~ (projNetMigrants * 0.5) + 5000,
                                      TRUE ~ projNetMigrants))
-
+}else{
+  print("Override Not Activated.")
+}
 
 
 # apply the number of net migrants to the total population (PROJECTION COMPLETE!)

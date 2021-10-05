@@ -224,12 +224,7 @@ NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex
   select(Region, Sex, Age, TargetNM, NetMigration.x) %>%
   rename(NetMigration = NetMigration.x) %>%
   rowwise() %>%
-  mutate(NM_Change = case_when((TargetNM < 0 && NetMigration < 0) ~ NetMigration - TargetNM,
-                               ((TargetNM > 0 && NetMigration > 0) && TargetNM > NetMigration) ~ (TargetNM - NetMigration)*-1,
-                               ((TargetNM > 0 && NetMigration > 0) && NetMigration > TargetNM) ~ NetMigration - TargetNM,
-                               (TargetNM > 0 && NetMigration < 0) ~ (TargetNM - NetMigration)*-1,
-                               (TargetNM < 0 && NetMigration > 0) ~ abs(TargetNM - NetMigration),
-                               TRUE ~ 0)) %>%
+  mutate(NM_Change = TargetNM - NetMigration) %>%
  select(Region, Sex, Age, NM_Change)
 
 
@@ -357,9 +352,7 @@ Projections <- Projections %>%
   rowwise() %>%
   mutate(projNetMigrants = round(((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living), digits = 0))
 
-#----------------MANUAL OVERRIDE (feature still being tested...)
-if(override > 0){
-
+#----------------MANUAL OVERRIDE
 # 1 This override checks if the number of 70+ in the CMAP region is positive. If it is, it cuts the number by half and makes it negative.
 Projections <- Projections %>%
   mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '70 years and older' && projNetMigrants > 0 ~ (projNetMigrants * -0.5),
@@ -368,13 +361,11 @@ Projections <- Projections %>%
 Projections <- Projections %>%
   mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '0 to 24 years' && projNetMigrants > 0 ~ (projNetMigrants * 1.5),
                                      TRUE ~ projNetMigrants))
-# 3 This override checks if the number of 30-39 is negative, and if so, decreases it by half
+# 3 This override checks decreases the number of 30-39 by one half and adds 5k.
 Projections <- Projections %>%
-  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '25 to 39 years' && Age != "25 to 29 years" && projNetMigrants < 0 ~ (projNetMigrants * 0.5),
+  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '25 to 39 years' && Age != "25 to 29 years" ~ (projNetMigrants * 0.5) + 5000,
                                      TRUE ~ projNetMigrants))
-}else{
-  print("Override Not Activated.")
-}
+
 
 
 # apply the number of net migrants to the total population (PROJECTION COMPLETE!)
@@ -414,7 +405,6 @@ Migrants <- Migrants %>%
 migrantDeaths <- left_join(Migrants, Mort_MidPoint, by=c("Region", "Sex", "Age")) %>%
   rename(Mort = starts_with("Mort")) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(Region, Sex, x) %>% select(-x) %>%
-  ungroup() %>%
   mutate(Mort = case_when(is.na(Mort) ~ lead(Mort),  #ballparking the 0-4 migrant survival rate - using 5 to 9 rate instead
                           TRUE ~ Mort)) %>%
   mutate(migdeaths = case_when(Age == "0 to 4 years" ~ round((NetMigrants/((Mort+1)/2) - NetMigrants),0),

@@ -17,6 +17,9 @@ load("Output/Head_of_HH.Rdata") # Headship
 #load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/PopData.Rdata") #POP
 
+#override Headship #s with 2010 Adjusted Headship Ratios (pulled from Berger)
+Headship <- read.csv("C:/Users/amcadams/Documents/R/Headships2010.csv") %>% select(Age, Region, Ratio_Adj)
+
 startyear = 2010
 projectionstart = 2020
 endyear = 2050

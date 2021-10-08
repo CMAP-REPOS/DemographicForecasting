@@ -305,7 +305,8 @@ pops <- both_all %>%
   ggplot(aes(x=age2, y=Population, group = Source, color = Source)) + geom_point() + geom_line() +
   facet_wrap(Region ~ Year, ncol = 5,
              #scales = "free")
-  )
+  ) +   ggtitle("Berger vs CMAP Popuation Forecast", subtitle = paste("In use:", tNMfile))
+
 pops
 
 #calculate age dependency ratio = (0-19 + >65) / (20-64) for each projection and year

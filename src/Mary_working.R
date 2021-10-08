@@ -360,10 +360,10 @@ Projections <- Projections %>%
 
 if(override > 0){
 
-#----------------MANUAL OVERRIDE
-# 1 This override checks if the number of 70+ in the CMAP region is positive. If it is, this override makes it negative.
+#----------------MANUAL MIGRATION OVERRIDES
+# 1 This override checks if the number of 70+ in the CMAP region is positive. If it is, this override makes it negative and increases it by one half
 Projections <- Projections %>%
-  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '70 years and older' && projNetMigrants > 0 ~ (projNetMigrants * -1.0),
+  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '70 years and older' && projNetMigrants > 0 ~ (projNetMigrants * -1.5),
                                      TRUE ~ projNetMigrants))
 # 2 This override checks if the number of <24 is positive. If it is, it increases it by x1.5
 Projections <- Projections %>%

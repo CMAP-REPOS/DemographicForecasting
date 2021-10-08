@@ -1,6 +1,6 @@
 # CMAP | Noel Peterson, Mary Weber | 1/15/2021
 
-#This file fetches and formats 1990, 2000 and 2010 Decennial Census data
+#This file fetches and formats 2000 and 2010 Decennial Census data
 #AFTER RUNNING, make sure to run the companion script PEP.R!
 
 #install.packages(c("tidyverse", "tidycensus", "readxl"))
@@ -78,7 +78,7 @@ for (YEAR in YEARS) {
 
 # Download full population data set  --------------------------------
 
-c <- tibble()
+'c <- tibble()
 b <- tibble()
 Year2 <- c(1990:2019)
 
@@ -88,13 +88,12 @@ for (YEAR in Year2) {
 }
 
 
-
-b <- b %>% filter(State == "Illinois" & Region == 'CMAP Region') %>%  #select(-Year, -County, -State, -GEOID) %>%
+b <- b %>% filter(State == "Illinois" & Region == CMAP Region) %>%  #select(-Year, -County, -State, -GEOID) %>%
   group_by(Age, Sex) %>% mutate(Population = sum(Population)) %>% ungroup()
 View(b)
 
 write.csv(b, "/Users/mweber/Desktop/Total_POP.csv")
-
+'
 
 # Upload POP to GitHub  --------------------------------
 

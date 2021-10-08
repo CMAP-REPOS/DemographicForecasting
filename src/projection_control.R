@@ -37,7 +37,7 @@ base_year_NM_check <- tibble()
 target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <-  "workerjobbalance TNMs, Override Applied"
+tNMfile <-  "workerjobbalance TNMs, no ASFR override"
 
 
 ######## set up the population projection and migration projection lists
@@ -68,9 +68,13 @@ NetMig <- netMigSums %>% select(-Source)
 i <- 1
 while(i <= projnums){
 
-# TOGGLE OVERRIDE (see Mary_working.R lines 360-370), 1 is ON, 0 is OFF
+# TOGGLE *MIGRATION* OVERRIDE (see Mary_working.R lines 360-370), 1 is ON, 0 is OFF
 
 override = 1
+
+# TOGGLE *FERTILITY* OVERRIDE (see Mary_working.R lines 15-19), 1 is ON, 0 is OFF
+
+ASFRoverride = 1
 
 #set up variables that MigrationProjections needs
 projstart <- series[i]

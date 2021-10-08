@@ -37,7 +37,7 @@ base_year_NM_check <- tibble()
 target_NM <- read_excel("target_netmigration/TNM_workerjobbalance.xlsx") %>%
   mutate(Year = as.character(Year))
 #name which net migration values you're using (important for documentation!)
-tNMfile <-  "Mary's netmig, workerjobbalance"
+tNMfile <-  "workerjobbalance TNMs, Override Applied"
 
 
 ######## set up the population projection and migration projection lists
@@ -148,6 +148,4 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
 #write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
 #write.csv(target_NM_Sex_check, "/Users/mweber/Desktop/target_NM_Sex_check.csv")
 #write.csv(base_year_NM_check, "/Users/mweber/Desktop/base_year_NM_check.csv")
-
-
 

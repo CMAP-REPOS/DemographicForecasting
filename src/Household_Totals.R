@@ -5,7 +5,7 @@
 startyear = as.character(projstart)  #"2020"
 
 # if/else statement decides if population is pulled from POP or MIG_PROJ and formats data accordingly
-if(startyear <= projectionstart) {
+if(startyear < projectionstart) {
 
   basepop <- POP[[startyear]] %>%
     group_by(Sex, Age, Region) %>%

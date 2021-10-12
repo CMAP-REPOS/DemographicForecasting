@@ -84,7 +84,7 @@ q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape
 q2 <- pop_totals %>% filter(Year <= 2020) %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape = type)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Total Population by Sex, CMAP and External Regions", subtitle = "Census: 2010, 2025, 2020 (est)") +
   theme(legend.position = "bottom")
-q2
+
 
 q3 <- POPrecent[['2020']] %>% filter(Region == "CMAP Region") %>%
   mutate(Age_Group = str_split_fixed(Age, " years", 2)[,1] ) %>%
@@ -97,7 +97,7 @@ q4 <- q3 %>%
   ggplot(aes(x=reorder(Age_Group,x), y=Population, color=Sex, group = Sex)) + geom_point() + geom_line() +
   ggtitle("Total Population by Sex and Age Group, CMAP Region", subtitle = "2020 Census, Redistricting Data") +
   theme(axis.text.x = element_text(angle = 45, hjust=1))
-q4
+
 
 #build population pyramid  ####
 'pp1 <- export %>% filter(Region == "CMAP Region") %>%
@@ -181,12 +181,13 @@ workersandjobs_graph <- workersandjobs %>%
   mutate(valuetype = case_when(Year <= 2020 ~ "Known Data",
                            TRUE ~ "Forecasted Data") )
 r <- workersandjobs_graph %>%   filter(Region == "CMAP Region") %>%
+  filter(forecast != "baseline_jobs_minus_local_industries") %>%
   ggplot(aes(x=Year, y= value, shape = valuetype, group = forecast, color = forecast )) +
   geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") +
   ggtitle("Projected Workers and Jobs, 2010-2050", subtitle = paste("Add'l info: ", tNMfile)) +
   theme(legend.position = "bottom", legend.direction = "vertical") + ylab("Number of People") + labs(tag = "1", color = NULL)
-r
+
 
 #calculate the # difference and % difference between the # of workers and jobs, graph percent difference as bar chart
 workerjobdiff <- alljobforecasts %>%

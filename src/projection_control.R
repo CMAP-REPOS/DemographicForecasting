@@ -68,13 +68,17 @@ NetMig <- netMigSums %>% select(-Source)
 i <- 1
 while(i <= projnums){
 
-# TOGGLE *MIGRATION* OVERRIDE (see Mary_working.R lines 360-370), 1 is ON, 0 is OFF
 
-override = 1
+  ##### OVERRIDES #####{
+# TOGGLE *MIGRATION* OVERRIDE (see Mary_working.R lines 360-370), 1 is ON, 0 is OFF
+override = 0
 
 # TOGGLE *FERTILITY* OVERRIDE (see Mary_working.R lines 15-19), 1 is ON, 0 is OFF
+ASFRoverride = 0
 
-ASFRoverride = 1
+# TOGGLE *ZERO MIGRATION* OVERRIDE (see Projection.R lines 389-393), 1 is ON, 0 is OFF
+zeromigrationoverride = 1
+  ##### OVERRIDES #####}
 
 #set up variables that MigrationProjections needs
 projstart <- series[i]

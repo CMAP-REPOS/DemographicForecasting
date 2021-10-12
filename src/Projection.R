@@ -385,6 +385,7 @@ print("Overrides Activated!")
   print("Override Not Activated.")
 }
 
+# OPTION TO TURN OFF ALL MIGRATION! (for curiosity's sake only)
 if(zeromigrationoverride > 0){
   Projections <- Projections %>%
     ungroup() %>%

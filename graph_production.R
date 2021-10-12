@@ -69,11 +69,28 @@ pp <- pop_totals %>% ggplot(aes(x=Year, y=totpop, group = Region, shape = type))
 
 
 #graphing total population by sex and region
-pop_totals <- pop_recandproj %>% group_by(Region, Sex, Year, type) %>% summarize(totpop = sum(Population))
+pop_totals <- pop_recandproj %>% group_by(Region, Sex, Year, type) %>% summarize(totpop = sum(Population)) %>% ungroup()
 q <- pop_totals %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape = type)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Total Population, estimated and projected, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
   theme(legend.position = "bottom")
 
+q2 <- pop_totals %>% filter(Year <= 2020) %>% ggplot(aes(x=Year, y=totpop, color = Sex, group = Sex, shape = type)) + geom_point() + geom_line() +
+  facet_wrap(~Region, scales="free") + ggtitle("Total Population by Sex, CMAP and External Regions", subtitle = "Census: 2010, 2025, 2020 (est)") +
+  theme(legend.position = "bottom")
+q2
+
+q3 <- POPrecent[['2020']] %>% filter(Region == "CMAP Region") %>%
+  mutate(Age_Group = str_split_fixed(Age, " years", 2)[,1] ) %>%
+  mutate(Age_Group = case_when(Age_Group == "85" ~ "85+",
+                               TRUE ~ Age_Group)) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x)
+
+q4 <- q3 %>%
+  mutate(Age_Group = ordered(Age_Group)) %>%
+  ggplot(aes(x=reorder(Age_Group,x), y=Population, color=Sex, group = Sex)) + geom_point() + geom_line() +
+  ggtitle("Total Population by Sex and Age Group, CMAP Region", subtitle = "2020 Census, Redistricting Data") +
+  theme(axis.text.x = element_text(angle = 45, hjust=1))
+q4
 
 #build population pyramid  ####
 'pp1 <- export %>% filter(Region == "CMAP Region") %>%
@@ -152,14 +169,17 @@ workersandjobs_graph <- workersandjobs %>%
   mutate(forecast = case_when(is.na(forecast) ~ "workers",
                               TRUE ~ forecast)) %>%
   mutate(forecast = case_when(valuename == "jobs" ~ paste(forecast,type,sep="_"),
-                              TRUE ~ forecast))
-r <- workersandjobs_graph %>%   #filter(Region == "CMAP Region") %>%
-  ggplot(aes(x=Year, y= value, group = forecast, color = forecast)) +
+                              TRUE ~ forecast)) %>%
+  ungroup() %>%
+  mutate(valuetype = case_when(Year <= 2020 ~ "Known Data",
+                           TRUE ~ "Forecasted Data") )
+r <- workersandjobs_graph %>%   filter(Region == "CMAP Region") %>%
+  ggplot(aes(x=Year, y= value, shape = valuetype, group = forecast, color = forecast )) +
   geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") +
-  ggtitle("Projected Workers and Jobs, 2010-2050 (Baseline Economic Forecast)", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  ggtitle("Projected Workers and Jobs, 2010-2050", subtitle = paste("Add'l info: ", tNMfile)) +
   theme(legend.position = "bottom", legend.direction = "vertical") + ylab("Number of People") + labs(tag = "1", color = NULL)
-
+r
 
 #calculate the # difference and % difference between the # of workers and jobs, graph percent difference as bar chart
 workerjobdiff <- alljobforecasts %>%

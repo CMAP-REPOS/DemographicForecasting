@@ -86,7 +86,7 @@ projyears <- seq(from=projstart,
 print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "))
 
 #run the projection code
-source("src/Mary_working.R")
+source("src/Projection.R")
 
 #save the MigrationProjections.R outputs in list format
 

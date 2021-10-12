@@ -67,6 +67,13 @@ pp <- pop_totals %>% ggplot(aes(x=Year, y=totpop, group = Region, shape = type))
   facet_wrap(~Region, scales="free") + ggtitle("Total Population, estimated and projected, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
   theme(legend.position = "bottom")
 
+#Graphing total population by region (EXcluding Census)
+pop_totals2 <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(totpop = sum(Population)) %>% filter(Year > 2020)
+ppnc <- pop_totals2 %>% ggplot(aes(x=Year, y=totpop, group = Region, shape = type)) + geom_point() + geom_line() +
+  facet_wrap(~Region, scales="free") + ggtitle("Total Population, estimated and projected, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  theme(legend.position = "bottom")
+ppnc
+
 
 #graphing total population by sex and region
 pop_totals <- pop_recandproj %>% group_by(Region, Sex, Year, type) %>% summarize(totpop = sum(Population)) %>% ungroup()
@@ -201,7 +208,9 @@ t <- summary_components %>%  # filter(Region == "CMAP Region") %>%
   ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
   geom_point() + geom_line() +
   facet_wrap( ~ Region, scales = "free") +
-  ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile))
+  ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
+  scale_color_brewer(palette = "Set1")
+t
 
 
 #same as above, but break out each component by Sex
@@ -303,7 +312,7 @@ both_total <- bergerpop %>% group_by(Region, Year, Sex) %>% summarize(totpop = s
 ppp <- both_total %>% ggplot(aes(x=Year, y=totpop, group = Source, color = Source, shape = Source)) + geom_point() + geom_line() +
   facet_wrap(Region ~ Sex, ncol = 4, scales="free") + ggtitle("Total Population, estimated and projected, CMAP vs Berger 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
   theme(legend.position = "bottom")
-ppp
+
 
 
 bothtotal2 <- both_total %>% group_by(Region, Year, Source) %>% summarize(totpop = sum(totpop))
@@ -327,7 +336,6 @@ pops <- both_all %>%
              #scales = "free")
   ) +   ggtitle("Berger vs CMAP Popuation Forecast", subtitle = paste("In use:", tNMfile))
 
-pops
 
 #calculate age dependency ratio = (0-19 + >65) / (20-64) for each projection and year
 # Census predicts ~ 85 by 2050: https://www.census.gov/prod/2010pubs/p25-1138.pdf

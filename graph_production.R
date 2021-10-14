@@ -55,6 +55,7 @@ pop2020 <- POP[['2020']] %>%
 recentdata <- bind_rows(POP[['2010']], POP[['2015']], pop2020) %>%
   select(Year, Age, Region, Sex, Population) %>%
   mutate(type = "PEPestimate")
+
 pop_proj <- export %>% rename(Population = ProjectedPop_final) %>% mutate(Year = as.numeric(year), type = "Projection") %>% select(-year)
 
 pop_recandproj <- bind_rows(recentdata, pop_proj) ###population, recent and projected
@@ -71,7 +72,7 @@ pp <- pop_totals %>% ggplot(aes(x=Year, y=totpop, group = Region, shape = type))
 pop_totals2 <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(totpop = sum(Population)) %>% filter(Year > 2020)
 ppnc <- pop_totals2 %>% ggplot(aes(x=Year, y=totpop, group = Region, shape = type)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Total Population, estimated and projected, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") + theme_cmap()
 ppnc
 
 
@@ -100,7 +101,7 @@ q4 <- q3 %>%
 
 
 #build population pyramid  ####
-'pp1 <- export %>% filter(Region == "CMAP Region") %>%
+pp1 <- export %>% filter(Region == "CMAP Region") %>%
   filter(year == 2025 | year == 2050) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
   ggplot(aes(x = x, fill = Sex,
@@ -111,6 +112,9 @@ q4 <- q3 %>%
   coord_flip() +
   facet_wrap(Region ~ year, ncol = 4, scales = "free")
 pp1
+
+
+'
 pp2 <- export %>% filter(Region == "External IL") %>%
   filter(year == 2025 | year == 2050) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
@@ -306,13 +310,18 @@ c <- projectedNetMigrationrates %>%
 bergerpop <- read_excel("Input/berger_population.xlsx") %>%
   mutate(Source = "Berger")
 
-pop_totals <- pop_recandproj %>% group_by(Region, Year, Sex, type) %>% summarize(totpop = sum(Population))
-both_total <- bergerpop %>% group_by(Region, Year, Sex) %>% summarize(totpop = sum(Population)) %>%
-  mutate(Source = "Berger") %>%
-  bind_rows(pop_totals %>% select(-type) %>% mutate(Source = "CMAP Script"))
-ppp <- both_total %>% ggplot(aes(x=Year, y=totpop, group = Source, color = Source, shape = Source)) + geom_point() + geom_line() +
-  facet_wrap(Region ~ Sex, ncol = 4, scales="free") + ggtitle("Total Population, estimated and projected, CMAP vs Berger 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
-  theme(legend.position = "bottom")
+pop_totals <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(totpop = sum(Population))
+both_total <- bergerpop %>% group_by(Region, Year) %>% summarize(totpop = sum(Population)) %>%
+  mutate(Source = "Berger's Model") %>%
+  bind_rows(pop_totals %>% select(-type) %>% mutate(Source = "CMAP Model"))
+ppp <- both_total %>%
+  filter(Region == "CMAP Region") %>%
+  ggplot(aes(x=Year, y=totpop, group = Source, color = Source, shape = Source)) +
+  geom_line() +
+  facet_wrap(~ Region, ncol = 4, scales="free") +
+  ggtitle("Total Population, CMAP Region, estimated and projected") +
+  theme_cmap()
+finalize_plot(ppp)
 
 
 

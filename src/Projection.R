@@ -385,6 +385,13 @@ print("Overrides Activated!")
   print("Override Not Activated.")
 }
 
+# OPTION TO TURN OFF ALL MIGRATION! (for curiosity's sake only)
+if(zeromigrationoverride > 0){
+  Projections <- Projections %>%
+    ungroup() %>%
+    mutate(projNetMigrants = 0)
+}
+
 # apply the number of net migrants to the total population (PROJECTION COMPLETE!)
 Projections <- Projections %>%
   mutate(ProjectedPop_final = round((ProjectedPop + projNetMigrants), digits = 0))

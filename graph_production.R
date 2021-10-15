@@ -346,6 +346,15 @@ pops <- both_all %>%
              #scales = "free")
   ) +   ggtitle("Berger vs CMAP Popuation Forecast", subtitle = paste("In use:", tNMfile))
 
+#similar to above, but just graphing each model result on one chart
+pops2 <- both_all %>%
+  filter(Region == "CMAP Region") %>%
+  #filter(Source == "CMAP") %>%
+  filter(Year %% 10 == 0) %>%
+  ggplot(aes(x=age2, y=Population, group = as.character(Year), color = as.character(Year))) + geom_point() + geom_line() +
+  facet_grid(~ Source) +
+  ggtitle("CMAP Popuation Forecast", subtitle = paste("In use:", tNMfile))
+pops2
 
 #calculate age dependency ratio = (0-19 + >65) / (20-64) for each projection and year
 # Census predicts ~ 85 by 2050: https://www.census.gov/prod/2010pubs/p25-1138.pdf
@@ -362,3 +371,16 @@ depratio <- agedepratio %>%
   facet_wrap(~ Region, scales = "free")
 #depratio
 
+#summary calcs
+temp <- both_all %>% filter(Region == "CMAP Region") %>% group_by(Year, Source, Region) %>% summarize(totpop = sum(Population))
+
+temp2 <- both_all %>%
+  mutate(grouping = case_when(age2 <= 10 ~ "0_to_14",
+                              age2 > 10 & age2 < 65 ~ "15 to 64",
+                              TRUE ~ "65_plus") ) %>%
+  group_by(Year, Source, grouping) %>%
+  summarize(totpop = sum(Population)) %>%
+  pivot_wider(names_from = Source, values_from = totpop)
+write.csv(temp2, file = "C:/Users/amcadams/Documents/R/popgroupings.csv")
+
+temp3 <- components_all %>% filter(componentType == "Births") %>% group_by(Region, year) %>% summarize(Births = sum(componentValue))

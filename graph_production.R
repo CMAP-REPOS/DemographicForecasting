@@ -384,3 +384,4 @@ temp2 <- both_all %>%
 write.csv(temp2, file = "C:/Users/amcadams/Documents/R/popgroupings.csv")
 
 temp3 <- components_all %>% filter(componentType == "Births") %>% group_by(Region, year) %>% summarize(Births = sum(componentValue))
+temp0 <- both_all %>% filter(Region == "CMAP Region") %>% filter(Age == "0 to 4 years")

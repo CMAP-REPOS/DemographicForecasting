@@ -126,6 +126,12 @@ GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])
   relocate(starts_with("GQ_Inst_"), .after = Inst_GQ) %>%
   relocate(GQ_NonInst_Military, .before = GQ_NonInst_Other)
 
+GQ_basic_summary <- GQ_full %>%
+  group_by(Region, Year) %>%
+  summarize(totalGQ = sum(totalGQ),
+            totalGQ_Inst = sum(Inst_GQ),
+            totalGQ_NonInst = sum(nonInst_GQ))
+
 GQ_summary <- GQ_full %>% group_by(Region, Sex, Age, Year) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>%
@@ -163,7 +169,9 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
             GQ_NonInst_Other_16_to_64 = sum(GQ_NonInst_Other_16_to_64),
             GQ_NonInst_Other_65_plus = sum(GQ_NonInst_Other_65_plus))
 
-View(HouseholdSummary)
+#View(HouseholdSummary)
+#View(HouseholdSize)
+View(GQ_basic_summary)
 
 
 '
@@ -174,6 +182,7 @@ write.csv(travelModelHHs, file = "C:/Users/amcadams/Documents/R/export_travelmod
 write.csv(HHs_65split, file = "C:/Users/amcadams/Documents/R/export_Households_Age65split.csv")
 
 write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
+write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")

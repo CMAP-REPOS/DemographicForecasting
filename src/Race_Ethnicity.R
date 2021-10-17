@@ -5,6 +5,8 @@ library(readxl)
 
 # Set parameters ----------------------------------------------------------
 
+#CENSUS RACE DEFINITIONS: https://www.census.gov/programs-surveys/cps/data/data-tools/cps-table-creator-help/race-definitions.html
+
 Decennial_YEARS <- c(2010) #ideally add 2020 when that data is available
 Other_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019) # add in 2020 estimates
 YEARS <- c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019)
@@ -73,7 +75,27 @@ for (STATE in names(COUNTIES)) {
                               State == "Illinois" ~ "External IL",
                               State == "Indiana" ~ "External IN",
                               State == "Wisconsin" ~ "External WI")) %>%
-          select(-DATE)
+          select(-DATE)  #%>%
+   
   
   PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
 }
+
+# Filter for NH-White, NH-Black, and NH-Asian
+Non_HISP <- PEP_DATA %>% filter((RACE == 'White alone' & HISP == 'Non-Hispanic') | (RACE == 'Black alone' & HISP == 'Non-Hispanic') | (RACE == 'Asian alone' & HISP == 'Non-Hispanic')) %>%
+                         filter(AGEGROUP != 'All ages' & SEX != 'Both sexes')
+
+# Filter for all other NH groups (American Indian and Alaska Native alone, Native Hawaiian and Other Pacific Islander alone)
+temp <-  PEP_DATA %>% filter(RACE %in% c('American Indian and Alaska Native alone', 'Native Hawaiian and Other Pacific Islander alone') & HISP == 'Hispanic') %>%
+                      filter(AGEGROUP != 'All ages' & SEX != 'Both sexes') %>%
+                      mutate(RACE = case_when(RACE %in% c('American Indian and Alaska Native alone', 'Native Hawaiian and Other Pacific Islander alone') ~ "NH_Other")) %>%
+                      group_by(GEOID, County, State, SEX, AGEGROUP, RACE, HISP, Year, Region) %>%
+                      summarise(value = sum(value))
+
+# Filter for Hispanic only                                     
+HISP <- PEP_DATA %>% filter(HISP == 'Hispanic' & AGEGROUP != 'All ages' & SEX != 'Both sexes' & RACE == 'All races')
+
+# Create final table
+RE <- full_join(Non_HISP, HISP)
+RE <- full_join(RE, temp)
+

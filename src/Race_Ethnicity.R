@@ -27,7 +27,7 @@ IDs <- c('P005003', 'P005004', 'P005005', 'P005006', 'P005007','P005008', 'P0050
 Decennial_DATA <- tibble()
 POP <- list()
 for (YEAR in Decennial_YEARS) {
-  
+
   # Compile list of variables to download
   SF1_VARS <- load_variables(YEAR, "sf1")
   POP_VARS <- SF1_VARS %>% filter(name %in% IDs) %>%
@@ -35,7 +35,7 @@ for (YEAR in Decennial_YEARS) {
       Category = str_replace_all(label, "!!.*?", " "),
       Category = str_replace(Category, ".*? ", "")
     )
-  
+
   for (STATE in names(COUNTIES)) {
     TEMP <- get_decennial(geography = "county", variables = POP_VARS$name,
                           county = COUNTIES[[STATE]], state = STATE,
@@ -50,13 +50,13 @@ for (YEAR in Decennial_YEARS) {
                              variable == 'P005008' ~ 'NH_Other',
                              variable == 'P005009' ~ 'NH_Other',
                              variable == 'P005010' ~ 'Hispanic'))
- 
+
       Decennial_DATA <- bind_rows(Decennial_DATA, TEMP)
     }
-    
-    Decennial_DATA  <- Decennial_DATA %>% group_by(variable, County, State, GEOID) %>% 
+
+    Decennial_DATA  <- Decennial_DATA %>% group_by(variable, County, State, GEOID) %>%
     summarise(Population = sum(Population)) #Berger lumped together all the 'other' groups into one
-    
+
     Decennial_DATA$Year = '2010'
 }
 
@@ -76,8 +76,8 @@ for (STATE in names(COUNTIES)) {
                               State == "Indiana" ~ "External IN",
                               State == "Wisconsin" ~ "External WI")) %>%
           select(-DATE)  #%>%
-   
-  
+
+
   PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
 }
 
@@ -86,16 +86,17 @@ Non_HISP <- PEP_DATA %>% filter((RACE == 'White alone' & HISP == 'Non-Hispanic')
                          filter(AGEGROUP != 'All ages' & SEX != 'Both sexes')
 
 # Filter for all other NH groups (American Indian and Alaska Native alone, Native Hawaiian and Other Pacific Islander alone)
-temp <-  PEP_DATA %>% filter(RACE %in% c('American Indian and Alaska Native alone', 'Native Hawaiian and Other Pacific Islander alone') & HISP == 'Hispanic') %>%
+temp <-  PEP_DATA %>% filter(RACE %in% c('American Indian and Alaska Native alone', 'Native Hawaiian and Other Pacific Islander alone', 'Two or more races') & HISP == 'Non-Hispanic') %>%
                       filter(AGEGROUP != 'All ages' & SEX != 'Both sexes') %>%
-                      mutate(RACE = case_when(RACE %in% c('American Indian and Alaska Native alone', 'Native Hawaiian and Other Pacific Islander alone') ~ "NH_Other")) %>%
+                      mutate(RACE = case_when(RACE %in% c('American Indian and Alaska Native alone', 'Native Hawaiian and Other Pacific Islander alone', 'Two or more races') ~ "NH_Other")) %>%
                       group_by(GEOID, County, State, SEX, AGEGROUP, RACE, HISP, Year, Region) %>%
                       summarise(value = sum(value))
 
-# Filter for Hispanic only                                     
+# Filter for Hispanic only
 HISP <- PEP_DATA %>% filter(HISP == 'Hispanic' & AGEGROUP != 'All ages' & SEX != 'Both sexes' & RACE == 'All races')
 
 # Create final table
 RE <- full_join(Non_HISP, HISP)
 RE <- full_join(RE, temp)
 
+summary <- RE %>% group_by(Region, Year, RACE, HISP) %>% summarize(totpop = sum(value))

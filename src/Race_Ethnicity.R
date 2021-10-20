@@ -58,9 +58,25 @@ for (YEAR in Decennial_YEARS) {
     summarise(Population = sum(Population)) #Berger lumped together all the 'other' groups into one
 
     Decennial_DATA$Year = '2010'
+
+    Decennial_DATA <- Decennial_DATA %>%
+      mutate(Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+                                State == "Illinois" ~ "External IL",
+                                State == "Indiana" ~ "External IN",
+                                TRUE ~ "External WI"))
 }
 
+DecennialSummary <- Decennial_DATA %>% group_by(Region, Year, variable) %>% summarize(Population = sum(Population)) %>%
+  mutate(RACE = case_when(str_detect(variable, "Asian") ~ "Asian alone",
+                          str_detect(variable, "Black") ~ "Black alone",
+                          str_detect(variable, "White") ~ "White alone",
+                          str_detect(variable, "Other") ~ "NH_Other",
+                          TRUE ~ "All races" ) ) %>%
+  mutate(HISP = case_when(str_detect(variable, "Hispanic") ~ "Hispanic",
+                          TRUE ~ "Non-Hispanic")) %>%
+  select(-variable) %>% pivot_wider(names_from = Year, values_from = Population)
 
+# Extract PEP race/ethnicity data ---------------------------------------------
 
 PEP_DATA <- tibble()
 
@@ -99,4 +115,12 @@ HISP <- PEP_DATA %>% filter(HISP == 'Hispanic' & AGEGROUP != 'All ages' & SEX !=
 RE <- full_join(Non_HISP, HISP)
 RE <- full_join(RE, temp)
 
-summary <- RE %>% group_by(Region, Year, RACE, HISP) %>% summarize(totpop = sum(value))
+# Reformat and combine the two tables -----------------------------
+
+summary <- RE %>% group_by(Region, Year, RACE, HISP) %>% summarize(totpop = sum(value)) %>%
+  pivot_wider(names_from = Year, values_from = totpop) %>%
+  right_join(DecennialSummary, by=c("Region", "RACE", "HISP")) %>%
+  relocate(`2010`, .after = HISP)
+
+# Export
+write.csv(summary, file = "C:/Users/amcadams/Documents/R/race_eth_2010-19.csv")

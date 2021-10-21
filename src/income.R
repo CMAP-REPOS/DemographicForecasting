@@ -25,6 +25,10 @@ pums_wi <- get_pums(variables = c("PUMA", "HINCP", "ADJINC"), state = "55", year
 pums_all <- bind_rows(pums_il, pums_in, pums_wi)
 
 
+
+
+
+##### Working scraps below vvv
 pums_il_2 <- pums_il %>%
   select(1:8) %>% left_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>%
   filter(SPORDER == "1") %>%

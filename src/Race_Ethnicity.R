@@ -21,6 +21,8 @@ COUNTIES <- list(
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 IDs <- c('P005003', 'P005004', 'P005005', 'P005006', 'P005007','P005008', 'P005009','P005010')
 
+#P002
+
 
 # Extract Decennial Census race/ethnicity variables from SF1 ---------------------------------
 
@@ -124,3 +126,5 @@ summary <- RE %>% group_by(Region, Year, RACE, HISP) %>% summarize(totpop = sum(
 
 # Export
 write.csv(summary, file = "C:/Users/amcadams/Documents/R/race_eth_2010-19.csv")
+
+write.csv(summary, file = "/Users/mweber/Desktop/race_eth_2010-19.csv")

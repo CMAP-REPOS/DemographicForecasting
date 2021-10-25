@@ -7,7 +7,7 @@ library(readxl)
 
 
 
-#load("Output/Migration_Projections.Rdata") #Mig_Proj
+load("Output/Migration_Projections.Rdata") #Mig_Proj
 
 #Import projected rates by race and ethnicity groupings (see Race_Ethnicity.R)
 re_rates <- read_excel(path = "Input/raceethrates.xlsx") %>%

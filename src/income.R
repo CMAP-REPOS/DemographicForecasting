@@ -13,6 +13,8 @@ load("Output/PumaRegions.Rdata") #"puma_region" - key for identifying CMAP regio
 
 
 # get data from ACS
+# HINCP - household income
+# ADJINC - adjustment factor for income and earnings dollar amounts; Use ADJINC to adjust HINCP to constant dollars.
 
 
 pums_il <- get_pums(variables = c("PUMA", "HINCP", "ADJINC"), state = "17", year = 2019, survey = "acs5",
@@ -33,7 +35,7 @@ pums_il_2 <- pums_il %>%
   select(1:8) %>% left_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>%
   filter(SPORDER == "1") %>%
   filter(!is.na(Region)) %>%
-  mutate(HHincome = HINCP * as.numeric(ADJINC)) %>%
+  mutate(HHincome = HINCP * as.numeric(ADJINC)) %>% #HH income x adjustment factor
   group_by(Region) %>% summarize(totHH = sum(WGTP))
 
 

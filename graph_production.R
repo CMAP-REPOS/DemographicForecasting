@@ -73,7 +73,7 @@ pop_totals2 <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(tot
 ppnc <- pop_totals2 %>% ggplot(aes(x=Year, y=totpop, group = Region, shape = type)) + geom_point() + geom_line() +
   facet_wrap(~Region, scales="free") + ggtitle("Total Population, estimated and projected, 2010-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
   theme(legend.position = "bottom") + theme_cmap()
-ppnc
+
 
 
 #graphing total population by sex and region
@@ -111,7 +111,7 @@ pp1 <- export %>% filter(Region == "CMAP Region") %>%
   scale_y_continuous(labels = abs, limits = max(export$ProjectedPop_final) * c(-1,1)) +
   coord_flip() +
   facet_wrap(Region ~ year, ncol = 4, scales = "free")
-pp1
+
 
 
 '

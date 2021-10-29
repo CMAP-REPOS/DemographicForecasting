@@ -26,3 +26,4 @@ raceeth_proj <- full_join(re_rates, pop_summary, by=c("Year" = "year", "Region")
 #export results
 
 write.csv(raceeth_proj, file = "C:/Users/amcadams/Documents/R/race_eth_projections.csv")
+

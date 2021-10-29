@@ -1,13 +1,22 @@
-# Labor Force calculation
+# Workforce.R
 #
+# This script estimates the number of workers from several inputs: total
+# population by age and sex (Census and CMAP Projection), estimates of Group
+# Quarter populations by age and sex (Census and CMAP Projection), national age- and sex-
+# specific Labor Force Participation Rates (Source: CBO's "2021 Long-Term Budget
+# Outlook", interpolated and held constant post-2030), national annual
+# non-Military 16+ Unemployment rates (source: CBO's "An Update to the Budget
+# and Economic Outlook: 2021 to 2031", held constant post-2030)
+#
+# Alexis McAdams, CMAP, Oct 2021
 
 # load libraries
 library(dplyr)
 library(tidyverse)
 library(readxl)
 
-#get GQ ratios
-load("Output/GQData.Rdata")
+#get GQ ratios from GroupQuarters.R
+load("Output/GQData.Rdata") # named GQratios
 
 #define "too young to work" age groups (assumption)
 kiddos <- c("0 to 4 years", "5 to 9 years", "10 to 14 years")
@@ -24,6 +33,8 @@ load("Output/PopData.Rdata") #POP
 POPrecent <- list()
 POPrecent[["2010"]] <- POP[["2010"]]
 POPrecent[["2015"]] <- POP[["2015"]]
+POPrecent[["2018"]] <- POP[["2018"]]
+POPrecent[["2019"]] <- POP[["2019"]]
 POPrecent[["2020"]] <- POP[["2020"]]
 for(i in names(POPrecent)){
   POPrecent[[i]] <- POPrecent[[i]] %>%
@@ -37,10 +48,10 @@ POPPROJcopy <- POPPROJ
 POPPROJcopy[['2020']] <- NULL  #remove the blank 2020 from POPPROJ (investigate that later)
 for(i in names(POPPROJcopy)){
   POPPROJcopy[[i]] <- POPPROJcopy[[i]] %>%
-    rename(Population = ProjectedPop_final)
+    rename(Population = ProjectedPop_final) #reformat Projected Population column
 }
 
-#combine the two lists above into one list
+#combine the two lists created above into one list
 laborforce <- c(POPrecent, POPPROJcopy)
 
 #join the GQ ratios to the population for every year
@@ -51,14 +62,17 @@ for(i in names(laborforce)){
     filter(!Age %in% kiddos)
 }
 
-#join the LSPRs to each of the tables in laborforce
+#join the LFPRs to each of the tables in laborforce
 laborforce[["2010"]] <- laborforce[["2010"]] %>% left_join(LFPRs[c(1:2,3)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2010)
 laborforce[["2015"]] <- laborforce[["2015"]] %>% left_join(LFPRs[c(1:2,4)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2015)
-laborforce[["2020"]] <- laborforce[["2020"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2020)
-laborforce[["2025"]] <- laborforce[["2025"]] %>% left_join(LFPRs[c(1:2,6)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2025)
+laborforce[["2018"]] <- laborforce[["2018"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2018)
+laborforce[["2019"]] <- laborforce[["2019"]] %>% left_join(LFPRs[c(1:2,6)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2019)
+laborforce[["2020"]] <- laborforce[["2020"]] %>% left_join(LFPRs[c(1:2,7)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2020)
+laborforce[["2025"]] <- laborforce[["2025"]] %>% left_join(LFPRs[c(1:2,8)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2025)
 
+#use the 2030 LPFR for 2030 and all projection years after that
 for(i in c("2030","2035","2040","2045","2050")){
-  laborforce[[i]] <- laborforce[[i]] %>% left_join(LFPRs[c(1:2,7)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2030)
+  laborforce[[i]] <- laborforce[[i]] %>% left_join(LFPRs[c(1:2,9)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2030)
 }
 
 #multiply NonGQpop * LFPR for each year
@@ -68,7 +82,7 @@ for(i in names(laborforce)){
     mutate(laborforce = NonGQpop * (LFPR/100))
 }
 
-#condense laborforce into one table
+#condense laborforce list into single tibble
 workers <- tibble()
 i=1
 for(item in laborforce){
@@ -91,3 +105,4 @@ workers <- workers %>%
   mutate(Year = as.numeric(year)) %>% select(-year) %>%
   mutate(type = case_when(Year < 2021 ~ "PEPestimate",
                           TRUE ~ "Projection"))
+

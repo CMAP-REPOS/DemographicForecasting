@@ -97,8 +97,7 @@ travelModelHHs <- Households %>% mutate(x = as.numeric(str_split_fixed(Age, " ",
                               x >= 65 ~ "c_over65",           #define age groups
                               TRUE ~ "b_between35_65")) %>%   # a,b,c is for table sorting only
   group_by(Region, agegroup, Year) %>%
-  summarize(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH)) %>%
-  rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
+  summarize(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH))
 
 #calculate the HHpop, total Household Heads, and household size by <65 and 65+
 
@@ -174,7 +173,7 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
 View(GQ_basic_summary)
 
 
-'
+
 write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
 write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/export_HouseholdsSummary.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
@@ -186,7 +185,7 @@ write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summ
 write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
-'
+
 
 
 

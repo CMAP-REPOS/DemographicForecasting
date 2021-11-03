@@ -89,10 +89,10 @@ test <- pums_data <- pums_all %>%
   rowwise() %>% mutate(HINC_19 = HINCP * as.numeric(ADJINC))
 
 testCMAP <- test %>% filter(Region == "CMAP Region") %>%
-  select(HINC_19, WGTP)
+  select(HINC_19, WGTP) %>% ungroup()
 
 
-testrows <- rep(testCMAP[,1], times=testCMAP[,2])
+testrows <- rep(testCMAP[,1], times = testCMAP[,2])
 
 
 

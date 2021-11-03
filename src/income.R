@@ -53,22 +53,34 @@ pums_test <- pums_all %>%
 pums_perc <- pums_test %>% group_by(Region) %>% summarize(total = sum(tot_incgroup)) %>% #calculate total # of households by region
   right_join(pums_test, by="Region") %>% #join total # of HH to income groupings
   rowwise() %>% mutate(incperc = round((tot_incgroup / total) * 100,2)) %>% #calculate percentage of HH in each income grouping
-  mutate(x = as.numeric(str_split_fixed(inc_group, "_", 2)[,1])) %>% arrange(Region, x) %>% #create column for proper sorting of income groupings (low to high)
+  mutate(x_min = as.numeric(str_split_fixed(inc_group, "_", 2)[,1])) %>% #grab the min value from the income grouping
+  mutate(x_max = str_remove(str_split_fixed(inc_group, "_", 3)[,3], "k")) %>% mutate(x_max = case_when(x_max == "over" ~ "-1", TRUE ~ x_max)) %>% mutate(xmax = as.numeric(x_max)) %>%
+  arrange(Region, x_min) %>% #create column for proper sorting of income groupings (low to high)
   group_by(Region) %>% mutate(perc_cumulative = cumsum(incperc)) %>% #calculate cumulative percentage
   rowwise() %>%
   mutate(quantile = case_when(perc_cumulative < 25 ~ "1st_quantile", # assign quartile to each income grouping
                               perc_cumulative < 50 ~ "2nd_quantile",
                               perc_cumulative < 75 ~ "3rd_quantile",
-                              TRUE ~ "4th_quantile")) %>%
-  group_by(Region, quantile) %>% summarize(total = total, tot_quantile = sum(tot_incgroup)) %>% unique() %>% # total up number of households in each quantile
+                              TRUE ~ "4th_quantile"))
+
+temp <- pums_perc %>% group_by(Region, quantile) %>%
+  mutate(mininc = min(x_min), maxinc = as.numeric(max(x_max))) %>% ungroup() %>% #grab the min and max income for each quantile
+  mutate(maxinc = case_when(maxinc >= 200 ~ -1, TRUE ~ maxinc )) %>% # fix for the top quantile (no upper bound)
+  select(Region, quantile, mininc, maxinc)
+
+pums_perc2 <- pums_perc %>%
+  group_by(Region, quantile) %>%
+  summarize(total = total, totperc = sum(incperc), tot_quantile = sum(tot_incgroup)) %>% unique() %>% # total up number of households in each quantile
   rowwise() %>% mutate(hh_quant_perc = (tot_quantile / total) * 100 ) # calculate percentage of households in each quantile
 
-quantiles <- pums_perc %>% select(Region, quantile, hh_quant_perc) # isolate hh quantile percentage by region (ready to apply to projected # of households)
-
+quantiles <- pums_perc2 %>% select(Region, quantile, hh_quant_perc) %>% # isolate hh quantile percentage by region (ready to apply to projected # of households)
+  left_join(temp, by=c("Region", "quantile")) %>% unique() #tack on min and max income values for each quantile
 
 
 
 ####
+
+temp <- pums_perc %>% group_by(Region, quantile) %>% mutate(Region = Region, mininc = min(x_min), maxinc = max(x_max))
 
 inc_quant <- pums_all %>%
   select(1:8) %>%

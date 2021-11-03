@@ -181,7 +181,7 @@ write.csv(travelModelHHs, file = "C:/Users/amcadams/Documents/R/export_travelmod
 write.csv(HHs_65split, file = "C:/Users/amcadams/Documents/R/export_Households_Age65split.csv")
 
 write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
-write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
+write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_basic_summary.csv")
 write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
@@ -189,6 +189,6 @@ write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdS
 
 
 
-#save(HH_PROJ, file="Output/HH_Proj.Rdata")
-#save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+save(HH_PROJ, file="Output/HH_Proj.Rdata")
+save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
 

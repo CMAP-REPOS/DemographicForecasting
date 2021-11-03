@@ -26,7 +26,7 @@ pums_wi <- get_pums(variables = c("PUMA", "HINCP", "ADJINC"), state = "55", year
 pums_all <- bind_rows(pums_il, pums_in, pums_wi)
 
 # reformat ACS income data
-pums_test <- pums_all %>%
+pums_data <- pums_all %>%
   select(1:8) %>%
   left_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>% #join to "puma_region" key (which counties are in which region)
   filter(!is.na(Region))  %>% #filter out all data from areas outside of 4 regions
@@ -46,12 +46,13 @@ pums_test <- pums_all %>%
                                HINC_19 <= 124999 ~ "100_to_125k",
                                HINC_19 <= 149999 ~ "125_to_150k",
                                HINC_19 <= 199999 ~ "150_to_200k",
-                               TRUE ~ "200_and_over" )) %>%
-  group_by(Region, inc_group) %>% summarize(tot_incgroup = sum(WGTP)) #sum up the number of HH in each of the income groupings
+                               TRUE ~ "200_and_over" )) %>% #sum up the number of HH in each of the income groupings
+  group_by(Region, inc_group) %>% summarize(tot_incgroup = sum(WGTP))
 
 # calculate percentages by income grouping, assign quantile, and calculate percentage of households in each quantile
-pums_perc <- pums_test %>% group_by(Region) %>% summarize(total = sum(tot_incgroup)) %>% #calculate total # of households by region
-  right_join(pums_test, by="Region") %>% #join total # of HH to income groupings
+pums_perc <- pums_data %>%
+  group_by(Region) %>% summarize(total = sum(tot_incgroup)) %>% #calculate total # of households by region
+  right_join(pums_data, by="Region") %>% #join total # of HH to income groupings
   rowwise() %>% mutate(incperc = round((tot_incgroup / total) * 100,2)) %>% #calculate percentage of HH in each income grouping
   mutate(x_min = as.numeric(str_split_fixed(inc_group, "_", 2)[,1])) %>% #grab the min value from the income grouping
   mutate(x_max = str_remove(str_split_fixed(inc_group, "_", 3)[,3], "k")) %>% mutate(x_max = case_when(x_max == "over" ~ "-1", TRUE ~ x_max)) %>% mutate(xmax = as.numeric(x_max)) %>%
@@ -66,7 +67,7 @@ pums_perc <- pums_test %>% group_by(Region) %>% summarize(total = sum(tot_incgro
 temp <- pums_perc %>% group_by(Region, quantile) %>%
   mutate(mininc = min(x_min), maxinc = as.numeric(max(x_max))) %>% ungroup() %>% #grab the min and max income for each quantile
   mutate(maxinc = case_when(maxinc >= 200 ~ -1, TRUE ~ maxinc )) %>% # fix for the top quantile (no upper bound)
-  select(Region, quantile, mininc, maxinc)
+  select(Region, quantile, mininc, maxinc) %>% unique()
 
 pums_perc2 <- pums_perc %>%
   group_by(Region, quantile) %>%
@@ -74,11 +75,29 @@ pums_perc2 <- pums_perc %>%
   rowwise() %>% mutate(hh_quant_perc = (tot_quantile / total) * 100 ) # calculate percentage of households in each quantile
 
 quantiles <- pums_perc2 %>% select(Region, quantile, hh_quant_perc) %>% # isolate hh quantile percentage by region (ready to apply to projected # of households)
-  left_join(temp, by=c("Region", "quantile")) %>% unique() #tack on min and max income values for each quantile
+  left_join(temp, by=c("Region", "quantile")) #tack on min and max income values for each quantile
 
 
 
 ####
+
+#let's try to get our own quantiles (don't use the income groupings)
+test <- pums_data <- pums_all %>%
+  select(1:8) %>%
+  left_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>% #join to "puma_region" key (which counties are in which region)
+  filter(!is.na(Region))  %>% #filter out all data from areas outside of 4 regions
+  rowwise() %>% mutate(HINC_19 = HINCP * as.numeric(ADJINC))
+
+testCMAP <- test %>% filter(Region == "CMAP Region") %>%
+  select(HINC_19, WGTP)
+
+
+testrows <- rep(testCMAP[,1], times=testCMAP[,2])
+
+
+
+
+
 
 temp <- pums_perc %>% group_by(Region, quantile) %>% mutate(Region = Region, mininc = min(x_min), maxinc = max(x_max))
 

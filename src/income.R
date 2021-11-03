@@ -65,8 +65,8 @@ pums_perc <- pums_data %>%
                               TRUE ~ "4th_quantile"))
 
 temp <- pums_perc %>% group_by(Region, quantile) %>%
-  mutate(mininc = min(x_min), maxinc = as.numeric(max(x_max))) %>% ungroup() %>% #grab the min and max income for each quantile
-  mutate(maxinc = case_when(maxinc >= 200 ~ -1, TRUE ~ maxinc )) %>% # fix for the top quantile (no upper bound)
+  mutate(mininc = min(x_min)*1000, maxinc = as.numeric(max(x_max))*1000) %>% ungroup() %>% #grab the min and max income for each quantile
+  mutate(maxinc = case_when(maxinc >= 200000 ~ -1, TRUE ~ maxinc )) %>% # fix for the top quantile (no upper bound)
   select(Region, quantile, mininc, maxinc) %>% unique()
 
 pums_perc2 <- pums_perc %>%
@@ -76,6 +76,31 @@ pums_perc2 <- pums_perc %>%
 
 quantiles <- pums_perc2 %>% select(Region, quantile, hh_quant_perc) %>% # isolate hh quantile percentage by region (ready to apply to projected # of households)
   left_join(temp, by=c("Region", "quantile")) #tack on min and max income values for each quantile
+
+#### apply projection to number of households
+
+#import and reformat Households data
+load("Output/HH_PROJ.Rdata") # HH_PROJ
+
+Households <- tibble()
+i=1
+for(item in HH_PROJ){
+  temp2 <- item
+  temp2$Year <- names(HH_PROJ)[i]
+  Households <- bind_rows(Households, temp2)
+  i <- i + 1
+}
+
+HH_incomes <- Households %>%
+  group_by(Region, Year) %>% summarize(totalHH = sum(Head_HH)) %>%
+  left_join(quantiles, by = "Region") %>%
+  rowwise() %>% mutate(households = round(totalHH * (hh_quant_perc / 100),0)) %>%
+  select(Region, Year, households, quantile, mininc, maxinc)
+
+write.csv(HH_incomes, file = "C:/Users/amcadams/Documents/R/HH_incomes.csv")
+
+
+
 
 
 

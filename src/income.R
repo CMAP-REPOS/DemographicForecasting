@@ -25,6 +25,8 @@ pums_wi <- get_pums(variables = c("PUMA", "HINCP", "ADJINC"), state = "55", year
 # put all 3 state ACS data together
 pums_all <- bind_rows(pums_il, pums_in, pums_wi)
 
+# STEP 2: By County, divide households into 16 income groups as defined by Berger
+
 # reformat ACS income data
 pums_data <- pums_all %>%
   select(1:8) %>%
@@ -48,6 +50,12 @@ pums_data <- pums_all %>%
                                HINC_19 <= 199999 ~ "150_to_200k",
                                TRUE ~ "200_and_over" )) %>% #sum up the number of HH in each of the income groupings
   group_by(Region, inc_group) %>% summarize(tot_incgroup = sum(WGTP))
+
+
+
+# STEP 3: By County...calculate what % of total households each grouping represents (household income group / total household count)
+#                     calculate the cumulative percentage (highest income grouping should equal 100%)
+#                     use the cumulative percentages to separate the income groupings into quantiles
 
 # calculate percentages by income grouping, assign quantile, and calculate percentage of households in each quantile
 pums_perc <- pums_data %>%
@@ -136,12 +144,8 @@ temp <- inc_quant %>% filter(Region == "CMAP Region") %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x)
 
 
-# STEP 2: By County, divide households into 16 income groups as defined by Berger
-# STEP 3: By County, calculate what % of total households each grouping represents (household income group / total household count)
-# STEP 4: By County, calculate the cumulative percentage (highest income grouping should equal 100%)
-# STEP 5: By County, use the cumulative percentages to separate the income groupings into quantiles
-          # simply looking for the income group closest to, but less than, the quantile in question
-          # so if there's an income group with a cumulative % of 24 and the next grouping is 27%, the 24% grouping is the cut off for the 25% group
+
+
 # STEP 6: Once quantile groupings are identified, for each quantile sum up the % of total households the quantile represents (values from Step 2)
 
 

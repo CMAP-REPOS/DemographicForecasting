@@ -20,7 +20,9 @@ COUNTIES <- list(
 )
 
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
-IDs <- c('P005003', 'P005004', 'P005005', 'P005006', 'P005007','P005008', 'P005009','P005010')
+IDs <- c('P005003', 'P005004', 'P005005', 'P005006', 'P005007','P005008', 'P005009','P005010') #race/ethnicity
+
+HH_Race <- c('H007003', 'H007004', 'H007005', 'H007006', 'H007007', 'H007008', 'H007009',' H007010') #householder by race
 
 #P002
 
@@ -126,6 +128,6 @@ summary <- RE %>% group_by(Region, Year, RACE, HISP) %>% summarize(totpop = sum(
   relocate(`2010`, .after = HISP)
 
 # Export
-write.csv(summary, file = "C:/Users/amcadams/Documents/R/race_eth_2010-19.csv")
+#write.csv(summary, file = "C:/Users/amcadams/Documents/R/race_eth_2010-19.csv")
 
 write.csv(summary, file = "/Users/mweber/Desktop/race_eth_2010-19.csv")

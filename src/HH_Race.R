@@ -27,7 +27,7 @@ HH_Race <- c('H007003', 'H007004', 'H007005', 'H007006', 'H007007', 'H007008', '
 Decennial_DATA <- tibble()
 POP <- list()
 for (YEAR in Decennial_YEARS) {
-  
+
   # Compile list of variables to download
   SF1_VARS <- load_variables(YEAR, "sf1")
   POP_VARS <- SF1_VARS %>% filter(name %in% HH_Race) %>%
@@ -35,7 +35,7 @@ for (YEAR in Decennial_YEARS) {
       Category = str_replace_all(label, "!!.*?", " "),
       Category = str_replace(Category, ".*? ", "")
     )
-  
+
   for (STATE in names(COUNTIES)) {
     TEMP <- get_decennial(geography = "county", variables = POP_VARS$name,
                           county = COUNTIES[[STATE]], state = STATE,
@@ -50,18 +50,54 @@ for (YEAR in Decennial_YEARS) {
                                   variable == 'H007008' ~ 'NH_Other', #some other race alone
                                   variable == 'H007009' ~ 'NH_Other', #two or more races
                                   variable == 'H007010' ~ 'Hispanic')) #Hispanic or Latino
-    
+
     Decennial_DATA <- bind_rows(Decennial_DATA, TEMP)
   }
 
   Decennial_DATA  <- Decennial_DATA %>% group_by(variable, County, State, GEOID) %>%
     summarise(Population = sum(Population)) #Berger lumped together all the 'other' groups into one
-  
+
   Decennial_DATA$Year = '2010'
-  
+
   Decennial_DATA <- Decennial_DATA %>%
     mutate(Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
                               State == "Illinois" ~ "External IL",
                               State == "Indiana" ~ "External IN",
                               TRUE ~ "External WI"))
 }
+
+# Extract PEP race/ethnicity data ---------------------------------------------
+  # ACS 1-year estimates, 2014-2019 (only for counties 65k and over...)
+
+PEP_DATA <- tibble()
+
+years_test <- c(2011:2019)
+
+hh_race_variables = c("B25006_001" , "B25006_002", "B25006_003", "B25006_004", "B25006_005", "B25006_006", "B25006_007",
+                      "B25006_008", "B25006_009", "B25006_010")
+
+for (STATE in names(COUNTIES)) {
+  for (YEAR in years_test){
+    PEP_TEMP <- get_acs(geography = "county", variables = hh_race_variables, county = COUNTIES[[STATE]],
+                      state = STATE, survey = "acs1", year = YEAR) %>%
+      mutate(Year = YEAR) %>%
+      separate(NAME, c("County", "State"), sep = "\\, ") %>%
+      mutate(Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+                         State == "Illinois" ~ "External IL",
+                         State == "Indiana" ~ "External IN",
+                         State == "Wisconsin" ~ "External WI"))
+
+    PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
+  }
+}
+
+
+
+
+###### scratchpad code below
+
+test <- get_acs(geography = "county", variables = "B25006_001", county = "Cook",
+                state = "IL", survey = "acs1", year = 2011)
+
+
+popTot <- Decennial_DATA %>% group_by(Year, Region) %>% summarize(sumHH = sum(Population))

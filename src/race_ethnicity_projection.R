@@ -28,3 +28,10 @@ raceeth_proj <- full_join(re_rates, pop_summary, by=c("Year" = "year", "Region")
 write.csv(raceeth_proj, file = "C:/Users/amcadams/Documents/R/race_eth_projections.csv")
 
 write.csv(raceeth_proj, file = "/Users/mweber/Desktop/raceeth_proj.csv")
+
+#check that population totals match (compare to pop_summary)
+pop_summary2 <- raceeth_proj <- full_join(re_rates, pop_summary, by=c("Year" = "year", "Region")) %>%
+  filter(Year >=2025) %>%
+  rowwise() %>%
+  mutate(calcPop = round(TotPopulation * Proportion, 0)) %>%
+  group_by(Region, Year) %>% summarize(totREPop = sum(calcPop))

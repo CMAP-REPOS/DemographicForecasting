@@ -70,13 +70,13 @@ while(i <= projnums){
 
 
   ##### OVERRIDES #####{
-# TOGGLE *MIGRATION* OVERRIDE (see Mary_working.R lines 360-370), 1 is ON, 0 is OFF
+# TOGGLE *MIGRATION* OVERRIDE (see Projection.R lines 363-375), 1 is ON, 0 is OFF
 override = 1
 
-# TOGGLE *FERTILITY* OVERRIDE (see Mary_working.R lines 15-19), 1 is ON, 0 is OFF
+# TOGGLE *FERTILITY* OVERRIDE (see Projection.R lines 15-20), 1 is ON, 0 is OFF
 ASFRoverride = 1
 
-# TOGGLE *ZERO MIGRATION* OVERRIDE (see Projection.R lines 389-393), 1 is ON, 0 is OFF
+# TOGGLE *ZERO MIGRATION* OVERRIDE (see Projection.R lines 383-388), 1 is ON, 0 is OFF
 zeromigrationoverride = 0
   ##### OVERRIDES #####}
 
@@ -152,7 +152,7 @@ for(item in COMPONENTS){
 Mig_Proj <- export %>% unique() %>% # we should think about renaming this variable - it's not really a migration projection, it's a population projection with migration included
   mutate(TNMtype = tNMfile) #add column that documents WHICH SET of target net migrant values were used for this projection
 
-#save(Mig_Proj, file="Output/Migration_Projections.Rdata")
+save(Mig_Proj, file="Output/Migration_Projections.Rdata")
 #write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
 #write.csv(target_NM_Sex_check, "/Users/mweber/Desktop/target_NM_Sex_check.csv")
 #write.csv(base_year_NM_check, "/Users/mweber/Desktop/base_year_NM_check.csv")

@@ -373,16 +373,11 @@ Projections <- Projections %>%
 Projections <- Projections %>%
   mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '25 to 39 years' && Age != "25 to 29 years" ~ (projNetMigrants * 0.5) + 5000,
                                      TRUE ~ projNetMigrants))
-# 4 This override checks if the projection period is 2030 or later, and doubles the number of net migrants of 25-39
-#if(startyr >= 2030){
-#  Projections <- Projections %>%
-#  mutate(projNetMigrants = case_when(Region == "CMAP Region" && Age_Group == '25 to 39 years'  ~ (projNetMigrants * 2),
-#                                     TRUE ~ projNetMigrants))
-#}
+
 print("Overrides Activated!")
 
 }else{
-  print("Override Not Activated.")
+  print("Migration Override Not Activated.")
 }
 
 # OPTION TO TURN OFF ALL MIGRATION! (for curiosity's sake only)

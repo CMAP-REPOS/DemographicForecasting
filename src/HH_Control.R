@@ -14,7 +14,7 @@ library(readxl)
 
 load("Output/GQData2.Rdata") # GQratios, GQ_Military
 load("Output/Head_of_HH.Rdata") # Headship
-#load("Output/Migration_Projections.Rdata") #Mig_Proj
+load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/PopData.Rdata") #POP
 
 #override Headship #s with 2010 Adjusted Headship Ratios (pulled from Berger)
@@ -191,4 +191,18 @@ write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdS
 
 save(HH_PROJ, file="Output/HH_Proj.Rdata")
 save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+
+### project GQ and Household population by Race/Ethnicity
+
+#load in GQ pop by R/E rates
+load("Output/GQRE_rates.Rdata") #GQRE_perc, from GQ_by_RaceEth.R
+#join to total GQ population projections
+GQRE_proj <- left_join(GQ_basic_summary %>% select(Region, Year, totalGQ), GQRE_perc, by="Region") %>%
+  rowwise() %>%
+  mutate(GQPop_RE = round(totalGQ * GQ_perc,0)) %>%
+  select(Region, Year, variable, GQPop_RE)
+
+save(GQRE_proj, file = "Output/GQRE_projections_RE.data")
+
+
 

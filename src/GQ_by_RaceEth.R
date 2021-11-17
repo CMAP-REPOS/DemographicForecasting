@@ -46,8 +46,8 @@ for (YEAR in Decennial_YEARS) {
       separate(NAME, c("County", "State"), sep = "\\, ") %>%
       rename(Population = value) %>%
       mutate(variable = case_when(variable == "PCT020001" ~ "total_GQ",
-                                  variable == "PCT020I001" ~ "NH_white",
-                                  variable == "PCT020B001" ~ "NH_black",
+                                  variable == "PCT020I001" ~ "NH_White",
+                                  variable == "PCT020B001" ~ "NH_Black",
                                   variable == "PCT020D001" ~ "NH_Asian",
                                   variable == "PCT020H001" ~ "Hispanic") )
 
@@ -88,6 +88,7 @@ GQ_totals <- GQRE_summary %>% ungroup() %>%
 
 GQRE_perc <- GQRE_summary %>% filter(variable != "total_GQ") %>%
   rowwise() %>%
-  mutate(GQ_perc = Population / totalGQ)
+  mutate(GQ_perc = Population / totalGQ) %>%
+  select(Region, variable, GQ_perc)
 
 save(GQRE_perc, file="Output/GQRE_rates.Rdata")

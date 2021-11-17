@@ -72,7 +72,7 @@ GQRE_summary <- GQ_RaceEth %>%
 NH_others <- GQRE_summary %>%
   pivot_wider(names_from = variable, values_from = Population) %>%
   rowwise() %>%
-  mutate(NH_Other = total_GQ - Hispanic - NH_white - NH_black - NH_Asian) %>%
+  mutate(NH_Other = total_GQ - Hispanic - NH_White - NH_Black - NH_Asian) %>%
   select(Region, NH_Other) %>%
   rename(Population = NH_Other) %>%
   mutate(variable = "NH_Other")
@@ -87,8 +87,10 @@ GQ_totals <- GQRE_summary %>% ungroup() %>%
   select(totalGQ, Region)
 
 GQRE_perc <- GQRE_summary %>% filter(variable != "total_GQ") %>%
+  left_join(GQ_totals, by = "Region") %>%
   rowwise() %>%
   mutate(GQ_perc = Population / totalGQ) %>%
+  ungroup() %>%
   select(Region, variable, GQ_perc)
 
 save(GQRE_perc, file="Output/GQRE_rates.Rdata")

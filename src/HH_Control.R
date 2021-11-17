@@ -192,17 +192,46 @@ write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdS
 save(HH_PROJ, file="Output/HH_Proj.Rdata")
 save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
 
-### project GQ and Household population by Race/Ethnicity
 
-#load in GQ pop by R/E rates
+
+### calculate projected GQ and Household populations by Race/Ethnicity
+
+#import GQ by R/E rates
 load("Output/GQRE_rates.Rdata") #GQRE_perc, from GQ_by_RaceEth.R
-#join to total GQ population projections
-GQRE_proj <- left_join(GQ_basic_summary %>% select(Region, Year, totalGQ), GQRE_perc, by="Region") %>%
-  rowwise() %>%
-  mutate(GQPop_RE = round(totalGQ * GQ_perc,0)) %>%
-  select(Region, Year, variable, GQPop_RE)
 
-save(GQRE_proj, file = "Output/GQRE_projections_RE.data")
+
+#apply rates to total GQ population (GQ_basic_summary) to get GQ pop by Race/Ethnicity
+GQRE_pop <- GQ_basic_summary %>%
+  select(Region, Year, totalGQ) %>%
+  full_join(GQRE_perc, by="Region") %>%
+  rowwise() %>%
+  mutate(GQRE_pop_proj = round(totalGQ * GQ_perc,0)) %>%
+  select(Region, Year, variable, GQRE_pop_proj) %>%
+  filter(Year >=2025)
+
+#import total R/E populations
+load("Output/totalPop_RE_projection.R") #raceeth_proj
+#reformat R/E groupings
+raceeth_proj <- raceeth_proj %>%
+  mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",
+                              RACE == "Asian alone" ~ "NH_Asian",
+                              RACE == "Black alone" ~ "NH_Black",
+                              RACE == "White alone" ~ "NH_White",
+                              RACE == "NH_Other" ~ "NH_Other",
+                              TRUE ~ "99999999")) %>%
+  select(Region, Year, variable, calcPop) %>%
+  rename(totalRE_pop = calcPop)
+
+#join the GQ pops to total R/E populations, subtract to get HH pop
+HHRE_pop <- GQRE_pop %>%
+  full_join(raceeth_proj, by=c("Region", "Year", "variable")) %>%
+  rowwise() %>%
+  mutate(HHRE_pop_proj = totalRE_pop - GQRE_pop_proj) %>%
+  select(Region, Year, variable, HHRE_pop_proj)
+
+#export
+write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/export_GQpop_RE.csv")
+write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/export_HHpop_RE.csv")
 
 
 

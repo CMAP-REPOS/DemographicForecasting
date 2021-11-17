@@ -42,38 +42,3 @@ pop_summary2 <- raceeth_proj_summary <- full_join(re_rates, pop_summary, by=c("Y
   rowwise() %>%
   mutate(calcPop = round(TotPopulation * Proportion, 0)) %>%
   group_by(Region, Year) %>% summarize(totREPop = sum(calcPop))
-
-
-#
-
-#import GQ populations by Race/Ethnicity (performed in HH_Control.R)
-load("Output/GQRE_projections_RE.data") #GQRE_proj
-
-#join the projected GQ populations by race to the Total populations by race,
-  # and subtract to get household population by race.
-HHRE_proj <-
-
-
-# reformat the total population by R/E projections
-GQRE_proj <- full_join(re_rates, pop_summary, by=c("Year" = "year", "Region")) %>%
-  filter(Year >=2025) %>%
-  rowwise() %>%
-  mutate(calcPop = round(TotPopulation * Proportion, 0)) %>%
-  select(-Proportion, -TotPopulation) %>%
-  mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",
-                              RACE == "Asian alone" ~ "NH_Asian",
-                              RACE == "Black alone" ~ "NH_Black",
-                              RACE == "White alone" ~ "NH_White",
-                              RACE == "NH_Other" ~ "NH_Other",
-                              TRUE ~ "99999999")) %>%
-  left_join(GQRE_perc, by = c("Region", "variable")) %>%
-  rename(totPop = calcPop) %>%
-  select(Region, Year, variable, totPop, GQ_perc) %>%
-  rowwise() %>%
-  mutate(GQ_Pop = round(totPop * GQ_perc,0),
-         HH_Pop = totPop - GQ_Pop)
-
-#join and apply the GQRE percentages to the Total Populations by Race/Ethnicity
-
-
-

@@ -35,3 +35,11 @@ pop_summary2 <- raceeth_proj <- full_join(re_rates, pop_summary, by=c("Year" = "
   rowwise() %>%
   mutate(calcPop = round(TotPopulation * Proportion, 0)) %>%
   group_by(Region, Year) %>% summarize(totREPop = sum(calcPop))
+
+#import GQ population %s by Race/Ethnicity
+load("Output/GQRE_rates.Rdata") #GQRE_perc, from GQ_by_RaceEth.R
+
+#join and apply the GQRE percentages to the Total Populations by Race/Ethnicity
+
+
+

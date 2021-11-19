@@ -63,7 +63,7 @@ pums_perc <- pums_data %>%
   right_join(pums_data, by="Region") %>% #join total # of HH to income groupings
   rowwise() %>% mutate(incperc = round((tot_incgroup / total) * 100,2)) %>% #calculate percentage of HH in each income grouping
   mutate(x_min = as.numeric(str_split_fixed(inc_group, "_", 2)[,1])) %>% #grab the min value from the income grouping
-  mutate(x_max = str_remove(str_split_fixed(inc_group, "_", 3)[,3], "k")) %>% mutate(x_max = case_when(x_max == "over" ~ "-1", TRUE ~ x_max)) %>% mutate(xmax = as.numeric(x_max)) %>%
+  mutate(x_max = str_remove(str_split_fixed(inc_group, "_", 3)[,3], "k")) %>% mutate(x_max = case_when(x_max == "over" ~ "-1", TRUE ~ x_max)) %>% mutate(x_max = as.numeric(x_max)) %>%
   arrange(Region, x_min) %>% #create column for proper sorting of income groupings (low to high)
   group_by(Region) %>% mutate(perc_cumulative = cumsum(incperc)) %>% #calculate cumulative percentage
   rowwise() %>%
@@ -73,7 +73,8 @@ pums_perc <- pums_data %>%
                               TRUE ~ "4th_quantile"))
 
 temp <- pums_perc %>% group_by(Region, quantile) %>%
-  mutate(mininc = min(x_min)*1000, maxinc = as.numeric(max(x_max))*1000) %>% ungroup() %>% #grab the min and max income for each quantile
+  mutate(mininc = min(x_min)*1000, maxinc = max(x_max)*1000) %>%
+  ungroup() %>% #grab the min and max income for each quantile
   mutate(maxinc = case_when(maxinc >= 200000 ~ -1, TRUE ~ maxinc )) %>% # fix for the top quantile (no upper bound)
   select(Region, quantile, mininc, maxinc) %>% unique()
 

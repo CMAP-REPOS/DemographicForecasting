@@ -53,13 +53,14 @@ pums_data <- pums_all %>%
 
 
 
-# STEP 3: By County...calculate what % of total households each grouping represents (household income group / total household count)
+# STEP 3: By Region...calculate what % of total households each grouping represents (household income group / total household count)
 #                     calculate the cumulative percentage (highest income grouping should equal 100%)
 #                     use the cumulative percentages to separate the income groupings into quantiles
 
 # calculate percentages by income grouping, assign quantile, and calculate percentage of households in each quantile
 pums_perc <- pums_data %>%
-  group_by(Region) %>% summarize(total = sum(tot_incgroup)) %>% #calculate total # of households by region
+  group_by(Region) %>%  #try to do this but for t
+  summarize(total = sum(tot_incgroup)) %>% #calculate total # of households by region
   right_join(pums_data, by="Region") %>% #join total # of HH to income groupings
   rowwise() %>% mutate(incperc = round((tot_incgroup / total) * 100,2)) %>% #calculate percentage of HH in each income grouping
   mutate(x_min = as.numeric(str_split_fixed(inc_group, "_", 2)[,1])) %>% #grab the min value from the income grouping
@@ -114,6 +115,112 @@ write.csv(HH_incomes, file = "C:/Users/amcadams/Documents/R/HH_incomes.csv")
 
 
 ####
+
+
+###~~~ Let's Try: Equal income groupings for all Regions
+
+#categorize
+pums_data <- pums_all %>%
+  select(1:8) %>%
+  left_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>% #join to "puma_region" key (which counties are in which region)
+  filter(!is.na(Region))  %>% #filter out all data from areas outside of 4 regions
+  rowwise() %>% mutate(HINC_19 = HINCP * as.numeric(ADJINC)) %>%  #multiply income by adjustment factor (result: all $$$ in 2019 dollars)
+  mutate(inc_group = case_when(HINC_19 < 10000 ~ "0_to_10k",    # categorize each of the incomes into income groupings
+                               HINC_19 <= 14999 ~ "10_to_15k",
+                               HINC_19 <= 19999 ~ "15_to_20k",
+                               HINC_19 <= 24999 ~ "20_to_25k",
+                               HINC_19 <= 29999 ~ "25_to_30k",
+                               HINC_19 <= 34999 ~ "30_to_35k",
+                               HINC_19 <= 39999 ~ "35_to_40k",
+                               HINC_19 <= 44999 ~ "40_to_45k",
+                               HINC_19 <= 49999 ~ "45_to_50k",
+                               HINC_19 <= 59999 ~ "50_to_60k",
+                               HINC_19 <= 74999 ~ "60_to_75k",
+                               HINC_19 <= 99999 ~ "75_to_100k",
+                               HINC_19 <= 124999 ~ "100_to_125k",
+                               HINC_19 <= 149999 ~ "125_to_150k",
+                               HINC_19 <= 199999 ~ "150_to_200k",
+                               TRUE ~ "200_and_over" ))
+
+#sum up the number of HH in each of the income groupings
+#pums_data <- pums_data %>% group_by(inc_group) %>%
+#  summarize(tot_incgroup = sum(WGTP))
+
+# STEP 3: For All 4 regions together:
+#                     calculate what % of total households each grouping represents (household income group / total household count)
+#                     calculate the cumulative percentage (highest income grouping should equal 100%)
+#                     use the cumulative percentages to separate the income groupings into quantiles
+
+# calculate percentages by income grouping, assign quantile, and calculate percentage of households in each quantile
+pums_total <- pums_data %>%
+  #group_by(Region) %>%  #try to do this but for Total Region
+  summarize(total = sum(tot_incgroup))
+
+pums_perc <- pums_data %>% #calculate total # of households by region
+  mutate(total = pums_total[1,1]) %>% #join total # of HH to income groupings
+  rowwise() %>% mutate(incperc = round((tot_incgroup / total) * 100,2)) %>% #calculate percentage of HH in each income grouping
+  mutate(x_min = as.numeric(str_split_fixed(inc_group, "_", 2)[,1])) %>% #grab the min value from the income grouping
+  mutate(x_max = str_remove(str_split_fixed(inc_group, "_", 3)[,3], "k")) %>% mutate(x_max = case_when(x_max == "over" ~ "-1", TRUE ~ x_max)) %>% mutate(x_max = as.numeric(x_max)) %>%
+  arrange(x_min) %>% #create column for proper sorting of income groupings (low to high)
+  ungroup() %>%
+  mutate(perc_cumulative = cumsum(incperc)) %>% #calculate cumulative percentage
+  rowwise() %>%
+  mutate(quantile = case_when(perc_cumulative < 25 ~ "1st_quantile", # assign quartile to each income grouping
+                              perc_cumulative < 50 ~ "2nd_quantile",
+                              perc_cumulative < 75 ~ "3rd_quantile",
+                              TRUE ~ "4th_quantile"))
+
+temp <- pums_perc %>% group_by(quantile) %>%
+  mutate(mininc = min(x_min)*1000, maxinc = max(x_max)*1000) %>%
+  ungroup() %>% #grab the min and max income for each quantile
+  mutate(maxinc = case_when(maxinc >= 200000 ~ -1, TRUE ~ maxinc )) %>% # fix for the top quantile (no upper bound)
+  select(quantile, mininc, maxinc) %>% unique()
+
+pums_perc2 <- pums_perc %>%
+  ungroup() %>%
+  group_by(quantile) %>%
+  summarize(total = total, totperc = sum(incperc), tot_quantile = sum(tot_incgroup)) %>% # total up number of households in each quantile
+  unique()
+
+pums_perc3 <- pums_perc2 %>%
+  ungroup() %>%
+  rowwise() %>%
+  #mutate(total = as.numeric(total)) %>%
+  mutate(hh_quant_perc = as.numeric((tot_quantile / total) * 100 )) %>% # calculate percentage of households in each quantile
+  ungroup()
+
+quantiles <- pums_perc3 %>% select(quantile, hh_quant_perc) %>% # isolate hh quantile percentage by region (ready to apply to projected # of households)
+  left_join(temp, by=c("quantile")) %>% #tack on min and max income values for each quantile
+  mutate(JoinCol = "All")
+
+#import and reformat Households data
+load("Output/HH_PROJ.Rdata") # HH_PROJ
+
+Households <- tibble()
+i=1
+for(item in HH_PROJ){
+  temp2 <- item
+  temp2$Year <- names(HH_PROJ)[i]
+  Households <- bind_rows(Households, temp2)
+  i <- i + 1
+}
+
+Households <- Households %>%
+  group_by(Year, Region) %>% summarize(totalHH = sum(Head_HH)) %>% ungroup() %>%
+  mutate(JoinCol = "All")
+
+HH_incomes <- Households %>%
+  full_join(quantiles, by = "JoinCol") %>%
+  rowwise() %>% mutate(households = round(totalHH * (hh_quant_perc / 100),0)) %>%
+  select(Region, Year, households, quantile, mininc, maxinc) %>%
+  ungroup()
+
+write_csv(HH_incomes, "C:/Users/amcadams/Documents/R/HH_incomes_constantbins.csv")
+
+
+
+###~~~
+
 
 #let's try to get our own quantiles (don't use the income groupings)
 test <- pums_data <- pums_all %>%

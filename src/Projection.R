@@ -358,6 +358,9 @@ Projections <- Projections %>%
   rowwise() %>%
   mutate(projNetMigrants = round( ((NMs_Living_Abs/sum_NM_Abs)*(TargetNM-sum_NM)+NMs_Living), digits = 0))
 
+detailedMigs <- Projections %>%
+  rename(originalMigrantTotals = projNetMigrants)
+
 if(override > 0){
 
 #----------------MANUAL MIGRATION OVERRIDES
@@ -379,6 +382,10 @@ print("Overrides Activated!")
 }else{
   print("Migration Override Not Activated.")
 }
+
+detailedMigs <- detailedMigs %>% left_join(Projections, by=c("Age","Region","Sex")) %>%
+  rename(modifiedMigrantTotals = projNetMigrants) %>%
+  select(Age, Region, Sex, originalMigrantTotals, modifiedMigrantTotals)
 
 # OPTION TO TURN OFF ALL MIGRATION! (for curiosity's sake only)
 if(zeromigrationoverride > 0){

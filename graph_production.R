@@ -208,14 +208,19 @@ s <- workerjobdiff %>% ggplot(aes(x=Year, y=percentdiff, fill=type.y)) + geom_co
 
 #add up all of the components of change and graph them together (1 graph per region)
 summary_components <- components_all %>%
-  group_by(Region, year, componentType) %>% summarize(summaryvalue = sum(componentValue))
-t <- summary_components %>%  # filter(Region == "CMAP Region") %>%
+  group_by(Region, year, componentType) %>% summarize(summaryvalue = sum(componentValue)) %>%
+  filter(componentType != "NetMigrants") %>%
+  ungroup()
+t <- summary_components %>%  filter(Region == "CMAP Region") %>%
   ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
-  geom_point() + geom_line() +
-  facet_wrap( ~ Region, scales = "free") +
+  #geom_point() +
+  geom_line() +
+  #facet_wrap( ~ Region, scales = "free") +
   ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
-  scale_color_brewer(palette = "Set1")
-t
+  scale_color_brewer(palette = "Set1") + scale_y_continuous(limits = c(0,600000), labels = scales::comma) + theme_cmap()
+finalize_plot(t,
+              title = "CMAP Region, Projected Components of Change",
+              caption = "Source: CMAP Demographic Model (2025-2050)")
 
 
 #same as above, but break out each component by Sex
@@ -232,11 +237,12 @@ u <- summary_components_bysex %>% ggplot(aes(x=year, y=summaryvalue,  color = co
 deaths_graphs <- components_all %>% filter(componentType == "Deaths") %>%
   mutate(category = paste(year, Sex, sep="_"))
 w <- deaths_graphs %>%
-  #filter(Region == "External WI") %>% #filter to focus on one region
+  filter(Region == "CMAP Region") %>% #filter to focus on one region
   ggplot(aes(x=Age, y=componentValue, shape = Sex, color = year, group = category)) +
-  geom_point() + geom_line() + facet_wrap(~ Region, scales = "free") +
+  geom_point() + geom_line() +
+  #facet_wrap(~ Region, scales = "free") +
   ggtitle("Age Distribution of Projected Deaths", subtitle = paste("Target Net Migration values: ", tNMfile))
-
+w
 
 #combine population with components (Alexis' note: I forgot why I wanted to do this..)
 comp_pop <- export %>% rename(componentValue = ProjectedPop_final) %>%
@@ -303,7 +309,7 @@ c <- projectedNetMigrationrates %>%
   geom_point() + geom_line() + facet_wrap(Region ~ Sex,  ncol = 2, scales = "free") +
   ggtitle("Net Migration Rates by Age", subtitle = paste("Target Net Migration values: ", tNMfile)) #+
   #theme(axis.text.x = element_text(angle = 45, hjust=1))
-
+c
 
 #import the full Berger pop totals and compare them
 
@@ -318,7 +324,7 @@ ppp <- both_total %>%
   filter(Region == "CMAP Region") %>%
   ggplot(aes(x=Year, y=totpop, group = Source, color = Source, shape = Source)) +
   geom_line() +
-  facet_wrap(~ Region, ncol = 4, scales="free") +
+  #facet_wrap(~ Region, ncol = 4, scales="free") +
   ggtitle("Total Population, CMAP Region, estimated and projected") +
   theme_cmap()
 finalize_plot(ppp)
@@ -350,10 +356,11 @@ pops <- both_all %>%
 pops2 <- both_all %>%
   filter(Region == "CMAP Region") %>%
   #filter(Source == "CMAP") %>%
-  filter(Year %% 10 == 0) %>%
+  #filter(Year %% 10 == 0) %>%
+  filter(Year == 2050 | Year == 2010) %>%
   ggplot(aes(x=age2, y=Population, group = as.character(Year), color = as.character(Year))) + geom_point() + geom_line() +
-  facet_grid(~ Source) +
-  ggtitle("CMAP Popuation Forecast", subtitle = paste("In use:", tNMfile))
+  facet_grid(~ Source) + scale_y_continuous(labels = scales::comma) + xlab("Age") +
+  ggtitle("CMAP Region Total Popuation Forecast")
 pops2
 
 #calculate age dependency ratio = (0-19 + >65) / (20-64) for each projection and year

@@ -115,5 +115,5 @@ GQ_Military <- GQ %>%
   ungroup()
 
 #save(GQ, GQ_Military, GQratios, file="Output/GQData.Rdata")
-save(GQ, GQ_Military, GQratios, file="Output/GQData2.Rdata")
+
 

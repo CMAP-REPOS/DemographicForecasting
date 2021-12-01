@@ -64,6 +64,7 @@ NetMig <- netMigSums %>% select(-Source)
 
 
 ######## run the loop
+PB <- tibble()
 
 i <- 1
 while(i <= projnums){

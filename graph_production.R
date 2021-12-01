@@ -5,6 +5,7 @@ library(dplyr)
 library(tidyverse)
 library(readxl)
 library(ggplot2)
+library(cmapplot)
 
 #run required scripts
 source("src/employment.R") # for Job Forecast graphs
@@ -313,7 +314,7 @@ c <- projectedNetMigrationrates %>%
   #theme(axis.text.x = element_text(angle = 45, hjust=1))
 c
 
-#import the full Berger pop totals and compare them
+###############import the full Berger pop totals and compare them
 
 bergerpop <- read_excel("Input/berger_population.xlsx") %>%
   mutate(Source = "Berger")
@@ -324,12 +325,32 @@ both_total <- bergerpop %>% group_by(Region, Year) %>% summarize(totpop = sum(Po
   bind_rows(pop_totals %>% select(-type) %>% mutate(Source = "CMAP Model"))
 ppp <- both_total %>%
   filter(Region == "CMAP Region") %>%
-  ggplot(aes(x=Year, y=totpop, group = Source, color = Source, shape = Source)) +
+  ggplot(aes(x=Year, y=totpop, group = Source, color = Source)) +
   geom_line() +
+  scale_y_continuous(labels = scales::comma, limits = c(0,12000000)) +
   #facet_wrap(~ Region, ncol = 4, scales="free") +
-  ggtitle("Total Population, CMAP Region, estimated and projected") +
   theme_cmap()
-finalize_plot(ppp)
+finalize_plot(ppp,
+              title = "Total Population, CMAP Region, estimated and projected",
+              caption = "Source: Louis Berger socioeconomic model documentation, CMAP Demographic Model")
+
+
+ppp_cmap <- both_total %>%
+  filter(Region == "CMAP Region") %>%
+  filter(Source == "CMAP Model") %>%
+  ggplot(aes(x=Year, y=totpop, group = Source, color = Source)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma, limits = c(0,12000000)) +
+  #facet_wrap(~ Region, ncol = 4, scales="free") +
+  scale_color_manual(values = c("#00BFC4", "#F8766D")) +
+  theme_cmap()
+finalize_plot(ppp_cmap,
+              title = "Total Population, CMAP Region, estimated and projected",
+              caption = "Source: CMAP Demographic Model")
+
+
+
+
 
 
 

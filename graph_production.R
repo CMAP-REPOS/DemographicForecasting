@@ -208,6 +208,7 @@ s <- workerjobdiff %>% ggplot(aes(x=Year, y=percentdiff, fill=type.y)) + geom_co
 
 
 ############### GRAPHS OF COMPONENTS OF CHANGE
+###
 
 #add up all of the components of change and graph them together (1 graph per region)
 summary_components <- components_all %>%

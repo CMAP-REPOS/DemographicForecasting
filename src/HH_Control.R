@@ -170,11 +170,10 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
 
 #View(HouseholdSummary)
 #View(HouseholdSize)
-View(GQ_basic_summary)
+#View(GQ_basic_summary)
 
 
-
-write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
+'write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
 write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/export_HouseholdsSummary.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
 write.csv(travelModelHHs, file = "C:/Users/amcadams/Documents/R/export_travelmodelHHs.csv")
@@ -184,13 +183,13 @@ write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
 write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_basic_summary.csv")
 write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
 write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
-write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
+write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")'
 
 
 
 
-save(HH_PROJ, file="Output/HH_Proj.Rdata")
-save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+#save(HH_PROJ, file="Output/HH_Proj.Rdata")
+#save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
 
 
 
@@ -230,8 +229,8 @@ HHRE_pop <- GQRE_pop %>%
   select(Region, Year, variable, HHRE_pop_proj)
 
 #export
-write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/export_GQpop_RE.csv")
-write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/export_HHpop_RE.csv")
+#write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/export_GQpop_RE.csv")
+#write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/export_HHpop_RE.csv")
 
 
 

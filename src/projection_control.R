@@ -56,6 +56,12 @@ for(years in series){
   COMPONENTS[[as.character(years)]] <- tibble()
 }
 
+MIG_DETAIL <- list()
+for(years in series){
+  MIG_DETAIL[[as.character(years)]] <- tibble()
+}
+
+
 #import in Base Net Migration data
 #NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
 #NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
@@ -102,6 +108,9 @@ NETMIGPROJ[[as.character(projend)]] <- Migration
 
 #save the Components of Change
 COMPONENTS[[as.character(projend)]] <- Components
+
+#save the detailed Migration data
+MIG_DETAIL[[as.character(projend)]] <- detailedMigs
 
 #-------
   i <- i+1

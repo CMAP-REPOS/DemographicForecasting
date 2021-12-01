@@ -53,6 +53,8 @@ p <- pop_proj_totals %>% ggplot(aes(x=year, y=total_population, color=Sex, group
 pop2020 <- POP[['2020']] %>%
   mutate(GEOID = as.character(GEOID)) #extra step to fix the GEOID type and make sure the bind_rows below works
 recentdata <- bind_rows(POP[['2010']], POP[['2015']], pop2020) %>%
+  group_by(Year, Region, Age, Sex, State) %>%
+  summarize(Population = sum(Population)) %>%
   select(Year, Age, Region, Sex, Population) %>%
   mutate(type = "PEPestimate")
 

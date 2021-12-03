@@ -8,6 +8,7 @@ library(readxl)
 # Parameters ---------------------------------------------------------
 
 load("Output/PopData.Rdata")
+load("Output/PopData.Rdata")
 load("Output/Age_0_4_Freq.Rdata")
 AGE_0_4_FREQ$Population <- as.numeric(AGE_0_4_FREQ$Population)
 

@@ -20,11 +20,12 @@ load("Output/PopData.Rdata") #POP
 #override Headship #s with 2010 Adjusted Headship Ratios (pulled from Berger)
 Headship <- read.csv("C:/Users/amcadams/Documents/R/Headships2010.csv") %>% select(Age, Region, Ratio_Adj)
 
-startyear = 2025
+startyear = 2015
 projectionstart = 2020
 endyear = 2050
 
-series <- c(#2010, 2015, 2020,
+series <- c(#2010,
+            2015, 2020,
   2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)
 
 cycles <- ((endyear - startyear) / 5) + 1 #number of 5-year projection cycles to complete
@@ -121,7 +122,7 @@ for(item in GQ_PROJ){
 }
 GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>% select(-x) %>% arrange(Region, Year, desc(Sex)) %>%
-  filter(Year != "2010" & Year != "2015") %>%
+  #filter(Year != "2010" & Year != "2015") %>%
   relocate(c(Year, totalGQ, Inst_GQ, nonInst_GQ), .after = Population) %>%
   relocate(starts_with("GQ_Inst_"), .after = Inst_GQ) %>%
   relocate(GQ_NonInst_Military, .before = GQ_NonInst_Other)
@@ -206,8 +207,8 @@ GQRE_pop <- GQ_basic_summary %>%
   full_join(GQRE_perc, by="Region") %>%
   rowwise() %>%
   mutate(GQRE_pop_proj = round(totalGQ * GQ_perc,0)) %>%
-  select(Region, Year, variable, GQRE_pop_proj) %>%
-  filter(Year >=2025)
+  select(Region, Year, variable, GQRE_pop_proj) #%>%
+  #filter(Year >=2025)
 
 #import total R/E populations
 load("Output/totalPop_RE_projection.R") #raceeth_proj
@@ -230,8 +231,8 @@ HHRE_pop <- GQRE_pop %>%
   select(Region, Year, variable, HHRE_pop_proj)
 
 #export
-#write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/export_GQpop_RE.csv")
-#write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/export_HHpop_RE.csv")
+write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/export_GQpop_RE.csv")
+write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/export_HHpop_RE.csv")
 
 
 

@@ -2,7 +2,7 @@
 # This script estimates and projects the percentage of Group Quarter population
 # by Race/Ethnicity groupings (Census 2010)
 # Calculation of the projected populations occurs in
-# race_ethnicity_projection.R
+# HH_Control.R
 #
 # Alexis McAdams | 16 Nov 2021
 

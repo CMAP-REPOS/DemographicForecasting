@@ -199,6 +199,7 @@ write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/extILadj
 
 
 ### calculate projected GQ and Household populations by Race/Ethnicity
+  # make sure race_ethnicity_projection.R is checked out FIRST!!!
 
 #import GQ by R/E rates
 load("Output/GQRE_rates.Rdata") #GQRE_perc, from GQ_by_RaceEth.R

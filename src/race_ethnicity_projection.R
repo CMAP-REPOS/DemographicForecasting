@@ -40,7 +40,7 @@ raceeth_proj <- full_join(re_rates, pop_summary, by=c("Year" = "year", "Region")
   filter(!is.na(calcPop)) %>% ungroup()
 
 # Save results (used in HH_Control.R)
-save(raceeth_proj, file = "Output/totalPop_RE_projection.R")
+save(raceeth_proj, file = "Output/totalPop_RE_projection.Rdata")
 
 # Create alternate summary version
 raceeth_proj_summary <- raceeth_proj %>%

@@ -214,7 +214,7 @@ GQRE_pop <- GQ_basic_summary %>%
   #filter(Year >=2025)
 
 #import total R/E populations
-load("Output/totalPop_RE_projection.R") #raceeth_proj
+load("Output/totalPop_RE_projection.Rdata") #raceeth_proj
 #reformat R/E groupings
 raceeth_proj <- raceeth_proj %>%
   mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",

@@ -20,11 +20,11 @@ load("Output/PopData.Rdata") #POP
 #override Headship #s with 2010 Adjusted Headship Ratios (pulled from Berger)
 Headship <- read.csv("C:/Users/amcadams/Documents/R/Headships2010.csv") %>% select(Age, Region, Ratio_Adj)
 
-startyear = 2015
+startyear = 2010
 projectionstart = 2020
 endyear = 2050
 
-series <- c(#2010,
+series <- c(2010,
             2015, 2020,
   2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)
 

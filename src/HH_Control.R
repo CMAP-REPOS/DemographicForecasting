@@ -17,9 +17,9 @@ load("Output/Head_of_HH.Rdata") # Headship
 load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/POP_PEP.Rdata") #POP
 
-#adjustment to POP_PEP
-POP[["2010"]] <- read_excel("Input/adjustedCensus2010_ExtIL.xlsx")
-POP[["2015"]] <- read_excel("Input/adjustedPEP2015_ExtIL.xlsx")
+#adjustment to POP_PEP (external IL boundary modification)
+POP[["2010"]] <- read.csv("Input/adjustedCensus2010_ExtIL.csv")
+POP[["2015"]] <- read.csv("Input/adjustedPEP2015_ExtIL.csv")
 
 #override Headship #s with 2010 Adjusted Headship Ratios (pulled from Berger)
 Headship <- read.csv("C:/Users/amcadams/Documents/R/Headships2010.csv") %>% select(Age, Region, Ratio_Adj)
@@ -179,17 +179,16 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
 #View(GQ_basic_summary)
 
 
-'write.csv(Households, file = "C:/Users/amcadams/Documents/R/extILadj/export_Households.csv")
+write.csv(Households, file = "C:/Users/amcadams/Documents/R/extILadj/export_Households.csv")
 write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/extILadj/export_HouseholdsSummary.csv")
 write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/extILadj/export_HouseholdSize.csv")
 write.csv(travelModelHHs, file = "C:/Users/amcadams/Documents/R/extILadj/export_travelmodelHHs.csv")
-write.csv(HHs_65split, file = "C:/Users/amcadams/Documents/R/extILadj/export_Households_Age65split.csv")
+#write.csv(HHs_65split, file = "C:/Users/amcadams/Documents/R/extILadj/export_Households_Age65split.csv")
 
 write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_full.csv")
 write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_basic_summary.csv")
-write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_summary.csv")
+#write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_summary.csv")
 write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_summary_travelmodel.csv")
-write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/extILadj/export_HouseholdSize.csv")'
 
 
 
@@ -203,7 +202,6 @@ write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/extILadj/export_H
 
 #import GQ by R/E rates
 load("Output/GQRE_rates.Rdata") #GQRE_perc, from GQ_by_RaceEth.R
-
 
 #apply rates to total GQ population (GQ_basic_summary) to get GQ pop by Race/Ethnicity
 GQRE_pop <- GQ_basic_summary %>%

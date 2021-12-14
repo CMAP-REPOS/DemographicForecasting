@@ -418,6 +418,6 @@ temp3 <- components_all %>% filter(componentType == "Births") %>% group_by(Regio
 temp0 <- both_all %>% filter(Region == "CMAP Region") %>% filter(Age == "0 to 4 years")
 
 ############## Table Exports
-#write.csv(pop_recandproj %>% filter(Region == "External IL"), file = "C:/Users/amcadams/Documents/R/extILadj/export_poptotals.csv")
-#write.csv(workers, file = "C:/Users/amcadams/Documents/R/extILadj/export_workers.csv")
+write.csv(pop_recandproj %>% filter(Region == "External IL"), file = "C:/Users/amcadams/Documents/R/extILadj/export_poptotals.csv")
+write.csv(workers, file = "C:/Users/amcadams/Documents/R/extILadj/export_workers.csv")
 

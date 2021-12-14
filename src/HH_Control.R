@@ -193,8 +193,8 @@ write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/extILadj
 
 
 
-#save(HH_PROJ, file="Output/HH_Proj.Rdata")
-#save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+save(HH_PROJ, file="Output/HH_Proj.Rdata")
+save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
 
 
 

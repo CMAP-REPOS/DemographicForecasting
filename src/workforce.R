@@ -16,7 +16,7 @@ library(tidyverse)
 library(readxl)
 
 #get GQ ratios from GroupQuarters.R
-load("Output/GQData.Rdata") # named GQratios
+load("Output/GQData2.Rdata") # named GQratios
 
 #define "too young to work" age groups (assumption)
 kiddos <- c("0 to 4 years", "5 to 9 years", "10 to 14 years")
@@ -28,8 +28,9 @@ LFPRs <- read.csv("Input/LFPRs.csv")
 unemp <- read.csv("Input/unemploymentrates.csv") %>%
   mutate(Year = as.character(Year))
 
-#load in and format known population data (2010-2020)
-load("Output/PopData.Rdata") #POP
+#re-load in and format known population data (2010-2020)
+# POP was originally retrieved in Projection.R
+load("Output/POP_PEP.Rdata")  # named POP
 POPrecent <- list()
 POPrecent[["2010"]] <- POP[["2010"]]
 POPrecent[["2015"]] <- POP[["2015"]]
@@ -54,9 +55,13 @@ for(i in names(POPPROJcopy)){
 #combine the two lists created above into one list
 laborforce <- c(POPrecent, POPPROJcopy)
 
+#slight reformat to GQratios
+GQratios2 <- GQratios %>%
+  mutate(GQratio = GQ_NonInst_College + GQ_Inst_Corr + GQ_Inst_Juv + GQ_Inst_Nurs + GQ_Inst_Other + GQ_NonInst_Other)
+
 #join the GQ ratios to the population for every year
 for(i in names(laborforce)){
-  laborforce[[i]] <- left_join(laborforce[[i]], GQratios, by=c("Region","Age","Sex")) %>%
+  laborforce[[i]] <- left_join(laborforce[[i]], GQratios2, by=c("Region","Age","Sex")) %>%
     mutate(GQpop = Population * GQratio,
            NonGQpop = round(Population - GQpop,0)) %>%
     filter(!Age %in% kiddos)

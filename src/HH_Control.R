@@ -15,16 +15,21 @@ library(readxl)
 load("Output/GQData2.Rdata") # GQratios, GQ_Military
 load("Output/Head_of_HH.Rdata") # Headship
 load("Output/Migration_Projections.Rdata") #Mig_Proj
-load("Output/PopData.Rdata") #POP
+load("Output/POP_PEP.Rdata") #POP
+
+#adjustment to POP_PEP (external IL boundary modification)
+POP[["2010"]] <- read.csv("Input/adjustedCensus2010_ExtIL.csv")
+POP[["2015"]] <- read.csv("Input/adjustedPEP2015_ExtIL.csv")
 
 #override Headship #s with 2010 Adjusted Headship Ratios (pulled from Berger)
 Headship <- read.csv("C:/Users/amcadams/Documents/R/Headships2010.csv") %>% select(Age, Region, Ratio_Adj)
 
-startyear = 2025
+startyear = 2010
 projectionstart = 2020
 endyear = 2050
 
-series <- c(#2010, 2015, 2020,
+series <- c(2010,
+            2015, 2020,
   2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)
 
 cycles <- ((endyear - startyear) / 5) + 1 #number of 5-year projection cycles to complete
@@ -92,7 +97,7 @@ HouseholdSize <- Households %>% group_by(Region, Year) %>%
   rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
 
 #calculate the HHpop, total Household Heads, and household size by Travel Model age group (<35, 35-65, 65+)
-#NOTE: household size really only useful for 65+
+#NOTE: household size calculation really only useful for 65+
 travelModelHHs <- Households %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   mutate(agegroup = case_when(x < 35 ~ "a_lessthan35",
                               x >= 65 ~ "c_over65",           #define age groups
@@ -121,7 +126,7 @@ for(item in GQ_PROJ){
 }
 GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>% select(-x) %>% arrange(Region, Year, desc(Sex)) %>%
-  filter(Year != "2010" & Year != "2015") %>%
+  #filter(Year != "2010" & Year != "2015") %>%
   relocate(c(Year, totalGQ, Inst_GQ, nonInst_GQ), .after = Population) %>%
   relocate(starts_with("GQ_Inst_"), .after = Inst_GQ) %>%
   relocate(GQ_NonInst_Military, .before = GQ_NonInst_Other)
@@ -174,31 +179,30 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
 #View(GQ_basic_summary)
 
 
-'write.csv(Households, file = "C:/Users/amcadams/Documents/R/export_Households.csv")
-write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/export_HouseholdsSummary.csv")
-write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")
-write.csv(travelModelHHs, file = "C:/Users/amcadams/Documents/R/export_travelmodelHHs.csv")
-write.csv(HHs_65split, file = "C:/Users/amcadams/Documents/R/export_Households_Age65split.csv")
+write.csv(Households, file = "C:/Users/amcadams/Documents/R/extILadj/export_Households.csv")
+write.csv(HouseholdSummary, file = "C:/Users/amcadams/Documents/R/extILadj/export_HouseholdsSummary.csv")
+write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/extILadj/export_HouseholdSize.csv")
+write.csv(travelModelHHs, file = "C:/Users/amcadams/Documents/R/extILadj/export_travelmodelHHs.csv")
+#write.csv(HHs_65split, file = "C:/Users/amcadams/Documents/R/extILadj/export_Households_Age65split.csv")
 
-write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/export_GQ_full.csv")
-write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_basic_summary.csv")
-write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/export_GQ_summary.csv")
-write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/export_GQ_summary_travelmodel.csv")
-write.csv(HouseholdSize, file = "C:/Users/amcadams/Documents/R/export_HouseholdSize.csv")'
-
+write.csv(GQ_full, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_full.csv")
+write.csv(GQ_basic_summary, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_basic_summary.csv")
+#write.csv(GQ_summary, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_summary.csv")
+write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQ_summary_travelmodel.csv")
 
 
 
-#save(HH_PROJ, file="Output/HH_Proj.Rdata")
-#save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+
+save(HH_PROJ, file="Output/HH_Proj.Rdata")
+save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
 
 
 
 ### calculate projected GQ and Household populations by Race/Ethnicity
+  # make sure race_ethnicity_projection.R is checked out FIRST!!!
 
 #import GQ by R/E rates
 load("Output/GQRE_rates.Rdata") #GQRE_perc, from GQ_by_RaceEth.R
-
 
 #apply rates to total GQ population (GQ_basic_summary) to get GQ pop by Race/Ethnicity
 GQRE_pop <- GQ_basic_summary %>%
@@ -206,11 +210,11 @@ GQRE_pop <- GQ_basic_summary %>%
   full_join(GQRE_perc, by="Region") %>%
   rowwise() %>%
   mutate(GQRE_pop_proj = round(totalGQ * GQ_perc,0)) %>%
-  select(Region, Year, variable, GQRE_pop_proj) %>%
-  filter(Year >=2025)
+  select(Region, Year, variable, GQRE_pop_proj) #%>%
+  #filter(Year >=2025)
 
 #import total R/E populations
-load("Output/totalPop_RE_projection.R") #raceeth_proj
+load("Output/totalPop_RE_projection.Rdata") #raceeth_proj
 #reformat R/E groupings
 raceeth_proj <- raceeth_proj %>%
   mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",
@@ -230,8 +234,8 @@ HHRE_pop <- GQRE_pop %>%
   select(Region, Year, variable, HHRE_pop_proj)
 
 #export
-#write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/export_GQpop_RE.csv")
-#write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/export_HHpop_RE.csv")
+write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQpop_RE.csv")
+write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/extILadj/export_HHpop_RE.csv")
 
 
 

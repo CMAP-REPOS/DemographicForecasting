@@ -32,7 +32,8 @@ if(startyr == baseyr){
   print(paste("USING", tNMfile, "TARGET MIGRATION VALUES"))
 
   #Load in and reformat population data
-  load("Output/PopData.Rdata")  # named POP
+  #
+  load("Output/POP_PEP.Rdata")  # named POP
 
   #Import the baseyear population data (2020)
   baseyearpoptable <- POP[[baseyr]] %>%

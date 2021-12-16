@@ -107,7 +107,7 @@ HH_incomes <- Households %>%
   rowwise() %>% mutate(households = round(totalHH * (hh_quant_perc / 100),0)) %>%
   select(Region, Year, households, quantile, mininc, maxinc)
 
-write.csv(HH_incomes, file = "C:/Users/amcadams/Documents/R/HH_incomes.csv")
+write.csv(HH_incomes, file = "C:/Users/amcadams/Documents/R/extILadj/HH_incomes.csv")
 
 
 
@@ -119,7 +119,7 @@ write.csv(HH_incomes, file = "C:/Users/amcadams/Documents/R/HH_incomes.csv")
 
 ###~~~ Let's Try: Equal income groupings for all Regions
 
-#categorize
+#REcategorize and re-summarize data (not the same as above!)
 pums_data <- pums_all %>%
   select(1:8) %>%
   left_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>% #join to "puma_region" key (which counties are in which region)
@@ -141,10 +141,8 @@ pums_data <- pums_all %>%
                                HINC_19 <= 149999 ~ "125_to_150k",
                                HINC_19 <= 199999 ~ "150_to_200k",
                                TRUE ~ "200_and_over" ))
-
-#sum up the number of HH in each of the income groupings
-#pums_data <- pums_data %>% group_by(inc_group) %>%
-#  summarize(tot_incgroup = sum(WGTP))
+pums_data <- pums_data %>% group_by(inc_group) %>%
+  summarize(tot_incgroup = sum(WGTP))
 
 # STEP 3: For All 4 regions together:
 #                     calculate what % of total households each grouping represents (household income group / total household count)
@@ -153,6 +151,7 @@ pums_data <- pums_all %>%
 
 # calculate percentages by income grouping, assign quantile, and calculate percentage of households in each quantile
 pums_total <- pums_data %>%
+  ungroup() %>%
   #group_by(Region) %>%  #try to do this but for Total Region
   summarize(total = sum(tot_incgroup))
 
@@ -215,7 +214,7 @@ HH_incomes <- Households %>%
   select(Region, Year, households, quantile, mininc, maxinc) %>%
   ungroup()
 
-write_csv(HH_incomes, "C:/Users/amcadams/Documents/R/HH_incomes_constantbins.csv")
+write_csv(HH_incomes, "C:/Users/amcadams/Documents/R/extILadj/HH_incomes_constantbins.csv")
 
 
 

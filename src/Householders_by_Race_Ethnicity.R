@@ -7,7 +7,7 @@ library(tidycensus)
 # I didn't use PEP data since there is no race/ethnicity information for housing units
 
 # Years
-Decennial_YEARS <- c(2010) #ideally add 2020 when that data is available
+Decennial_YEARS <- c(1990, 2000, 2010) #ideally add 2020 when that data is available
 Other_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019, `13` = 2020) # add in 2020 estimates
 YEARS <- c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019)
 
@@ -43,7 +43,7 @@ Decennial_ID <- c('P005003', #NH_White
                      'H007010') #Hisp
 
 
-Decennial_Data <- tibble()
+Decenial_2000 <- tibble()
 
 for (YEAR in Decennial_YEARS) {
   for (STATE in names(COUNTIES)) {
@@ -158,3 +158,9 @@ for (YEAR in Other_YEARS) {
     Decennial_POP <- bind_rows(Decennial_POP, POP_TEMP)
   }
 }
+
+
+
+######
+
+SF1_VARS <- load_variables(2000, "sf1")

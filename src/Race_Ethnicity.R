@@ -34,7 +34,7 @@ POP <- list()
 for (YEAR in Decennial_YEARS) {
 
   # Compile list of variables to download
-  SF1_VARS <- load_variables(2010, "sf1")
+  SF1_VARS <- load_variables(YEAR, "sf1")
   POP_VARS <- SF1_VARS %>% filter(name %in% IDs) %>%
     mutate(
       Category = str_replace_all(label, "!!.*?", " "),

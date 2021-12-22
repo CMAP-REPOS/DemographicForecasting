@@ -190,6 +190,10 @@ Decennial_2010_FINAL$Year <- 2010
 ########################## Combine 1990, 2000, 2010 data together ##########################
 
 # just combine the data from tidycensus at first
+save(Decennial_2000_FINAL, Decennial_2010_FINAL, file="Decennial_head_rate.RData")
+
+
+
 Decennial_2000_2010 <- rbind(Decennial_2000_FINAL, Decennial_2010_FINAL)
 Decennial_2000_2010 <- Decennial_2000_2010 %>%
   select("GEOID", "County", "State", "Race", "Year", "Population", "Householder", "head.rate")

@@ -115,3 +115,7 @@ ACS_longer <- right_join(POP_longer, HH_longer)
 ACS_longer$head.rate <- ACS_longer$Householder/ACS_longer$Population
 
 write.csv(ACS_longer, "C:/Users/hshi/Desktop/Demographic_Prediction/ACS_HeadRate_2005_to_2019.csv")
+
+##### Find Null Records
+ACS_NA <- ACS_longer[is.na(ACS_longer$head.rate),]
+write.csv(ACS_longer, "C:/Users/hshi/Desktop/Demographic_Prediction/Missing_Data.csv")

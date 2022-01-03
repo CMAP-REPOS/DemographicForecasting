@@ -8,16 +8,7 @@ ACS_2007 <- load_variables(2007, "acs3")
 
 ACS_2008 <- load_variables(2008, "acs3")
 
-ACS_2009 <- load_variables(2009, "acs5") # 2009 ACS5 doesn't have ethnicity info for householders
-# B25006_001 Householders Total
-# B25006_002 White
-# B25006_003 Black
-# B25006_005 Asian
-
-# B02001_001 Population Total
-# B02001_002 White
-# B02001_003 Black
-# B02001_005 Asian
+ACS_2009 <- load_variables(2009, "acs3")
 
 ACS_2010 <- load_variables(2010, "acs5")
 # B25006_001 Householders Total

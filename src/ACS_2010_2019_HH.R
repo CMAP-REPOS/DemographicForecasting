@@ -17,7 +17,11 @@ COUNTIES <- list(
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 
 # Years
-Years <- c(2010:2019)
+# ACS started in 2005, so the first avaliable ACS 5-year estimate was released in 2010.
+Years_acs1 <- c(2005:2006)
+Years_acs3 <- c(2007:2009)
+Years_acs5 <- c(2010:2019)
+
 
 ######################### Variables ID ###############################
 POP_ID <- c(POP_Total = "B02001_001", # Population Total
@@ -38,7 +42,36 @@ HH_ID <- c(HH_Total = "B25006_001", # Householder Total
 ################ Retrieving data using tidycensus ##################
 ACS_Data <- tibble()
 
-for (YEAR in Years){
+# ACS 1-year
+for (YEAR in Years_acs1){
+  for (STATE in names(COUNTIES)){
+    TEMP <- get_acs(geography = "county", variables = c(POP_ID,HH_ID),
+                    county = COUNTIES[[STATE]], state = STATE,
+                    year = YEAR, survey = "acs1", cache_table = TRUE, output = "wide") %>%
+      select(-ends_with("M")) %>%
+      separate(NAME, c("County", "State"), sep = "\\, ")
+
+    TEMP$Year = YEAR
+    ACS_Data <- bind_rows(ACS_Data, TEMP)
+  }
+}
+
+# ACS 3-year
+for (YEAR in Years_acs3){
+  for (STATE in names(COUNTIES)){
+    TEMP <- get_acs(geography = "county", variables = c(POP_ID,HH_ID),
+                    county = COUNTIES[[STATE]], state = STATE,
+                    year = YEAR, survey = "acs3", cache_table = TRUE, output = "wide") %>%
+      select(-ends_with("M")) %>%
+      separate(NAME, c("County", "State"), sep = "\\, ")
+
+    TEMP$Year = YEAR
+    ACS_Data <- bind_rows(ACS_Data, TEMP)
+  }
+}
+
+# ACS 5-year
+for (YEAR in Years_acs5){
   for (STATE in names(COUNTIES)){
     TEMP <- get_acs(geography = "county", variables = c(POP_ID,HH_ID),
                           county = COUNTIES[[STATE]], state = STATE,
@@ -81,4 +114,4 @@ HH_longer <- ACS_HH %>%
 ACS_longer <- right_join(POP_longer, HH_longer)
 ACS_longer$head.rate <- ACS_longer$Householder/ACS_longer$Population
 
-write.csv(ACS_longer, "C:/Users/hshi/Desktop/Demographic_Prediction/ACS-5_head_rate_2010_to_2019.csv")
+write.csv(ACS_longer, "C:/Users/hshi/Desktop/Demographic_Prediction/ACS_HeadRate_2005_to_2019.csv")

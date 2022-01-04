@@ -118,4 +118,4 @@ write.csv(ACS_longer, "C:/Users/hshi/Desktop/Demographic_Prediction/ACS_HeadRate
 
 ##### Find Null Records
 ACS_NA <- ACS_longer[is.na(ACS_longer$head.rate),]
-write.csv(ACS_longer, "C:/Users/hshi/Desktop/Demographic_Prediction/Missing_Data.csv")
+write.csv(ACS_NA, "C:/Users/hshi/Desktop/Demographic_Prediction/Missing_Data.csv")

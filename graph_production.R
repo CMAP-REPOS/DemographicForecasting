@@ -214,17 +214,39 @@ s <- workerjobdiff %>% ggplot(aes(x=Year, y=percentdiff, fill=type.y)) + geom_co
 summary_components <- components_all %>%
   group_by(Region, year, componentType) %>% summarize(summaryvalue = sum(componentValue)) %>%
   filter(componentType != "NetMigrants") %>%
-  ungroup()
+  mutate(year = as.numeric(year)) %>%
+  ungroup() %>%
+  mutate(period = case_when(year == 2025 ~ "2020-2025",
+                            year == 2030 ~ "2025-2030",
+                            year == 2035 ~ "2030-2035",
+                            year == 2040 ~ "2035-2040",
+                            year == 2045 ~ "2040-2045",
+                            year == 2050 ~ "2045-2050",
+                            TRUE ~ "9999"))
+
+#FUBAR at the moment
+#deaths_hist <- read.csv("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Socioeconomic Forecasting/Data/historicalPop/IL_deaths_by_county.csv") %>%
+#  rename(year = Year) %>%
+#  mutate(year = as.numeric(year)) %>%
+#  group_by(Region, year, componentType) %>%
+#  summarize(componentValue = sum(componentValue))
+
+#births_hist <- read.csv("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Socioeconomic Forecasting/Data/historicalPop/IL_births_by_county_CMAP.csv") %>%
+#  filter(Region == "CMAP Region") %>%
+#  rename(year = Year)
+
 t <- summary_components %>%  filter(Region == "CMAP Region") %>%
-  ggplot(aes(x=year, y=summaryvalue, group = componentType, color = componentType)) +
+  ggplot(aes(x=period, y=summaryvalue, group = componentType, fill = componentType)) +
   #geom_point() +
-  geom_line() +
+  geom_bar(stat="identity", position=position_dodge()) +
+  #geom_line() +
   #facet_wrap( ~ Region, scales = "free") +
   ggtitle("Components of Population Change 2025-2050", subtitle = paste("Target Net Migration values: ", tNMfile)) +
-  scale_color_brewer(palette = "Set1") + scale_y_continuous(limits = c(0,600000), labels = scales::comma) + theme_cmap()
+  scale_fill_brewer(palette = "Paired") + scale_y_continuous(limits = c(0,600000), labels = scales::comma) + theme_cmap()
 finalize_plot(t,
               title = "CMAP Region, Projected Components of Change",
-              caption = "Source: CMAP Demographic Model (2025-2050)")
+              caption = "Source: CMAP Demographic Model",
+              sidebar_width = 0)
 
 
 #same as above, but break out each component by Sex
@@ -320,34 +342,49 @@ c
 bergerpop <- read_excel("Input/berger_population.xlsx") %>%
   mutate(Source = "Berger")
 
+past_data <- read.csv("C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Socioeconomic Forecasting/Data/historicalPop/historicalCountyPopulation.csv") %>%
+  group_by(Region, Year) %>%
+  summarize(totpop = sum(Population)) %>%
+  #filter(Year >= "2000") %>%
+  mutate(Year = as.numeric(Year),
+         Source = "Census")
+
 pop_totals <- pop_recandproj %>% group_by(Region, Year, type) %>% summarize(totpop = sum(Population))
 both_total <- bergerpop %>% group_by(Region, Year) %>% summarize(totpop = sum(Population)) %>%
-  mutate(Source = "Berger's Model") %>%
-  bind_rows(pop_totals %>% select(-type) %>% mutate(Source = "CMAP Model"))
+  mutate(Source = "On to 2050") %>%
+  bind_rows(pop_totals %>% select(-type) %>% mutate(Source = "On to 2050 Update")) %>%
+  bind_rows(past_data) %>%
+  mutate(Source = factor(Source, levels = c("On to 2050","Census", "On to 2050 Update" )))
+
 ppp <- both_total %>%
   filter(Region == "CMAP Region") %>%
   ggplot(aes(x=Year, y=totpop, group = Source, color = Source)) +
+  #geom_recessions(update_recessions = TRUE, show_ongoing = FALSE) +
   geom_line() +
   scale_y_continuous(labels = scales::comma, limits = c(0,12000000)) +
+  scale_x_continuous(breaks = c(seq(1950,2050, by = 10))) +
   #facet_wrap(~ Region, ncol = 4, scales="free") +
   theme_cmap()
 finalize_plot(ppp,
               title = "Total Population, CMAP Region, estimated and projected",
-              caption = "Source: Louis Berger socioeconomic model documentation, CMAP Demographic Model")
+              caption = "Source: Census Bureau, Louis Berger OT2050 socioeconomic model documentation, CMAP Demographic Model",
+              sidebar_width = 0)
 
 
 ppp_cmap <- both_total %>%
   filter(Region == "CMAP Region") %>%
-  filter(Source == "CMAP Model") %>%
+  filter(Source == "On to 2050 Update") %>%
   ggplot(aes(x=Year, y=totpop, group = Source, color = Source)) +
   geom_line() +
   scale_y_continuous(labels = scales::comma, limits = c(0,12000000)) +
+  scale_x_continuous(breaks = c(seq(1990,2050, by = 10))) +
   #facet_wrap(~ Region, ncol = 4, scales="free") +
   scale_color_manual(values = c("#00BFC4", "#F8766D")) +
   theme_cmap()
 finalize_plot(ppp_cmap,
               title = "Total Population, CMAP Region, estimated and projected",
-              caption = "Source: CMAP Demographic Model")
+              caption = "Source: Census Bureau, CMAP Demographic Model",
+              sidebar_width = 0)
 
 
 

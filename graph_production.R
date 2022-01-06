@@ -382,9 +382,38 @@ ppp_cmap <- both_total %>%
   scale_color_manual(values = c("#00BFC4", "#F8766D")) +
   theme_cmap()
 finalize_plot(ppp_cmap,
-              title = "Total Population, CMAP Region, estimated and projected",
+              title = "Total Population, CMAP Region",
               caption = "Source: Census Bureau, CMAP Demographic Model",
               sidebar_width = 0)
+
+###
+connector <- both_total %>% filter(Region == "CMAP Region") %>%
+  filter(Source == "On to 2050 Update") %>% filter(Year == 2020) %>%
+  mutate(Type = "Forecast")
+
+ppp_cmap2 <- both_total %>%
+  filter(Region == "CMAP Region") %>%
+  filter(Source == "On to 2050 Update") %>%
+  bind_rows(past_data %>% filter(Region == "CMAP Region")) %>%
+  mutate(Type = case_when(Year <= 2020 ~ "Observed",
+                          Year > 2020 ~ "Forecast",
+                          TRUE ~ "Error")) %>%
+  bind_rows(connector) %>%
+  mutate(Type = factor(Type, levels = c("Observed", "Forecast"))) %>%
+  filter(Year >= 1980) %>%
+  ggplot(aes(x=Year, y=totpop, group = Type, color = Type, linetype = Type)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma, limits = c(0,12000000)) +
+  scale_x_continuous(breaks = c(seq(1980,2050, by = 10))) +
+  #facet_wrap(~ Region, ncol = 4, scales="free") +
+  scale_color_manual(values = c("#0c0c0c", "#F8766D")) +
+
+  theme_cmap()
+finalize_plot(ppp_cmap2,
+              title = "Total Population, CMAP Region",
+              caption = "Source: Census Bureau, CMAP Demographic Model",
+              sidebar_width = 0)
+
 
 
 

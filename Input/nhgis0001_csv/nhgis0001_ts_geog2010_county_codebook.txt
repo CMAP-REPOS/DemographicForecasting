@@ -1,0 +1,1652 @@
+--------------------------------------------------------------------------------
+Codebook for NHGIS data file 'nhgis0001_ts_geog2010_county'
+--------------------------------------------------------------------------------
+ 
+Contents
+    - Data Summary
+    - Data Dictionary
+    - Geographic Integration Methods
+    - Source Data
+    - Citation and Use
+ 
+Detailed notes on time series design and comparability are available at: 
+    https://www.nhgis.org/sites/www.nhgis.org/files/nhgis_time_series_tables.pdf 
+ 
+--------------------------------------------------------------------------------
+Data Summary
+--------------------------------------------------------------------------------
+ 
+Time series layout:     Time varies by column
+Geographic level:       County (by State)
+Geographic integration: Standardized to 2010
+Data measurement years: 1990, 2000, 2010
+ 
+Tables:
+ 
+1. Persons by Hispanic or Latino Origin [2]
+   Years: 1990, 2000, 2010
+   Code:  CP4
+ 
+2. Persons by Single Race/Ethnicity [6]
+   Years: 1990, 2000, 2010
+   Code:  CY8
+ 
+3. Persons by Hispanic or Latino Origin [2] by Race [6*]
+   Years: 1990, 2000, 2010
+   Code:  CW7
+ 
+4. Total Households
+   Years: 1990, 2000, 2010
+   Code:  CM4
+ 
+5. Total Families
+   Years: 1990, 2000, 2010
+   Code:  CM5
+ 
+6. Persons in Families
+   Years: 1990, 2000, 2010
+   Code:  CM6
+ 
+7. Total Housing Units
+   Years: 1990, 2000, 2010
+   Code:  CM7
+ 
+8. Occupied Housing Units by Race of Householder [6*]
+   Years: 1990, 2000, 2010
+   Code:  CY4
+ 
+9. Occupied Housing Units by Hispanic or Latino Origin of Householder [2]
+   Years: 1990, 2000, 2010
+   Code:  CZ4
+ 
+10. Occupied Housing Units by Hispanic or Latino Origin of Householder [2] by Race of Householder [6*]
+    Years: 1990, 2000, 2010
+    Code:  CZ8
+ 
+11. Occupied Housing Units with Householder Who Is White (Single Race*), Not Hispanic or Latino by Tenure [2]
+    Years: 1990, 2000, 2010
+    Code:  D02
+ 
+--------------------------------------------------------------------------------
+Data Dictionary
+--------------------------------------------------------------------------------
+ 
+Context Fields 
+        GISJOIN:     GIS Join Match Code
+        GEOGYEAR:    Geography Year
+        STATE:       State Name
+        STATEA:      State Code
+        COUNTY:      County Name
+        COUNTYA:     County Code
+ 
+Table 1: (CP4) Persons by Hispanic or Latino Origin [2]
+    Time series AA: Persons: Not Hispanic or Latino
+        CP4AA1990:   1990: Persons: Not Hispanic or Latino
+        CP4AA1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino
+        CP4AA1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino
+        CP4AA2000:   2000: Persons: Not Hispanic or Latino
+        CP4AA2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino
+        CP4AA2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino
+        CP4AA2010:   2010: Persons: Not Hispanic or Latino
+    Time series AB: Persons: Hispanic or Latino
+        CP4AB1990:   1990: Persons: Hispanic or Latino
+        CP4AB1990L:  Lower bound: 1990: Persons: Hispanic or Latino
+        CP4AB1990U:  Upper bound: 1990: Persons: Hispanic or Latino
+        CP4AB2000:   2000: Persons: Hispanic or Latino
+        CP4AB2000L:  Lower bound: 2000: Persons: Hispanic or Latino
+        CP4AB2000U:  Upper bound: 2000: Persons: Hispanic or Latino
+        CP4AB2010:   2010: Persons: Hispanic or Latino
+ 
+Table 2: (CY8) Persons by Single Race/Ethnicity [6]
+    Time series AA: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AA1990:   1990: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AA1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AA1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AA2000:   2000: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AA2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AA2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AA2010:   2010: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+    Time series AB: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AB1990:   1990: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AB1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AB1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AB2000:   2000: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AB2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AB2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AB2010:   2010: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+    Time series AC: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AC1990:   1990: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AC1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AC1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AC2000:   2000: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AC2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AC2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AC2010:   2010: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+    Time series AD: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AD1990:   1990: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AD1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AD1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AD2000:   2000: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AD2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AD2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AD2010:   2010: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+    Time series AE: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AE1990:   1990: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AE1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AE1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AE2000:   2000: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AE2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AE2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        CY8AE2010:   2010: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+    Time series AF: Persons: Hispanic or Latino
+        CY8AF1990:   1990: Persons: Hispanic or Latino
+        CY8AF1990L:  Lower bound: 1990: Persons: Hispanic or Latino
+        CY8AF1990U:  Upper bound: 1990: Persons: Hispanic or Latino
+        CY8AF2000:   2000: Persons: Hispanic or Latino
+        CY8AF2000L:  Lower bound: 2000: Persons: Hispanic or Latino
+        CY8AF2000U:  Upper bound: 2000: Persons: Hispanic or Latino
+        CY8AF2010:   2010: Persons: Hispanic or Latino
+ 
+Table 3: (CW7) Persons by Hispanic or Latino Origin [2] by Race [6*]
+    Time series AA: Persons: Not Hispanic or Latino ~ White (single race)
+        CW7AA1990:   1990: Persons: Not Hispanic or Latino ~ White (single race)
+        CW7AA1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ White (single race)
+        CW7AA1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ White (single race)
+        CW7AA2000:   2000: Persons: Not Hispanic or Latino ~ White (single race)
+        CW7AA2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ White (single race)
+        CW7AA2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ White (single race)
+        CW7AA2010:   2010: Persons: Not Hispanic or Latino ~ White (single race)
+    Time series AB: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        CW7AB1990:   1990: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        CW7AB1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        CW7AB1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        CW7AB2000:   2000: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        CW7AB2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        CW7AB2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        CW7AB2010:   2010: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+    Time series AC: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AC1990:   1990: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AC1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AC1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AC2000:   2000: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AC2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AC2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AC2010:   2010: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+    Time series AD: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AD1990:   1990: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AD1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AD1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AD2000:   2000: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AD2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AD2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AD2010:   2010: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+    Time series AE: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        CW7AE1990:   1990: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        CW7AE1990L:  Lower bound: 1990: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        CW7AE1990U:  Upper bound: 1990: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        CW7AE2000:   2000: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        CW7AE2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        CW7AE2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        CW7AE2010:   2010: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+    Time series AF: Persons: Not Hispanic or Latino ~ Two or More Races
+        CW7AF1990:   1990: Persons: Not Hispanic or Latino ~ Two or More Races
+        CW7AF2000:   2000: Persons: Not Hispanic or Latino ~ Two or More Races
+        CW7AF2000L:  Lower bound: 2000: Persons: Not Hispanic or Latino ~ Two or More Races
+        CW7AF2000U:  Upper bound: 2000: Persons: Not Hispanic or Latino ~ Two or More Races
+        CW7AF2010:   2010: Persons: Not Hispanic or Latino ~ Two or More Races
+    Time series AG: Persons: Hispanic or Latino ~ White (single race)
+        CW7AG1990:   1990: Persons: Hispanic or Latino ~ White (single race)
+        CW7AG1990L:  Lower bound: 1990: Persons: Hispanic or Latino ~ White (single race)
+        CW7AG1990U:  Upper bound: 1990: Persons: Hispanic or Latino ~ White (single race)
+        CW7AG2000:   2000: Persons: Hispanic or Latino ~ White (single race)
+        CW7AG2000L:  Lower bound: 2000: Persons: Hispanic or Latino ~ White (single race)
+        CW7AG2000U:  Upper bound: 2000: Persons: Hispanic or Latino ~ White (single race)
+        CW7AG2010:   2010: Persons: Hispanic or Latino ~ White (single race)
+    Time series AH: Persons: Hispanic or Latino ~ Black or African American (single race)
+        CW7AH1990:   1990: Persons: Hispanic or Latino ~ Black or African American (single race)
+        CW7AH1990L:  Lower bound: 1990: Persons: Hispanic or Latino ~ Black or African American (single race)
+        CW7AH1990U:  Upper bound: 1990: Persons: Hispanic or Latino ~ Black or African American (single race)
+        CW7AH2000:   2000: Persons: Hispanic or Latino ~ Black or African American (single race)
+        CW7AH2000L:  Lower bound: 2000: Persons: Hispanic or Latino ~ Black or African American (single race)
+        CW7AH2000U:  Upper bound: 2000: Persons: Hispanic or Latino ~ Black or African American (single race)
+        CW7AH2010:   2010: Persons: Hispanic or Latino ~ Black or African American (single race)
+    Time series AI: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AI1990:   1990: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AI1990L:  Lower bound: 1990: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AI1990U:  Upper bound: 1990: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AI2000:   2000: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AI2000L:  Lower bound: 2000: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AI2000U:  Upper bound: 2000: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        CW7AI2010:   2010: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+    Time series AJ: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AJ1990:   1990: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AJ1990L:  Lower bound: 1990: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AJ1990U:  Upper bound: 1990: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AJ2000:   2000: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AJ2000L:  Lower bound: 2000: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AJ2000U:  Upper bound: 2000: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        CW7AJ2010:   2010: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+    Time series AK: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        CW7AK1990:   1990: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        CW7AK1990L:  Lower bound: 1990: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        CW7AK1990U:  Upper bound: 1990: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        CW7AK2000:   2000: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        CW7AK2000L:  Lower bound: 2000: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        CW7AK2000U:  Upper bound: 2000: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        CW7AK2010:   2010: Persons: Hispanic or Latino ~ Some Other Race (single race)
+    Time series AL: Persons: Hispanic or Latino ~ Two or More Races
+        CW7AL1990:   1990: Persons: Hispanic or Latino ~ Two or More Races
+        CW7AL2000:   2000: Persons: Hispanic or Latino ~ Two or More Races
+        CW7AL2000L:  Lower bound: 2000: Persons: Hispanic or Latino ~ Two or More Races
+        CW7AL2000U:  Upper bound: 2000: Persons: Hispanic or Latino ~ Two or More Races
+        CW7AL2010:   2010: Persons: Hispanic or Latino ~ Two or More Races
+ 
+Table 4: (CM4) Total Households
+    Time series AA: Households: Total
+        CM4AA1990:   1990: Households: Total
+        CM4AA1990L:  Lower bound: 1990: Households: Total
+        CM4AA1990U:  Upper bound: 1990: Households: Total
+        CM4AA2000:   2000: Households: Total
+        CM4AA2000L:  Lower bound: 2000: Households: Total
+        CM4AA2000U:  Upper bound: 2000: Households: Total
+        CM4AA2010:   2010: Households: Total
+ 
+Table 5: (CM5) Total Families
+    Time series AA: Families: Total
+        CM5AA1990:   1990: Families: Total
+        CM5AA1990L:  Lower bound: 1990: Families: Total
+        CM5AA1990U:  Upper bound: 1990: Families: Total
+        CM5AA2000:   2000: Families: Total
+        CM5AA2000L:  Lower bound: 2000: Families: Total
+        CM5AA2000U:  Upper bound: 2000: Families: Total
+        CM5AA2010:   2010: Families: Total
+ 
+Table 6: (CM6) Persons in Families
+    Time series AA: Persons: In families
+        CM6AA1990:   1990: Persons: In families
+        CM6AA1990L:  Lower bound: 1990: Persons: In families
+        CM6AA1990U:  Upper bound: 1990: Persons: In families
+        CM6AA2000:   2000: Persons: In families
+        CM6AA2000L:  Lower bound: 2000: Persons: In families
+        CM6AA2000U:  Upper bound: 2000: Persons: In families
+        CM6AA2010:   2010: Persons: In families
+ 
+Table 7: (CM7) Total Housing Units
+    Time series AA: Housing units: Total
+        CM7AA1990:   1990: Housing units: Total
+        CM7AA1990L:  Lower bound: 1990: Housing units: Total
+        CM7AA1990U:  Upper bound: 1990: Housing units: Total
+        CM7AA2000:   2000: Housing units: Total
+        CM7AA2000L:  Lower bound: 2000: Housing units: Total
+        CM7AA2000U:  Upper bound: 2000: Housing units: Total
+        CM7AA2010:   2010: Housing units: Total
+ 
+Table 8: (CY4) Occupied Housing Units by Race of Householder [6*]
+    Time series AA: Housing units: Occupied ~ Householder is White (single race)
+        CY4AA1990:   1990: Housing units: Occupied ~ Householder is White (single race)
+        CY4AA1990L:  Lower bound: 1990: Housing units: Occupied ~ Householder is White (single race)
+        CY4AA1990U:  Upper bound: 1990: Housing units: Occupied ~ Householder is White (single race)
+        CY4AA2000:   2000: Housing units: Occupied ~ Householder is White (single race)
+        CY4AA2000L:  Lower bound: 2000: Housing units: Occupied ~ Householder is White (single race)
+        CY4AA2000U:  Upper bound: 2000: Housing units: Occupied ~ Householder is White (single race)
+        CY4AA2010:   2010: Housing units: Occupied ~ Householder is White (single race)
+    Time series AB: Housing units: Occupied ~ Householder is Black or African American (single race)
+        CY4AB1990:   1990: Housing units: Occupied ~ Householder is Black or African American (single race)
+        CY4AB1990L:  Lower bound: 1990: Housing units: Occupied ~ Householder is Black or African American (single race)
+        CY4AB1990U:  Upper bound: 1990: Housing units: Occupied ~ Householder is Black or African American (single race)
+        CY4AB2000:   2000: Housing units: Occupied ~ Householder is Black or African American (single race)
+        CY4AB2000L:  Lower bound: 2000: Housing units: Occupied ~ Householder is Black or African American (single race)
+        CY4AB2000U:  Upper bound: 2000: Housing units: Occupied ~ Householder is Black or African American (single race)
+        CY4AB2010:   2010: Housing units: Occupied ~ Householder is Black or African American (single race)
+    Time series AC: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        CY4AC1990:   1990: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        CY4AC1990L:  Lower bound: 1990: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        CY4AC1990U:  Upper bound: 1990: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        CY4AC2000:   2000: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        CY4AC2000L:  Lower bound: 2000: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        CY4AC2000U:  Upper bound: 2000: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        CY4AC2010:   2010: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+    Time series AD: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        CY4AD1990:   1990: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        CY4AD1990L:  Lower bound: 1990: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        CY4AD1990U:  Upper bound: 1990: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        CY4AD2000:   2000: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        CY4AD2000L:  Lower bound: 2000: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        CY4AD2000U:  Upper bound: 2000: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        CY4AD2010:   2010: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+    Time series AE: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        CY4AE1990:   1990: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        CY4AE1990L:  Lower bound: 1990: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        CY4AE1990U:  Upper bound: 1990: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        CY4AE2000:   2000: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        CY4AE2000L:  Lower bound: 2000: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        CY4AE2000U:  Upper bound: 2000: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        CY4AE2010:   2010: Housing units: Occupied ~ Householder is Some Other Race (single race)
+    Time series AF: Housing units: Occupied ~ Householder is Two or More Races
+        CY4AF1990:   1990: Housing units: Occupied ~ Householder is Two or More Races
+        CY4AF2000:   2000: Housing units: Occupied ~ Householder is Two or More Races
+        CY4AF2000L:  Lower bound: 2000: Housing units: Occupied ~ Householder is Two or More Races
+        CY4AF2000U:  Upper bound: 2000: Housing units: Occupied ~ Householder is Two or More Races
+        CY4AF2010:   2010: Housing units: Occupied ~ Householder is Two or More Races
+ 
+Table 9: (CZ4) Occupied Housing Units by Hispanic or Latino Origin of Householder [2]
+    Time series AA: Housing units: Occupied ~ Not Hispanic or Latino householder
+        CZ4AA1990:   1990: Housing units: Occupied ~ Not Hispanic or Latino householder
+        CZ4AA1990L:  Lower bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder
+        CZ4AA1990U:  Upper bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder
+        CZ4AA2000:   2000: Housing units: Occupied ~ Not Hispanic or Latino householder
+        CZ4AA2000L:  Lower bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder
+        CZ4AA2000U:  Upper bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder
+        CZ4AA2010:   2010: Housing units: Occupied ~ Not Hispanic or Latino householder
+    Time series AB: Housing units: Occupied ~ Hispanic or Latino householder
+        CZ4AB1990:   1990: Housing units: Occupied ~ Hispanic or Latino householder
+        CZ4AB1990L:  Lower bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder
+        CZ4AB1990U:  Upper bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder
+        CZ4AB2000:   2000: Housing units: Occupied ~ Hispanic or Latino householder
+        CZ4AB2000L:  Lower bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder
+        CZ4AB2000U:  Upper bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder
+        CZ4AB2010:   2010: Housing units: Occupied ~ Hispanic or Latino householder
+ 
+Table 10: (CZ8) Occupied Housing Units by Hispanic or Latino Origin of Householder [2] by Race of Householder [6*]
+    Time series AA: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AA1990:   1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AA1990L:  Lower bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AA1990U:  Upper bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AA2000:   2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AA2000L:  Lower bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AA2000U:  Upper bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AA2010:   2010: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+    Time series AB: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AB1990:   1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AB1990L:  Lower bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AB1990U:  Upper bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AB2000:   2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AB2000L:  Lower bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AB2000U:  Upper bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AB2010:   2010: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+    Time series AC: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AC1990:   1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AC1990L:  Lower bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AC1990U:  Upper bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AC2000:   2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AC2000L:  Lower bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AC2000U:  Upper bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AC2010:   2010: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+    Time series AD: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AD1990:   1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AD1990L:  Lower bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AD1990U:  Upper bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AD2000:   2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AD2000L:  Lower bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AD2000U:  Upper bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AD2010:   2010: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+    Time series AE: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AE1990:   1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AE1990L:  Lower bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AE1990U:  Upper bound: 1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AE2000:   2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AE2000L:  Lower bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AE2000U:  Upper bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AE2010:   2010: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+    Time series AF: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AF1990:   1990: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AF2000:   2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AF2000L:  Lower bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AF2000U:  Upper bound: 2000: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AF2010:   2010: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Two or More Races
+    Time series AG: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AG1990:   1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AG1990L:  Lower bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AG1990U:  Upper bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AG2000:   2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AG2000L:  Lower bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AG2000U:  Upper bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        CZ8AG2010:   2010: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+    Time series AH: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AH1990:   1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AH1990L:  Lower bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AH1990U:  Upper bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AH2000:   2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AH2000L:  Lower bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AH2000U:  Upper bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        CZ8AH2010:   2010: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+    Time series AI: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AI1990:   1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AI1990L:  Lower bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AI1990U:  Upper bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AI2000:   2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AI2000L:  Lower bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AI2000U:  Upper bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        CZ8AI2010:   2010: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+    Time series AJ: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AJ1990:   1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AJ1990L:  Lower bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AJ1990U:  Upper bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AJ2000:   2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AJ2000L:  Lower bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AJ2000U:  Upper bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        CZ8AJ2010:   2010: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+    Time series AK: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AK1990:   1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AK1990L:  Lower bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AK1990U:  Upper bound: 1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AK2000:   2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AK2000L:  Lower bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AK2000U:  Upper bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        CZ8AK2010:   2010: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+    Time series AL: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AL1990:   1990: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AL2000:   2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AL2000L:  Lower bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AL2000U:  Upper bound: 2000: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Two or More Races
+        CZ8AL2010:   2010: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Two or More Races
+ 
+Table 11: (D02) Occupied Housing Units with Householder Who Is White (Single Race*), Not Hispanic or Latino by Tenure [2]
+    Time series AA: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AA1990:   1990: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AA1990L:  Lower bound: 1990: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AA1990U:  Upper bound: 1990: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AA2000:   2000: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AA2000L:  Lower bound: 2000: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AA2000U:  Upper bound: 2000: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AA2010:   2010: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+    Time series AB: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AB1990:   1990: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AB1990L:  Lower bound: 1990: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AB1990U:  Upper bound: 1990: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AB2000:   2000: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AB2000L:  Lower bound: 2000: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AB2000U:  Upper bound: 2000: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        D02AB2010:   2010: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+ 
+--------------------------------------------------------------------------------
+Geographic Integration Methods
+--------------------------------------------------------------------------------
+ 
+1990 Block Data Standardized to 2010 Geography:
+
+    NHGIS standardizes the 1990 data in these time series tables to 2010 census
+    geography in two steps, first allocating census counts from 1990 census
+    blocks to 2010 census blocks and then summing the reallocated 1990 counts
+    for all 2010 blocks that lie within each target 2010 unit. In cases where a
+    1990 block may intersect multiple 2010 units, NHGIS applies interpolation to
+    estimate how 1990 block characteristics are distributed among the
+    intersecting 2010 blocks, primarily using the population and housing
+    densities of 2000 and 2010 blocks to model the distribution of 1990
+    characteristics within 1990 blocks.
+    
+    For details on the interpolation model, see:
+    https://www.nhgis.org/documentation/time-series/1990-blocks-to-2010-geog
+
+2000 Block Data Standardized to 2010 Geography:
+
+    NHGIS standardizes the 2000 data in these time series tables to 2010 census
+    geography in two steps, first allocating census counts from 2000 census
+    blocks to 2010 census blocks and then summing the reallocated 2000 counts
+    for all 2010 blocks that lie within each target 2010 unit. Where a 2000
+    block intersects multiple 2010 blocks, NHGIS applies areal interpolation to
+    estimate how the 2000 block characteristics are distributed among the
+    intersecting 2010 blocks.
+    
+    In addition to the 2000 block data drawn from 2000 Census Summary File 1
+    (NHGIS dataset 2000_SF1b), NHGIS uses information from three ancillary
+    sources to refine the interpolation model:
+    
+    * 2010 census block population and housing unit counts from 2010 Census
+    Summary File 1 (NHGIS dataset 2010_SF1a)
+    
+    * Locations of residential roads from the U.S. Census Bureau's 2010
+    TIGER/Line Shapefiles
+    
+    * Extents of developed land, which we define as 30-meter square cells in the
+    2001 National Land Cover Database (NLCD 2001) (2011 Edition) with at least
+    5% of their area covered by impervious surface.
+    
+    For details on the interpolation model, see:
+    https://www.nhgis.org/documentation/time-series/2000-blocks-to-2010-geog
+
+2010 Standardized Data:
+
+    For time series tables that are standardized to 2010 census geography, NHGIS
+    draws the 2010 data directly from 2010 Census Summary Files without any
+    estimation. The only adjustment NHGIS may make to the 2010 source data is,
+    for some time series, to sum source counts together to compute larger
+    subtotals.
+
+Complete documentation on time series integration methods is available at:
+    https://www.nhgis.org/documentation/time-series
+ 
+--------------------------------------------------------------------------------
+Source Data
+--------------------------------------------------------------------------------
+ 
+Additional documentation on NHGIS data sources is available at:
+    https://www.nhgis.org/documentation/tabular-data
+
+Table 1: (CP4) Persons by Hispanic or Latino Origin [2]
+ 
+    Time series AA: Persons: Not Hispanic or Latino
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP9. Hispanic Origin
+                    Universe: Persons
+                        Variable: [EU1001] Not of Hispanic origin
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004A. Population by Hispanic or Latino and Not Hispanic or Latino
+                    Universe: Persons
+                        Variable: [FXZ002] Not Hispanic or Latino
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P4. Hispanic or Latino Origin
+                    Universe: Total population
+                        Variable: [H7Y002] Not Hispanic or Latino
+ 
+    Time series AB: Persons: Hispanic or Latino
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP8. Persons of Hispanic Origin
+                    Universe: Persons of Hispanic Origin
+                        Variable: [EU0001] Total
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004A. Population by Hispanic or Latino and Not Hispanic or Latino
+                    Universe: Persons
+                        Variable: [FXZ001] Hispanic or Latino
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P4. Hispanic or Latino Origin
+                    Universe: Total population
+                        Variable: [H7Y003] Hispanic or Latino
+ 
+ 
+Table 2: (CY8) Persons by Single Race/Ethnicity [6]
+ 
+    Time series AA: Persons: Not Hispanic or Latino ~ White (single race reported or, since 2000, race combinations likely to report this single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2001] Not of Hispanic origin >> White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004C. Not Hispanic or Latino Population of One Race by Race
+                    Universe: Not Hispanic or Latino Persons of One Race
+                        Variable: [FX1001] White alone
+                Source table: NP004E. Not Hispanic or Latino Population of Two or More Races by Race Combination
+                    Universe: Not Hispanic or Latino Persons of Two or More Races
+                        Variable: [FX3002] Population of Two Races: White; American Indian and Alaska Native
+                        Variable: [FX3003] Population of Two Races: White; Asian
+                        Variable: [FX3004] Population of Two Races: White; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3005] Population of Two Races: White; some other race
+                        Variable: [FX3017] Population of Three Races: White; Black or African American; Asian
+                        Variable: [FX3018] Population of Three Races: White; Black or African American; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3020] Population of Three Races: White; American Indian and Alaska Native; Asian
+                        Variable: [FX3021] Population of Three Races: White; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3022] Population of Three Races: White; American Indian and Alaska Native; some other race
+                        Variable: [FX3024] Population of Three Races: White; Asian; some other race
+                        Variable: [FX3036] Population of Four Races: White; Black or African American; American Indian and Alaska Native; Asian
+                        Variable: [FX3037] Population of Four Races: White; Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3039] Population of Four Races: White; Black or African American; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3040] Population of Four Races: White; Black or African American; Asian; some other race
+                        Variable: [FX3041] Population of Four Races: White; Black or African American; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3042] Population of Four Races: White; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3043] Population of Four Races: White; American Indian and Alaska Native; Asian; some other race
+                        Variable: [FX3044] Population of Four Races: White; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3051] Population of Five Races: White; Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3052] Population of Five Races: White; Black or African American; American Indian and Alaska Native; Asian; some other race
+                        Variable: [FX3053] Population of Five Races: White; Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3054] Population of Five Races: White; Black or African American; Asian; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3055] Population of Five Races: White; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3057] Population of Six Races: White; Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; some other race
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P9. Hispanic or Latino, and Not Hispanic or Latino by Race
+                    Universe: Total population
+                        Variable: [H73005] Not Hispanic or Latino: Population of one race: White alone
+                        Variable: [H73014] Not Hispanic or Latino: Two or More Races: Population of two races: White; American Indian and Alaska Native
+                        Variable: [H73015] Not Hispanic or Latino: Two or More Races: Population of two races: White; Asian
+                        Variable: [H73016] Not Hispanic or Latino: Two or More Races: Population of two races: White; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73017] Not Hispanic or Latino: Two or More Races: Population of two races: White; Some Other Race
+                        Variable: [H73030] Not Hispanic or Latino: Two or More Races: Population of three races: White; Black or African American; Asian
+                        Variable: [H73031] Not Hispanic or Latino: Two or More Races: Population of three races: White; Black or African American; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73033] Not Hispanic or Latino: Two or More Races: Population of three races: White; American Indian and Alaska Native; Asian
+                        Variable: [H73034] Not Hispanic or Latino: Two or More Races: Population of three races: White; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73035] Not Hispanic or Latino: Two or More Races: Population of three races: White; American Indian and Alaska Native; Some Other Race
+                        Variable: [H73037] Not Hispanic or Latino: Two or More Races: Population of three races: White; Asian; Some Other Race
+                        Variable: [H73050] Not Hispanic or Latino: Two or More Races: Population of four races: White; Black or African American; American Indian and Alaska Native; Asian
+                        Variable: [H73051] Not Hispanic or Latino: Two or More Races: Population of four races: White; Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73053] Not Hispanic or Latino: Two or More Races: Population of four races: White; Black or African American; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73054] Not Hispanic or Latino: Two or More Races: Population of four races: White; Black or African American; Asian; Some Other Race
+                        Variable: [H73055] Not Hispanic or Latino: Two or More Races: Population of four races: White; Black or African American; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73056] Not Hispanic or Latino: Two or More Races: Population of four races: White; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73057] Not Hispanic or Latino: Two or More Races: Population of four races: White; American Indian and Alaska Native; Asian; Some Other Race
+                        Variable: [H73058] Not Hispanic or Latino: Two or More Races: Population of four races: White; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73066] Not Hispanic or Latino: Two or More Races: Population of five races: White; Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73067] Not Hispanic or Latino: Two or More Races: Population of five races: White; Black or African American; American Indian and Alaska Native; Asian; Some Other Race
+                        Variable: [H73068] Not Hispanic or Latino: Two or More Races: Population of five races: White; Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73069] Not Hispanic or Latino: Two or More Races: Population of five races: White; Black or African American; Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73070] Not Hispanic or Latino: Two or More Races: Population of five races: White; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73073] Not Hispanic or Latino: Two or More Races: Population of six races: White; Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+ 
+    Time series AB: Persons: Not Hispanic or Latino ~ Black or African American (single race reported or, since 2000, race combinations likely to report this single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2002] Not of Hispanic origin >> Black
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004C. Not Hispanic or Latino Population of One Race by Race
+                    Universe: Not Hispanic or Latino Persons of One Race
+                        Variable: [FX1002] Black or African American alone
+                Source table: NP004E. Not Hispanic or Latino Population of Two or More Races by Race Combination
+                    Universe: Not Hispanic or Latino Persons of Two or More Races
+                        Variable: [FX3001] Population of Two Races: White; Black or African American
+                        Variable: [FX3006] Population of Two Races: Black or African American; American Indian and Alaska Native
+                        Variable: [FX3007] Population of Two Races: Black or African American; Asian
+                        Variable: [FX3008] Population of Two Races: Black or African American; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3009] Population of Two Races: Black or African American; some other race
+                        Variable: [FX3016] Population of Three Races: White; Black or African American; American Indian and Alaska Native
+                        Variable: [FX3019] Population of Three Races: White; Black or African American; some other race
+                        Variable: [FX3026] Population of Three Races: Black or African American; American Indian and Alaska Native; Asian
+                        Variable: [FX3027] Population of Three Races: Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3028] Population of Three Races: Black or African American; American Indian and Alaska Native; some other race
+                        Variable: [FX3029] Population of Three Races: Black or African American; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3030] Population of Three Races: Black or African American; Asian; some other race
+                        Variable: [FX3031] Population of Three Races: Black or African American; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3038] Population of Four Races: White; Black or African American; American Indian and Alaska Native; some other race
+                        Variable: [FX3046] Population of Four Races: Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3047] Population of Four Races: Black or African American; American Indian and Alaska Native; Asian; some other race
+                        Variable: [FX3048] Population of Four Races: Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3049] Population of Four Races: Black or African American; Asian; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3056] Population of Five Races: Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; some other race
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P9. Hispanic or Latino, and Not Hispanic or Latino by Race
+                    Universe: Total population
+                        Variable: [H73006] Not Hispanic or Latino: Population of one race: Black or African American alone
+                        Variable: [H73013] Not Hispanic or Latino: Two or More Races: Population of two races: White; Black or African American
+                        Variable: [H73018] Not Hispanic or Latino: Two or More Races: Population of two races: Black or African American; American Indian and Alaska Native
+                        Variable: [H73019] Not Hispanic or Latino: Two or More Races: Population of two races: Black or African American; Asian
+                        Variable: [H73020] Not Hispanic or Latino: Two or More Races: Population of two races: Black or African American; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73021] Not Hispanic or Latino: Two or More Races: Population of two races: Black or African American; Some Other Race
+                        Variable: [H73029] Not Hispanic or Latino: Two or More Races: Population of three races: White; Black or African American; American Indian and Alaska Native
+                        Variable: [H73032] Not Hispanic or Latino: Two or More Races: Population of three races: White; Black or African American; Some Other Race
+                        Variable: [H73039] Not Hispanic or Latino: Two or More Races: Population of three races: Black or African American; American Indian and Alaska Native; Asian
+                        Variable: [H73040] Not Hispanic or Latino: Two or More Races: Population of three races: Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73041] Not Hispanic or Latino: Two or More Races: Population of three races: Black or African American; American Indian and Alaska Native; Some Other Race
+                        Variable: [H73042] Not Hispanic or Latino: Two or More Races: Population of three races: Black or African American; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73043] Not Hispanic or Latino: Two or More Races: Population of three races: Black or African American; Asian; Some Other Race
+                        Variable: [H73044] Not Hispanic or Latino: Two or More Races: Population of three races: Black or African American; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73052] Not Hispanic or Latino: Two or More Races: Population of four races: White; Black or African American; American Indian and Alaska Native; Some Other Race
+                        Variable: [H73060] Not Hispanic or Latino: Two or More Races: Population of four races: Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73061] Not Hispanic or Latino: Two or More Races: Population of four races: Black or African American; American Indian and Alaska Native; Asian; Some Other Race
+                        Variable: [H73062] Not Hispanic or Latino: Two or More Races: Population of four races: Black or African American; American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73063] Not Hispanic or Latino: Two or More Races: Population of four races: Black or African American; Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73071] Not Hispanic or Latino: Two or More Races: Population of five races: Black or African American; American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+ 
+    Time series AC: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race reported or, since 2000, race combinations likely to report this single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2003] Not of Hispanic origin >> American Indian, Eskimo, or Aleut
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004C. Not Hispanic or Latino Population of One Race by Race
+                    Universe: Not Hispanic or Latino Persons of One Race
+                        Variable: [FX1003] American Indian and Alaska Native alone
+                Source table: NP004E. Not Hispanic or Latino Population of Two or More Races by Race Combination
+                    Universe: Not Hispanic or Latino Persons of Two or More Races
+                        Variable: [FX3012] Population of Two Races: American Indian and Alaska Native; some other race
+                        Variable: [FX3050] Population of Four Races: American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; some other race
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P9. Hispanic or Latino, and Not Hispanic or Latino by Race
+                    Universe: Total population
+                        Variable: [H73007] Not Hispanic or Latino: Population of one race: American Indian and Alaska Native alone
+                        Variable: [H73024] Not Hispanic or Latino: Two or More Races: Population of two races: American Indian and Alaska Native; Some Other Race
+                        Variable: [H73064] Not Hispanic or Latino: Two or More Races: Population of four races: American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+ 
+    Time series AD: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race reported or, since 2000, race combinations likely to report this single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2004] Not of Hispanic origin >> Asian or Pacific Islander
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004C. Not Hispanic or Latino Population of One Race by Race
+                    Universe: Not Hispanic or Latino Persons of One Race
+                        Variable: [FX1004] Asian alone
+                        Variable: [FX1005] Native Hawaiian and Other Pacific Islander alone
+                Source table: NP004E. Not Hispanic or Latino Population of Two or More Races by Race Combination
+                    Universe: Not Hispanic or Latino Persons of Two or More Races
+                        Variable: [FX3010] Population of Two Races: American Indian and Alaska Native; Asian
+                        Variable: [FX3011] Population of Two Races: American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3013] Population of Two Races: Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3014] Population of Two Races: Asian; some other race
+                        Variable: [FX3015] Population of Two Races: Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3023] Population of Three Races: White; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3025] Population of Three Races: White; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3032] Population of Three Races: American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [FX3033] Population of Three Races: American Indian and Alaska Native; Asian; some other race
+                        Variable: [FX3034] Population of Three Races: American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3035] Population of Three Races: Asian; Native Hawaiian and Other Pacific Islander; some other race
+                        Variable: [FX3045] Population of Four Races: White; Asian; Native Hawaiian and Other Pacific Islander; some other race
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P9. Hispanic or Latino, and Not Hispanic or Latino by Race
+                    Universe: Total population
+                        Variable: [H73008] Not Hispanic or Latino: Population of one race: Asian alone
+                        Variable: [H73009] Not Hispanic or Latino: Population of one race: Native Hawaiian and Other Pacific Islander alone
+                        Variable: [H73022] Not Hispanic or Latino: Two or More Races: Population of two races: American Indian and Alaska Native; Asian
+                        Variable: [H73023] Not Hispanic or Latino: Two or More Races: Population of two races: American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73025] Not Hispanic or Latino: Two or More Races: Population of two races: Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73026] Not Hispanic or Latino: Two or More Races: Population of two races: Asian; Some Other Race
+                        Variable: [H73027] Not Hispanic or Latino: Two or More Races: Population of two races: Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73036] Not Hispanic or Latino: Two or More Races: Population of three races: White; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73038] Not Hispanic or Latino: Two or More Races: Population of three races: White; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73045] Not Hispanic or Latino: Two or More Races: Population of three races: American Indian and Alaska Native; Asian; Native Hawaiian and Other Pacific Islander
+                        Variable: [H73046] Not Hispanic or Latino: Two or More Races: Population of three races: American Indian and Alaska Native; Asian; Some Other Race
+                        Variable: [H73047] Not Hispanic or Latino: Two or More Races: Population of three races: American Indian and Alaska Native; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73048] Not Hispanic or Latino: Two or More Races: Population of three races: Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+                        Variable: [H73059] Not Hispanic or Latino: Two or More Races: Population of four races: White; Asian; Native Hawaiian and Other Pacific Islander; Some Other Race
+ 
+    Time series AE: Persons: Not Hispanic or Latino ~ Some Other Race (single race reported or, since 2000, race combinations likely to report this single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2005] Not of Hispanic origin >> Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004C. Not Hispanic or Latino Population of One Race by Race
+                    Universe: Not Hispanic or Latino Persons of One Race
+                        Variable: [FX1006] Some other race alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P9. Hispanic or Latino, and Not Hispanic or Latino by Race
+                    Universe: Total population
+                        Variable: [H73010] Not Hispanic or Latino: Population of one race: Some Other Race alone
+ 
+    Time series AF: Persons: Hispanic or Latino
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP8. Persons of Hispanic Origin
+                    Universe: Persons of Hispanic Origin
+                        Variable: [EU0001] Total
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP004A. Population by Hispanic or Latino and Not Hispanic or Latino
+                    Universe: Persons
+                        Variable: [FXZ001] Hispanic or Latino
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P4. Hispanic or Latino Origin
+                    Universe: Total population
+                        Variable: [H7Y003] Hispanic or Latino
+ 
+ 
+Table 3: (CW7) Persons by Hispanic or Latino Origin [2] by Race [6*]
+ 
+    Time series AA: Persons: Not Hispanic or Latino ~ White (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2001] Not of Hispanic origin >> White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF001] Not Hispanic or Latino >> White alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z003] Not Hispanic or Latino: White alone
+ 
+    Time series AB: Persons: Not Hispanic or Latino ~ Black or African American (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2002] Not of Hispanic origin >> Black
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF002] Not Hispanic or Latino >> Black or African American alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z004] Not Hispanic or Latino: Black or African American alone
+ 
+    Time series AC: Persons: Not Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2003] Not of Hispanic origin >> American Indian, Eskimo, or Aleut
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF003] Not Hispanic or Latino >> American Indian and Alaska Native alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z005] Not Hispanic or Latino: American Indian and Alaska Native alone
+ 
+    Time series AD: Persons: Not Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2004] Not of Hispanic origin >> Asian or Pacific Islander
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF004] Not Hispanic or Latino >> Asian alone
+                        Variable: [FYF005] Not Hispanic or Latino >> Native Hawaiian and Other Pacific Islander alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z006] Not Hispanic or Latino: Asian alone
+                        Variable: [H7Z007] Not Hispanic or Latino: Native Hawaiian and Other Pacific Islander alone
+ 
+    Time series AE: Persons: Not Hispanic or Latino ~ Some Other Race (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2005] Not of Hispanic origin >> Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF006] Not Hispanic or Latino >> Some other race alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z008] Not Hispanic or Latino: Some Other Race alone
+ 
+    Time series AF: Persons: Not Hispanic or Latino ~ Two or More Races
+        Year: 1990
+            *NOT AVAILABLE for this time*
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF007] Not Hispanic or Latino >> Two or more races
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z009] Not Hispanic or Latino: Two or More Races
+ 
+    Time series AG: Persons: Hispanic or Latino ~ White (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2006] Hispanic origin >> White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF008] Hispanic or Latino >> White alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z011] Hispanic or Latino: White alone
+ 
+    Time series AH: Persons: Hispanic or Latino ~ Black or African American (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2007] Hispanic origin >> Black
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF009] Hispanic or Latino >> Black or African American alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z012] Hispanic or Latino: Black or African American alone
+ 
+    Time series AI: Persons: Hispanic or Latino ~ American Indian and Alaska Native (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2008] Hispanic origin >> American Indian, Eskimo, or Aleut
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF010] Hispanic or Latino >> American Indian and Alaska Native alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z013] Hispanic or Latino: American Indian and Alaska Native alone
+ 
+    Time series AJ: Persons: Hispanic or Latino ~ Asian and Pacific Islander (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2009] Hispanic origin >> Asian or Pacific Islander
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF011] Hispanic or Latino >> Asian alone
+                        Variable: [FYF012] Hispanic or Latino >> Native Hawaiian and Other Pacific Islander alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z014] Hispanic or Latino: Asian alone
+                        Variable: [H7Z015] Hispanic or Latino: Native Hawaiian and Other Pacific Islander alone
+ 
+    Time series AK: Persons: Hispanic or Latino ~ Some Other Race (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP10. Hispanic Origin by Race
+                    Universe: Persons
+                        Variable: [ET2010] Hispanic origin >> Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF013] Hispanic or Latino >> Some other race alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z016] Hispanic or Latino: Some Other Race alone
+ 
+    Time series AL: Persons: Hispanic or Latino ~ Two or More Races
+        Year: 1990
+            *NOT AVAILABLE for this time*
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP008A. Population by Hispanic or Latino and Not Hispanic or Latino by Race
+                    Universe: Persons
+                        Variable: [FYF014] Hispanic or Latino >> Two or more races
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P5. Hispanic or Latino Origin by Race
+                    Universe: Total population
+                        Variable: [H7Z017] Hispanic or Latino: Two or More Races
+ 
+ 
+Table 4: (CM4) Total Households
+ 
+    Time series AA: Households: Total
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP3. Households
+                    Universe: Households
+                        Variable: [EUO001] Total
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP015A. Total Households
+                    Universe: Households
+                        Variable: [FY4001] Total
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P18. Household Type
+                    Universe: Households
+                        Variable: [H8C001] Total
+ 
+ 
+Table 5: (CM5) Total Families
+ 
+    Time series AA: Families: Total
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP2. Families
+                    Universe: Families
+                        Variable: [EUD001] Total
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP031A. Total Families
+                    Universe: Families
+                        Variable: [F2V001] Total
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P35. Families
+                    Universe: Families
+                        Variable: [H8T001] Total
+ 
+ 
+Table 6: (CM6) Persons in Families
+ 
+    Time series AA: Persons: In families
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NP17. Persons in Families
+                    Universe: Persons in families
+                        Variable: [ET9001] Total
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NP032A. Total Population in Families
+                    Universe: Persons in Families
+                        Variable: [F2Z001] Total
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: P36. Population in Families by Age
+                    Universe: Population in families
+                        Variable: [H8U001] Total
+ 
+ 
+Table 7: (CM7) Total Housing Units
+ 
+    Time series AA: Housing units: Total
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH1. Housing Units
+                    Universe: Housing units
+                        Variable: [ESA001] Total
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH001A. Total Housing Units
+                    Universe: Housing Units
+                        Variable: [FV5001] Total
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H1. Housing Units
+                    Universe: Housing units
+                        Variable: [IFC001] Total
+ 
+ 
+Table 8: (CY4) Occupied Housing Units by Race of Householder [6*]
+ 
+    Time series AA: Housing units: Occupied ~ Householder is White (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH8. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ETZ001] White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH006A. Occupied Housing Units by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWD001] White alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H6. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFH002] Householder who is White alone
+ 
+    Time series AB: Housing units: Occupied ~ Householder is Black or African American (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH8. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ETZ002] Black
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH006A. Occupied Housing Units by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWD002] Black or African American alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H6. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFH003] Householder who is Black or African American alone
+ 
+    Time series AC: Housing units: Occupied ~ Householder is American Indian and Alaska Native (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH8. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ETZ003] American Indian, Eskimo, or Aleut
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH006A. Occupied Housing Units by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWD003] American Indian and Alaska Native alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H6. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFH004] Householder who is American Indian and Alaska Native alone
+ 
+    Time series AD: Housing units: Occupied ~ Householder is Asian and Pacific Islander (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH8. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ETZ004] Asian or Pacific Islander
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH006A. Occupied Housing Units by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWD004] Asian alone
+                        Variable: [FWD005] Native Hawaiian and Other Pacific Islander alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H6. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFH005] Householder who is Asian alone
+                        Variable: [IFH006] Householder who is Native Hawaiian and Other Pacific Islander alone
+ 
+    Time series AE: Housing units: Occupied ~ Householder is Some Other Race (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH8. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ETZ005] Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH006A. Occupied Housing Units by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWD006] Some other race alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H6. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFH007] Householder who is Some Other Race alone
+ 
+    Time series AF: Housing units: Occupied ~ Householder is Two or More Races
+        Year: 1990
+            *NOT AVAILABLE for this time*
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH006A. Occupied Housing Units by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWD007] Two or more races
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H6. Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFH008] Householder who is Two or More Races
+ 
+ 
+Table 9: (CZ4) Occupied Housing Units by Hispanic or Latino Origin of Householder [2]
+ 
+    Time series AA: Housing units: Occupied ~ Not Hispanic or Latino householder
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB001] Not of Hispanic origin >> White
+                        Variable: [ESB002] Not of Hispanic origin >> Black
+                        Variable: [ESB003] Not of Hispanic origin >> American Indian, Eskimo, or Aleut
+                        Variable: [ESB004] Not of Hispanic origin >> Asian or Pacific Islander
+                        Variable: [ESB005] Not of Hispanic origin >> Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007A. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWE001] Not Hispanic or Latino householder
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI002] Not Hispanic or Latino householder
+ 
+    Time series AB: Housing units: Occupied ~ Hispanic or Latino householder
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB006] Hispanic origin >> White
+                        Variable: [ESB007] Hispanic origin >> Black
+                        Variable: [ESB008] Hispanic origin >> American Indian, Eskimo, or Aleut
+                        Variable: [ESB009] Hispanic origin >> Asian or Pacific Islander
+                        Variable: [ESB010] Hispanic origin >> Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007A. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWE002] Hispanic or Latino householder
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI010] Hispanic or Latino householder
+ 
+ 
+Table 10: (CZ8) Occupied Housing Units by Hispanic or Latino Origin of Householder [2] by Race of Householder [6*]
+ 
+    Time series AA: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB001] Not of Hispanic origin >> White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF001] Not Hispanic or Latino householder >> White alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI003] Not Hispanic or Latino householder: Householder who is White alone
+ 
+    Time series AB: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB002] Not of Hispanic origin >> Black
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF002] Not Hispanic or Latino householder >> Black or African American alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI004] Not Hispanic or Latino householder: Householder who is Black or African American alone
+ 
+    Time series AC: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB003] Not of Hispanic origin >> American Indian, Eskimo, or Aleut
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF003] Not Hispanic or Latino householder >> American Indian and Alaska Native alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI005] Not Hispanic or Latino householder: Householder who is American Indian and Alaska Native alone
+ 
+    Time series AD: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB004] Not of Hispanic origin >> Asian or Pacific Islander
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF004] Not Hispanic or Latino householder >> Asian alone
+                        Variable: [FWF005] Not Hispanic or Latino householder >> Native Hawaiian and Other Pacific Islander alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI006] Not Hispanic or Latino householder: Householder who is Asian alone
+                        Variable: [IFI007] Not Hispanic or Latino householder: Householder who is Native Hawaiian and Other Pacific Islander alone
+ 
+    Time series AE: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB005] Not of Hispanic origin >> Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF006] Not Hispanic or Latino householder >> Some other race alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI008] Not Hispanic or Latino householder: Householder who is Some Other Race alone
+ 
+    Time series AF: Housing units: Occupied ~ Not Hispanic or Latino householder ~ Householder is Two or More Races
+        Year: 1990
+            *NOT AVAILABLE for this time*
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF007] Not Hispanic or Latino householder >> Two or more races
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI009] Not Hispanic or Latino householder: Householder who is Two or More Races
+ 
+    Time series AG: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is White (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB006] Hispanic origin >> White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF008] Hispanic or Latino householder >> White alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI011] Hispanic or Latino householder: Householder who is White alone
+ 
+    Time series AH: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Black or African American (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB007] Hispanic origin >> Black
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF009] Hispanic or Latino householder >> Black or African American alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI012] Hispanic or Latino householder: Householder who is Black or African American alone
+ 
+    Time series AI: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is American Indian and Alaska Native (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB008] Hispanic origin >> American Indian, Eskimo, or Aleut
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF010] Hispanic or Latino householder >> American Indian and Alaska Native alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI013] Hispanic or Latino householder: Householder who is American Indian and Alaska Native alone
+ 
+    Time series AJ: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Asian and Pacific Islander (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB009] Hispanic origin >> Asian or Pacific Islander
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF011] Hispanic or Latino householder >> Asian alone
+                        Variable: [FWF012] Hispanic or Latino householder >> Native Hawaiian and Other Pacific Islander alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI014] Hispanic or Latino householder: Householder who is Asian alone
+                        Variable: [IFI015] Hispanic or Latino householder: Householder who is Native Hawaiian and Other Pacific Islander alone
+ 
+    Time series AK: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Some Other Race (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH10. Hispanic Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [ESB010] Hispanic origin >> Other race
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF013] Hispanic or Latino householder >> Some other race alone
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI016] Hispanic or Latino householder: Householder who is Some Other Race alone
+ 
+    Time series AL: Housing units: Occupied ~ Hispanic or Latino householder ~ Householder is Two or More Races
+        Year: 1990
+            *NOT AVAILABLE for this time*
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH007B. Occupied Housing Units by Hispanic or Latino and Not Hispanic or Latino Householder by Race of Householder
+                    Universe: Occupied Housing Units
+                        Variable: [FWF014] Hispanic or Latino householder >> Two or more races
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H7. Hispanic or Latino Origin of Householder by Race of Householder
+                    Universe: Occupied housing units
+                        Variable: [IFI017] Hispanic or Latino householder: Householder who is Two or More Races
+ 
+ 
+Table 11: (D02) Occupied Housing Units with Householder Who Is White (Single Race*), Not Hispanic or Latino by Tenure [2]
+ 
+    Time series AA: Housing units: Owner occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH11. Tenure by Race of Householder
+                    Universe: Occupied Housing Units with Householder of Hispanic Origin
+                        - Variable: [ESC001] Owner occupied >> White
+                Source table: NH9. Tenure by Race of Householder
+                    Universe: Occupied housing units
+                        + Variable: [ET0001] Owner occupied >> White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH015I. Occupied Housing Units with White Alone, Not Hispanic or Latino Householder by Tenure
+                    Universe: Occupied Housing Units with Householder White Alone, Not Hispanic or Latino
+                        Variable: [FXA001] Owner occupied
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H16I. Tenure by Household Size (White Alone, Not Hispanic or Latino Householder)
+                    Universe: Occupied housing units with a householder who is White alone, not Hispanic or Latino
+                        Variable: [IGO002] Owner occupied
+ 
+    Time series AB: Housing units: Renter occupied ~ Not Hispanic or Latino householder ~ Householder is White (single race)
+        Year: 1990
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 1990 Census: STF 1 - 100% Data
+                Source table: NH11. Tenure by Race of Householder
+                    Universe: Occupied Housing Units with Householder of Hispanic Origin
+                        - Variable: [ESC006] Renter occupied >> White
+                Source table: NH9. Tenure by Race of Householder
+                    Universe: Occupied housing units
+                        + Variable: [ET0006] Renter occupied >> White
+        Year: 2000
+            Source geographic level: Block (by State--County--Tract)
+            Source dataset: 2000 Census: SF 1b - 100% Data [Blocks & Block Groups]
+                Source table: NH015I. Occupied Housing Units with White Alone, Not Hispanic or Latino Householder by Tenure
+                    Universe: Occupied Housing Units with Householder White Alone, Not Hispanic or Latino
+                        Variable: [FXA002] Renter occupied
+        Year: 2010
+            Source geographic level: County (by State)
+            Source dataset: 2010 Census: SF 1a - P & H Tables [Blocks & Larger Areas]
+                Source table: H16I. Tenure by Household Size (White Alone, Not Hispanic or Latino Householder)
+                    Universe: Occupied housing units with a householder who is White alone, not Hispanic or Latino
+                        Variable: [IGO010] Renter occupied
+ 
+--------------------------------------------------------------------------------
+Citation and Use of NHGIS Data
+--------------------------------------------------------------------------------
+ 
+All persons are granted a limited license to use this documentation and the
+accompanying data, subject to the following conditions:
+
+* REDISTRIBUTION: You will not redistribute the data without permission.
+
+  You may publish a subset of the data to meet journal requirements for accessing 
+  data related to a particular publication. Contact us for permission for any other 
+  redistribution; we will consider requests for free and commercial redistribution.
+
+* CITATION: You will cite NHGIS appropriately.
+
+    * Publications and research reports employing NHGIS data (either tabular or GIS) 
+      should include the following citation:
+
+        Steven Manson, Jonathan Schroeder, David Van Riper, Tracy Kugler, and Steven Ruggles. 
+        IPUMS National Historical Geographic Information System: Version 16.0 
+        [dataset]. Minneapolis, MN: IPUMS. 2021. 
+        http://doi.org/10.18128/D050.V16.0
+
+    * For policy briefs, online resources, or articles in the popular press, we 
+      recommend that you cite the use of NHGIS data as follows:
+
+        IPUMS NHGIS, University of Minnesota, www.nhgis.org.
+
+These terms of use are a legally binding agreement. You can use the data only in 
+accordance with these terms, and any other use is a violation of the agreement. 
+Violations may result in revocation of the agreement and prohibition from using other 
+IPUMS data. If IPUMS or our partners are harmed from your violation, you are 
+responsible for all damages, including reasonable attorney's fees and expenses.
+        
+In addition, we request that users send us a copy of any publications, research
+reports, or educational material making use of the data or documentation.
+
+Send electronic material to: nhgis@umn.edu
+
+Printed matter should be sent to:
+
+    IPUMS NHGIS
+    Institute for Social Research and Data Innovation
+    University of Minnesota
+    50 Willey Hall
+    225 19th Ave S
+    Minneapolis, MN 55455

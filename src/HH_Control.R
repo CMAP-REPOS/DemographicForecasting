@@ -174,6 +174,16 @@ GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Reg
             GQ_NonInst_Other_16_to_64 = sum(GQ_NonInst_Other_16_to_64),
             GQ_NonInst_Other_65_plus = sum(GQ_NonInst_Other_65_plus))
 
+#another way to look at the full GQ population
+#GQ_full2 <- GQ_full %>% relocate(Year, .after = Region) %>%
+#  pivot_longer(cols = c(5:15), names_to = "Type", values_to = "Population") %>%
+#  group_by(Region, Year, Type) %>%
+#  summarize(Population = sum(Population)) %>%
+#  pivot_wider(names_from = Year, values_from = Population)
+
+#write.csv(GQ_full2, "C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/GQ_review/GQ_full2.csv")
+
+
 #View(HouseholdSummary)
 #View(HouseholdSize)
 #View(GQ_basic_summary)

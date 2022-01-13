@@ -41,3 +41,4 @@ vignettes/*.pdf
 # macOS system files
 .DS_Store
 target_netmigration/~$TNM_workerjobbalance.xlsx
+Input/usa_00001.dat.gz

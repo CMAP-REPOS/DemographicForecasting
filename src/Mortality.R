@@ -7,9 +7,9 @@ library(readxl)
 
 # Parameters ---------------------------------------------------------
 
-load("Output/PopData.Rdata")
-load("Output/PopData.Rdata")
-load("Output/Age_0_4_Freq.Rdata")
+load("Output/POP_PEP.Rdata")
+#load("Output/PopData.Rdata") #OLD, do not use!
+load("Output/Age_0_4_Freq.Rdata") #AGE_0_4_FREQ
 AGE_0_4_FREQ$Population <- as.numeric(AGE_0_4_FREQ$Population)
 
 MORT_YEARS <- c(2014:2018)

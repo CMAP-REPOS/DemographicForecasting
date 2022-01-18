@@ -1,7 +1,10 @@
-# CMAP | Noel Peterson, Mary Weber | 3/16/2021
+# CMAP | Noel Peterson, Mary Weber, Alexis McAdams | 3/16/2021
 
-#This file fetches and formats 1990, 2000 and 2010 Decennial Census data
-#This file contains 1995, 2005 and 2011 - 2019 Population Estimates Program (PEP) data
+# This script fetches and formats 1990, 2000 and 2010 Decennial Census data AND
+# 2011 - 2019 Population Estimates Program (PEP) data.
+# Population data is pulled at the county level by age (5-year groupings) and sex.
+# Data for 1995, 2005 and 2020 is imported MANUALLY from prepared excel csvs (see end of script).
+# Data is combined into a single list object called POP.
 
 library(tidyverse)
 library(tidycensus)
@@ -9,20 +12,19 @@ library(readxl)
 
 # Set parameters ----------------------------------------------------------
 
+### Years for which to pull data
+#Census Population
 POP_YEARS <- c(2000, 2010)  # 1990 not available via API
-PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019) # add in 2020 estimates
-YEARS <- c(2000, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019)
-## PEP DATE_CODE documentation: https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-county-detail.html
+#Census Population Estimates Program (PEP)
+PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019)
+#  note: `#` names in PEP_YEARS are necessary to filter correct years of data from PEP pull (see tidycensus documentation, "time_series" argument)
+# PEP DATE_CODE documentation: https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-county-detail.html
 
-COUNTIES <- list(
-  IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
-         7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
-  IN = c(89, 91, 127),                       # Indiana counties
-  WI = c(59, 101, 127)                       # Wisconsin counties
-)
+### import helpers
+# COUNTIES and CMAP_GEOIDS
+load("Output/importhelpers.Rdata") # see setup_control.R for details
 
-CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
-
+# Table names for Decennial Census data pull
 POP_TABLES <- c(
   `2000` = "PCT0130",
   `2010` = "P0120"
@@ -33,7 +35,6 @@ PEP_remove <- c("Under 18 years", "16 years and over", "18 years and over", "65 
             "85 years and older", "5 to 13 years", "14 to 17 years", "15 to 44 years",
             "18 to 24 years", "18 to 64 years", "25 to 44 years", "45 to 64 years",
             "Median age", "All ages")
-
 
 # Extract Decennial Census variables from SF1 and join to decennial pop data ---------------------------------
 
@@ -82,14 +83,13 @@ for (YEAR in POP_YEARS) {
     ungroup()
 }
 
-
-# Pull PEP data, save in POP list ------------------------
+# Pull PEP data ------------------------
 PEP_DATA <- tibble()
 
 for (STATE in names(COUNTIES)) {
-    PEP_TEMP <- get_estimates(product="characteristics", geography = "county", year = max(PEP_YEARS),
+    PEP_TEMP <- get_estimates(product="characteristics", geography = "county",
                               county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"),
-                              breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE)%>%
+                              breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
       filter(DATE %in% names(PEP_YEARS), SEX %in% c("Male", "Female")) %>%
       rename(Population = value, Age = AGEGROUP, Sex = SEX) %>%
       separate(NAME, c("County", "State"), sep = "\\, ") %>%
@@ -100,9 +100,12 @@ for (STATE in names(COUNTIES)) {
                                 State == "Wisconsin" ~ "External WI"),
              Age = str_replace_all(Age, "Age ", "")) %>%
       select(-DATE)
+    names(PEP_TEMP$Year) <- NULL
 
     PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
 }
+
+# Combine POP and PEP data in the POP list ----------------
 
 for(YEAR in PEP_YEARS) {
 
@@ -115,13 +118,22 @@ for(YEAR in PEP_YEARS) {
 
 POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")
 POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
-#POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020.xlsx")
-POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020_ExtILadj.xlsx")
 
+
+# Option to import 2020 with External IL Adjusted Area population (see setup_control.R)
+
+if(EXTIL == 1){
+  POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020_ExtILadj.xlsx") %>% # partial LOL counties
+    mutate(GEOID = as.character(GEOID))
+} else {
+POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020.xlsx") %>% # full LOL counties
+  mutate(GEOID = as.character(GEOID))
+}
+
+# Finalize ------------------------------------
+
+# sort list elements by year
 POP <- POP[as.character(sort(as.numeric(names(POP))))]
 
-
+# save POP list to Output folder
 save(POP, file="Output/POP_PEP.Rdata")
-
-#write.csv(POP, "/Users/mweber/Desktop/POP_New.csv")
-

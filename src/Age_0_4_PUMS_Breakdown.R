@@ -75,11 +75,6 @@ pums_in <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "18", year = 2
 pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "55", year = 2019, survey = "acs5",
                     variables_filter = list(AGEP = 0:4), show_call = TRUE)
 
-pums_il <- get_pums(variables = "PUMA", state = "17", year = 2019, survey = "acs5",
-                    show_call = TRUE)
-temp <- get_pums(variables = "AGEP", state = "VT")
-
-
 # Join PUMS data to PUMA region assignments
 pums_21co <- bind_rows(pums_il, pums_in) %>%
   bind_rows(pums_wi) %>%
@@ -97,4 +92,4 @@ AGE_0_4_FREQ <- pums_21co %>%
   ungroup()
 
 # Save table to output folder
-# save(AGE_0_4_FREQ, file="Output/Age_0_4_Freq.Rdata")
+save(AGE_0_4_FREQ, file="Output/Age_0_4_Freq.Rdata")

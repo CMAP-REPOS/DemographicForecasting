@@ -49,6 +49,7 @@ source("src/Mortality.R")
 source("src/GroupQuarters.R")
 
 if(fMethod == 1){
+  source("src/Fertility.R") # this is ran first to save F_groups and bRatios (required for Projection.R)
   ASFR_projections <- read_excel("Input/berger_ASFRs.xlsx") %>%
     filter(Age != "10 - 14") %>%
     filter(Age != "45 - 49")

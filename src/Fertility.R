@@ -4,8 +4,8 @@ library(tidyverse)
 library(tidycensus)
 library(readxl)
 
-load("Output/PopData.Rdata")
-load("Output/GQData.Rdata")
+load("Output/POP_PEP.Rdata") # POP
+load("Output/GQData2.Rdata") # GQ, GQ_Military, GQratios
 
 
 # Set parameters ----------------------------------------------------------
@@ -14,7 +14,7 @@ GQE_YEARS <- c(2011:2019) #GQ estimate year range
 F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
 BASE_YEAR <- 2014 #Base year population, ASFR projections are built off of this year because it is midpoint of our 2010-2018 data
 
-# Remove estimates of females in GQ from each year ----------------------------
+# Remove estimates of females in GQ from 2011-2019 Population Totals ----------------------------
 
 # Step 1: Calculate 2010 GQ totals by County, excluding military
 GQ_totals_2010 <- GQ %>%
@@ -43,7 +43,7 @@ GQE$GEOID <- as.character(GQE$GEOID)
 GQE_projec <- left_join(GQ2010, select(GQE, c(GEOID, Year, Population)), by='GEOID') %>%
   mutate(GQE_pred = round(Prop_Female*Population),0) %>%
   rename(Year = Year.y) %>%
-  select(GEOID, County, State, Sex, Age, GQE_pred, Year,Region)
+  select(GEOID, County, State, Sex, Age, GQE_pred, Year, Region)
 
 # Step 6: Female HH population estimates by County, Age and Sex for 2011-2019
 TEMP_DATA <- tibble()
@@ -71,6 +71,7 @@ F_HH_Data <- bind_rows(Female_HH_2010, HH_Pop)
 
 
 # Birth data - add pre-age-15 births to 15-19 group, add 45+ age births to 40-44 group ------------------
+
 Births <- read_excel("Input/CMAPBirths_1990-2019.xlsx") %>%
   filter(Year %in% (2010:2018)) %>% # filtered out incomplete years data (2019 and 2020)
   mutate(Age = case_when(Age %in% c("10 to 14 years") ~ "15 to 19 years",

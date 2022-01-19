@@ -8,10 +8,9 @@
 
 # Import Berger's data (copied by AM from Berger's "Forecast Model_v09-Trans+Edu Employment.xlsx" spreadsheet)
 # This file contains 5-year net migration *values* by Region, age and sex from 1991 to 2005 (4 periods of data)
-
 pastNetMig <- read_excel("Input/NetMigration_Berger_Full_sexandage.xlsx")
 
-# import recent base migration rates (from Migration.R)
+# import recent base migration rates (from recentMigration.R, formerly Migration.R)
 load("Output/Base_Migration.Rdata") # named recent_Base_Mig
 
 recentNetMig <- recent_Base_Mig %>%  #reshaping data, saving data source in Source column

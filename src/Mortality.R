@@ -127,6 +127,6 @@ Mort_Proj <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025')),
 
 
 
-#save(Mort_Proj, file="Output/Mort_Proj.Rdata")
+save(Deaths, Mort_Proj, MORT_POP, file="Output/Mort_Proj.Rdata")
 #save(LifeTable, file="Output/LifeTables.Rdata")
 

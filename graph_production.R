@@ -487,3 +487,29 @@ temp0 <- both_all %>% filter(Region == "CMAP Region") %>% filter(Age == "0 to 4 
 write.csv(pop_recandproj %>% filter(Region == "External IL"), file = "C:/Users/amcadams/Documents/R/extILadj/export_poptotals.csv")
 write.csv(workers, file = "C:/Users/amcadams/Documents/R/extILadj/export_workers.csv")
 
+
+
+
+
+##########
+# EXPLORATIONS OF PAST MIGRATION DATA
+
+# load("Output/pastMigration_ageGroupSums.Rdata")
+
+#side item - plot out the net migration totals for each age group
+library(ggplot2)
+p <- pastNetMig %>% #filter(Region == "CMAP Region") %>%
+  #filter(agegroup == "0 to 24 years") %>%
+  filter(agegroup == "25 to 39 years") %>%
+  ggplot(aes(x=endyear, y= NetMigration, shape = Source, color = Age, group = Age)) +
+  geom_point() + geom_line() +
+  facet_wrap(Region~Sex, scales = "free", ncol = 2)
+p
+
+q <- pastNetMig %>% group_by(Period, Region, agegroup, Source) %>% summarize(NetMigration = sum(NetMigration)) %>%
+  ggplot(aes(x= Period, y= NetMigration, shape = Source, color = agegroup, group = agegroup)) +
+  geom_point() + geom_line() +
+  facet_wrap(~ Region, scales = "free", ncol = 2)
+q
+
+

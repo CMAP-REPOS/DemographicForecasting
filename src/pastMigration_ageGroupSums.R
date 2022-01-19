@@ -1,26 +1,30 @@
-# CMAP | Alexis McAdams| 9/20/2021
+# CMAP | Alexis McAdams | 9/20/2021
 #
 # This script imports previous Net Migration data and calculates
 # total net migration sums for different age categories, which are defined in rows 21-26 below.
 # This process directly informs the K-factor calculations in the
-# MigrationProjections.R (or Mary_working.R) script.
+# Projection.R (formerly Mary_working.R) script.
 #
 
-#import Berger data (copied by AM from "Forecast Model_v09-Trans+Edu Employment.xlsx") and Migration.R output
-pastNetMig <- read_excel("Input/NetMigration_Berger_Full_sexandage.xlsx")     #importing Berger data
-load("Output/Base_Migration.Rdata") # named Base_Mig
+# Import Berger's data (copied by AM from Berger's "Forecast Model_v09-Trans+Edu Employment.xlsx" spreadsheet)
+# This file contains 5-year net migration *values* by Region, age and sex from 1991 to 2005 (4 periods of data)
 
-recentNetMig <- Base_Mig %>% select(Region, Age, Sex, SurvMigrants2018) %>%   #importing and reshaping CMAP data
+pastNetMig <- read_excel("Input/NetMigration_Berger_Full_sexandage.xlsx")
+
+# import recent base migration rates (from Migration.R)
+load("Output/Base_Migration.Rdata") # named recent_Base_Mig
+
+recentNetMig <- recent_Base_Mig %>%  #reshaping data, saving data source in Source column
+  select(Region, Age, Sex, SurvMigrants2018) %>%
   mutate(Period = "2014-2018",
          Source = "CMAP") %>%
   rename(NetMigration = SurvMigrants2018)
 
-pastNetMig <- bind_rows(pastNetMig, recentNetMig) %>%
+pastNetMig <- bind_rows(pastNetMig, recentNetMig) %>% # append reshaped recent Net Migration values to pastNetMig table
   mutate(endyear = substr(Period, 6,9)) %>%
-  mutate(agegroup = "TEMP")
+  mutate(agegroup = "TEMP") # placeholder
 
-
-#define age groups and age group names
+# define 4 major age groups
 agegroups <- list( c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years'),
                    c('25 to 29 years', '30 to 34 years', '35 to 39 years'),
                    c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years'),
@@ -28,7 +32,7 @@ agegroups <- list( c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19
 
 names(agegroups) <- c("0 to 24 years", "25 to 39 years", "40 to 69 years", "70 years and older")
 
-#assign the agegroups to the full dataset, then calculate sum totals by age group and sex
+# assign the major age grouping to the pastNetMig dataset, then calculate sum totals by major age group, Region and sex
 i <- 1
 for(item in agegroups){
   pastNetMig <- pastNetMig %>%
@@ -44,26 +48,6 @@ netMigSums <- pastNetMig %>% group_by(Region, Period, Sex, Source, agegroup) %>%
   rename(Age = agegroup) %>%
   ungroup()
 
-#export
-#save(netMigSums, file="Output/pastMigration_ageGroupSums.Rdata")
+# export
+save(netMigSums, file="Output/pastMigration_ageGroupSums.Rdata")
 
-#copy this line for import:
-# load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums
-
-
-
-# ----------- SIDE ITEMS
-
-#side item - plot out the net migration totals for each age group
-library(ggplot2)
-p <- pastNetMig %>% #filter(Region == "CMAP Region") %>%
-  ggplot(aes(x=endyear, y= NetMigration, shape = Source, color = Age, group = Age)) +
-  geom_point() + geom_line() +
-  facet_wrap(Region~Sex, scales = "free", ncol = 2)
-#p
-
-q <- netMigTotals %>%
-  ggplot(aes(x=Period, y= NetMigration, shape = Source, color = agegroup, group = agegroup)) +
-  geom_point() + geom_line() +
-  facet_wrap(Region~Sex, scales = "free", ncol = 2)
-#q

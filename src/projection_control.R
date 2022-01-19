@@ -106,9 +106,9 @@ for(years in series){
 }
 
 
-#import in historical Net Migration data WITH summed migration by major age group
-load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums, derived from pastMigration_ageGroupSums.R
-NetMig <- netMigSums %>% select(-Source)
+#import in historical Net Migration data WITH summed migration by major age group ############## remove this section? not sure what it's for
+#load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums, derived from pastMigration_ageGroupSums.R
+#NetMig <- netMigSums %>% select(-Source)
 
 ######## run the loop ---------------
 

@@ -74,7 +74,7 @@ MORT_DATA2 <- MORT_POP %>%
             Mortality = sum(Mortality),
             .groups = "drop")
 
-#Join population and deaths to abridged life table
+#Join population and deaths to abridged life table    ######## possible to omit, import LT from Mortality instead?
 LT_Abg <- MORT_DATA2 %>%
   left_join(LT_Age, by="Age") %>%
   select(Region, Sex, Age, Mortality, Population, x, Ax) %>%

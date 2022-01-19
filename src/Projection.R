@@ -7,17 +7,10 @@ library(readxl)
 
 # Parameters ---------------------------------------------------------
 
-load("Output/Mort_Proj.Rdata")    #named Mort_Proj
-load("Output/ASFR.Rdata")         #named ASFR_projections
-load("Output/BirthRatios.Rdata")  #named bRatios
-
-#ASFR Data source OVERRIDE
-#if(ASFRoverride == 1){
-#  ASFR_projections <- read_excel("Input/berger_ASFRs.xlsx") %>%
-#    filter(Age != "10 - 14") %>%
-#    filter(Age != "45 - 49")
-#  print("ASFR Override in effect: Using Berger's Log Projection method")
-#}
+load("Output/Mort_Proj.Rdata")    # Mort_Proj (from Mortality.R)
+load("Output/BirthRatios.Rdata")  # F_Groups, bRatios (from Fertility.R)
+load("Output/ASFR.Rdata")         # ASFR_projections (from setup_control.R or Fertility.R)
+load("Output/pastMigration_ageGroupSums.Rdata") # agegroups list (from pastMigration_ageGroupSums.R) - age groups must match what's in this script!
 
 #load in variables from projection_control
 baseyr = as.character(baseyear)    #"2020"
@@ -27,9 +20,14 @@ endyr = as.character(projend)  #"2025"
 cycleyears = projyears # c(2020,2021,2022,2023,2024)
 lastyear = as.character(max(cycleyears))
 
+
+#FIRST: check if this is the first cycle.
+  # If first cycle, import 2020 base pop and 2014-2018 net migration rates
+  # If NOT first cycle, import previous cycle's pop and net migration rates
+
 if(startyr == baseyr){
   print(paste("GENERATING", baseyr, "PROJECTION"))
-  print(paste("USING", tNMfile, "TARGET MIGRATION VALUES"))
+  print(paste("USING", TNMnote, "TARGET MIGRATION VALUES"))
 
   #Load in and reformat population data
   #
@@ -37,18 +35,16 @@ if(startyr == baseyr){
 
   #Import the baseyear population data (2020)
   baseyearpoptable <- POP[[baseyr]] %>%
-    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population)) %>%
-    ungroup()
-  print(baseyearpoptable[1:3,])
+    group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population), .groups = "drop")
 
   #sort population by age group
   baseyearpoptable <- baseyearpoptable %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
 
   #Load in and reformat base year migration rate data
-  load("Output/Base_Migration.Rdata") # named Base_Mig
-  Base_Mig <- Base_Mig %>% select(Region, Age, Sex, NetRates)
+  load("Output/Base_Migration.Rdata") # named recent_Base_Mig, from recentMigration.R
+  Base_Mig <- recent_Base_Mig %>% select(Region, Age, Sex, NetRates)
 
-  start_Base_Mig <- Base_Mig
+  #start_Base_Mig <- Base_Mig - only used at end of projection_control? consider removing
 
 
 }else{
@@ -68,26 +64,14 @@ if(startyr == baseyr){
 
 }
 
-###### other definitions
+# Begin Projection Calculations ---------------------------------------------------------
 
-#used for Births calculation
-F_Groups <- c("15 to 19 years", "20 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years")
-
-#used for k factor calculations:
-group1 <- c('0 to 4 years', '5 to 9 years', '10 to 14 years', '15 to 19 years', '20 to 24 years')
-group2 <- c('25 to 29 years', '30 to 34 years', '35 to 39 years')
-group3 <- c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years')
-group4 <- c('70 to 74 years', '75 to 79 years', '80 to 84 years', '85 years and over')
-
-Age_Groups <- list(group1, group2, group3, group4)
-
-# Step 1: Age-Sex Specific Survival Rates, 2020-2050, Midpoints of 5-year Intervals
+# Step 1: Grab Age-Sex Specific Survival Rate: Midpoint of 5-year Projection Period
 
 Mort_MidPoint <- Mort_Proj %>%
   select(c(1:3) | ends_with(midpointyr))
 
-
-# Step 2: Age Specific Fertility Rate Projections, Midpoints of 5-year Intervals, 2020-2050
+# Step 2: Grab Age Specific Fertility Rate (ASFR): Midpoints of 5-year Projection Period
 
 ASFR_MidPoint <- ASFR_projections %>%
   select(c(1:2) | contains(midpointyr) | num_range("ASFR", cycleyears))
@@ -305,14 +289,15 @@ n <- 1
 NM_by_Age <- tibble()
 temp <- tibble()
 
-while(n <= length(Age_Groups)) {
+while(n <= length(agegroups)) {
 
-  temp <- Projections %>% filter(Age %in% Age_Groups[[n]])
+  temp <- Projections %>% filter(Age %in% agegroups[[n]])
 
-  temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
-                                                          Age %in% Age_Groups[[2]] ~ '25 to 39 years',
-                                                          Age %in% Age_Groups[[3]]~ '40 to 69 years',
-                                                          Age %in% Age_Groups[[4]] ~ '70 years and older'))
+  temp <- temp %>% mutate(Age_Group = case_when(Age %in% agegroups[[1]] ~ names(agegroups[[1]]),
+                                                          Age %in% agegroups[[2]] ~ names(agegroups[[2]]),
+                                                          Age %in% agegroups[[3]]~ names(agegroups[[3]]),
+                                                          Age %in% agegroups[[4]] ~ names(agegroups[[4]]),
+                                                          TRUE ~ "9999" ) )
 
   temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM = sum(NMs_Living))
 

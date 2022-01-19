@@ -1,25 +1,27 @@
-# CMAP | Mary Weber | 12/4/2020
+# CMAP | Mary Weber, Alexis McAdams | 12/4/2020
 
-#install.packages(c("tidyverse", "tidycensus"))
+##### GroupQuarters.R
+
+# This script fetches detailed 2010 Group Quarters populations and calculates ratios of
+# GQ type to Pop for each Age group and Sex by Region (with the exception of Military).
+#
+
 library(tidyverse)
 library(tidycensus)
-#census_api_key("d94fbe16b1b053593223397765874bf147d1ae72", install = TRUE)
-
-load("Output/PopData.Rdata") # POP, imported because we need the 2010 population values
 
 # Set parameters ----------------------------------------------------------
 
-YEAR <- 2010
-COUNTIES <- list(
-  IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
-         7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
-  IN = c(89, 91, 127),                       # Indiana counties
-  WI = c(59, 101, 127)                       # Wisconsin counties
-)
-CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
+load("Output/POP_PEP.Rdata") # POP
+#load("Output/PopData.Rdata") # POP, imported because we need the 2010 population values
+
+# import helpers
+load("Output/importhelpers.Rdata") # COUNTIES and CMAP_GEOIDS, see setup_control.R for details
+
 GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 
-# Compile data ------------------------------------------------------------
+YEAR <- 2010
+
+# Step 1: fetch historical GQ data ------------------------------------------
 
 # Compile list of variables to download
 SF1_VARS <- load_variables(YEAR, "sf1")
@@ -77,6 +79,9 @@ GQlong <- GQ %>% filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Fema
                          TRUE ~ Age)) %>%
   ungroup()
 
+
+# Step 2: calculate GQ Ratios ------------------------------------------
+
 # import the 2010 Census Population (these values are the NON GQ population)
 pop2010 <- POP[["2010"]] %>%
   group_by(Region, Age, Sex) %>%
@@ -110,10 +115,10 @@ GQ_Military <- GQ %>%
   group_by(Region, Sex, Age) %>%
   mutate(Value = sum(Value)) %>%
   select(Value, Sex, Age, Region) %>%
-  #filter(!Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years')) %>% #Decided to keep these age groups in for consistency (Alexis note)
+  #filter(!Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years')) %>% # Decided to keep these age groups in for consistency (Alexis note)
   unique() %>%
   ungroup()
 
-#save(GQ, GQ_Military, GQratios, file="Output/GQData2.Rdata")
+save(GQ, GQ_Military, GQratios, file="Output/GQData2.Rdata")
 
 

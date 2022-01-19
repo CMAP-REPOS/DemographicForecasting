@@ -66,19 +66,17 @@ zeromigrationoverride = 0
 
 
 
-######## set-up total projection start/end variables ---------------
+######## set-up projection start/end variables ---------------
 baseyear <- 2020
 startyear <- 2020
 endyear <- 2050
 
 projnums <- (endyear - startyear) / 5 #number of 5-year projection cycles to complete
 
-series <- seq(from=startyear,
-              to=endyear,
-              by= 5)
+series <- seq(from=startyear, to=endyear, by= 5)
 
-target_NM_Sex_check <- tibble()
-base_year_NM_check <- tibble()
+target_NM_Sex_check <- tibble()  ###################################### temporary!
+base_year_NM_check <- tibble()   ###################################### temporary!
 
 ###### set up import of TNM values
 target_NM <- read_excel(TNMfilename) %>%
@@ -87,35 +85,32 @@ target_NM <- read_excel(TNMfilename) %>%
 TNMnote <- str_split(TNMfilename, "TNM_")[[1]][2] # formerly tNMfile
 
 ######## set up the population projection and migration projection lists
-#create new file
-POPPROJ <- list()
+
+POPPROJ <- list() # total population
 for(years in series){
   POPPROJ[[as.character(years)]] <- tibble()
 }
-NETMIGPROJ <- list()
+NETMIGPROJ <- list() # Net migrants
 for(years in series){
   NETMIGPROJ[[as.character(years)]] <- tibble()
 }
 
-COMPONENTS <- list()
+COMPONENTS <- list() # components of change (births, deaths, migrants)
 for(years in series){
   COMPONENTS[[as.character(years)]] <- tibble()
 }
 
-MIG_DETAIL <- list()
+MIG_DETAIL <- list() # net migrants, detailed data
 for(years in series){
   MIG_DETAIL[[as.character(years)]] <- tibble()
 }
 
 
-#import in Base Net Migration data
-#NetMig <- read_excel("Input/NetMigration_Berger.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
-#NetMig <- read_excel("Input/NetMigration_ExpandedAgeGroups.xlsx") %>% filter(!is.na(Period)) %>% arrange(Period, Region, Sex)
+#import in historical Net Migration data WITH summed migration by major age group
 load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums, derived from pastMigration_ageGroupSums.R
 NetMig <- netMigSums %>% select(-Source)
 
-
-######## run the loop
+######## run the loop ---------------
 
 i <- 1
 while(i <= projnums){
@@ -146,22 +141,22 @@ while(i <= projnums){
 
 
 # TOGGLE *MIGRATION* OVERRIDE (see Projection.R lines 363-375), 1 is ON, 0 is OFF
-override = 1
+# override = 1
 
 # TOGGLE *FERTILITY* OVERRIDE (see Projection.R lines 15-20), 1 is ON, 0 is OFF
 # ASFRoverride = 1
 
 # TOGGLE *ZERO MIGRATION* OVERRIDE (see Projection.R lines 383-388), 1 is ON, 0 is OFF
-#zeromigrationoverride = 0
+# zeromigrationoverride = 0
 
   ##### OVERRIDES #####}
 
-#set up variables that MigrationProjections needs
+#set up variables for Projection.R
 projstart <- series[i]
 projend <- series[i+1]
 projmidpoint  <- (projstart + projend) / 2
-projyears <- seq(from=projstart,
-                 to=projend - 1)
+projyears <- seq(from = projstart,
+                 to = projend - 1)
 
 print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "))
 

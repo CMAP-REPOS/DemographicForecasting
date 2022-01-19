@@ -4,7 +4,7 @@ library(tidyverse)
 library(tidycensus)
 library(readxl)
 
-load("Output/PopData.Rdata")
+load("Output/POP_PEP.Rdata")
 load("Output/GQData2.Rdata")
 
 
@@ -166,7 +166,7 @@ ASFR_projections <- ASFR_projections %>% pivot_wider(names_from = "Year", values
   ungroup()
 
 #export the ASFR projections
-save(ASFR_projections, file="Output/ASFR.Rdata") #this is not used unless line 78 in projection_control.R is switched to 0
+save(ASFR_projections, file="Output/ASFR.Rdata")
 
 ###########------------ calculate sex by births ratios for each region
 

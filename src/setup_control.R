@@ -31,7 +31,9 @@ save(COUNTIES, CMAP_GEOIDS, file="Output/importhelpers.Rdata")
 
 ######### set options
 
-#### set External Illinois Adjustment area override
+#### set External Illinois Adjustment area Base Population override
+    # this option changes the Base Year (2020) population.
+    # this option does NOT recalculate fertility/mortality/migration rates (county or region-wide rates will be applied.)
 # if 1: model will use travel model boundary-adjusted population for LOL (Lee, Ogle, LaSalle) counties
 # if 0: model will use full county populations for the LOL counties, no adjustment will be applied.
 
@@ -43,5 +45,10 @@ EXTIL = 1
 ########## run scripts to prepare set-up for projection
 
 source("src/POP_PEP.R")
+source("src/Age_0_4_PUMS_Breakdown.R")
+source("src/Mortality.R")
+source("src/GroupQuarters.R")
+
+
 
 

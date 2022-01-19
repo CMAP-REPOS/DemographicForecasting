@@ -53,13 +53,10 @@ if(fMethod == 1){
     filter(Age != "10 - 14") %>%
     filter(Age != "45 - 49")
   save(ASFR_projections, file="Output/ASFR.Rdata")
-
 }else if(fMethod == 0){
   source("src/Fertility.R")
-
 }else{
   print("ERROR! Invalid ASFR method chosen, edit fMethod variable and run script again." )
-
 }
 
 

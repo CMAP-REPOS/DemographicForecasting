@@ -118,17 +118,8 @@ for(YEAR in PEP_YEARS) {
 
 POP[["1995"]] <- read_excel("Input/Pop1995.xlsx")
 POP[["2005"]] <- read_excel("Input/Pop2005.xlsx")
-
-
-# Option to import 2020 with External IL Adjusted Area population (see setup_control.R)
-
-if(EXTIL == 1){
-  POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020_ExtILadj.xlsx") %>% # partial LOL counties
-    mutate(GEOID = as.character(GEOID))
-} else {
 POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020.xlsx") %>% # full LOL counties
   mutate(GEOID = as.character(GEOID))
-}
 
 # Finalize ------------------------------------
 

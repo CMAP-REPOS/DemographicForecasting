@@ -93,7 +93,7 @@ projectedBirths <- bind_cols(projectedBirths[1:2], projectedBirths$baseyrpop * p
   summarise(totBirths = sum(totBirths)) %>%
   ungroup()
 
-# Step 3 part 2: Calculate the number of Births (by Sex and Region) that survive the projection period.
+# Step 3 part 2: Calculate the number of Births by Region and by Sex of Child
 projectedBirths_bySex <- projectedBirths %>%
   left_join(bRatios, by="Region") %>%
   mutate(fBirths = totBirths*Female,
@@ -186,8 +186,8 @@ BaseYears_NM <- NM_By_Sex %>% select(-Age) %>% group_by(Region, Sex, Period) %>%
   left_join(target_NMlocal, by = ('Region')) %>%
   mutate(target_next_cycle = Prop_NM * NetMigration)
 
-temp5 <- BaseYears_NM
-base_year_NM_check <- bind_rows(base_year_NM_check, temp5)
+#temp5 <- BaseYears_NM
+base_year_NM_check <- bind_rows(base_year_NM_check, BaseYears_NM) ############### temporareeeeee
 
 #Sum NM by Sex (Excel rows 23-27)
 Sum_NM_Sex <- NM_By_Sex %>%
@@ -203,12 +203,12 @@ target_NM_Sex <- full_join(NM_Proportions, BaseYears_NM, by=c('Region', 'Sex')) 
   mutate(TargetNM = case_when(SexProp < 0 & NetMigration > 0 ~ abs(SexProp*target_next_cycle),
                               TRUE ~ SexProp*target_next_cycle))
 
-temp4 <- target_NM_Sex
-target_NM_Sex_check <- bind_rows(target_NM_Sex_check, temp4)
+# temp4 <- target_NM_Sex
+target_NM_Sex_check <- bind_rows(target_NM_Sex_check, target_NM_Sex)  ############### temporareeeee
 
 # Net Migrants from prior 5 year period (Excel rows 39-42). For 1st projection period, data comes from data crunched
 # from 2014-2018. Subsequent years come from previous projection period. Totals are summed
-# later in this script (lines XXX - XXXish)
+# later in this script
 if(startyr == baseyr){
   NM_Prior_Period <- NM_By_Sex %>% filter(Period %in% NMperiods[3]) #pulled from pastMigration_ageGroupSums.R
 
@@ -225,16 +225,17 @@ NM_Change_Prior <- full_join(NM_Prior_Period, target_NM_Sex, by=c("Region", "Sex
   rename(NetMigration = NetMigration.x) %>%
   rowwise() %>%
   mutate(NM_Change = TargetNM - NetMigration) %>%
- select(Region, Sex, Age, NM_Change)
+  select(Region, Sex, Age, NM_Change)
 
 
 #Expected Populations of Current Period (Excel 51-54)
 #Note: These numbers have changed since initial Excel model
 sum_expectedPop <- expectedpop %>%
-  mutate(Age_Group = case_when(Age %in% group1 ~ '0 to 24 years',
-                               Age %in% group2 ~ '25 to 39 years',
-                               Age %in% group3 ~ '40 to 69 years',
-                               Age %in% group4 ~ '70 years and older')) %>%
+  mutate(Age_Group = case_when(Age %in% agegroups[[1]] ~ names(agegroups[1]),
+                               Age %in% agegroups[[2]] ~ names(agegroups[2]),
+                               Age %in% agegroups[[3]] ~ names(agegroups[3]),
+                               Age %in% agegroups[[4]] ~ names(agegroups[4]),
+                               TRUE ~ "9999")) %>%
   select(-Age, -baseyrpop) %>%
   rename(Age = Age_Group) %>%
   group_by(Region, Sex, Age) %>% mutate(ProjectedPop = sum(na.omit(ProjectedPop))) %>% distinct()
@@ -260,6 +261,7 @@ Migration <- Base_Mig %>%
          Female_40to69 = '40 to 69 years_Female',
          Female_70Plus = '70 years and older_Female')
 
+################ THIS PART NEEDS PROOFING vvv (-Alexis)
 Migration <- Migration %>% group_by(Region) %>%
   mutate(Male_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + Male_0to24 + Female_0to24)/2,
                               Age %in% c('15 to 19 years', '20 to 24 years') ~ NetRates_Male + Male_0to24,
@@ -290,19 +292,14 @@ NM_by_Age <- tibble()
 temp <- tibble()
 
 while(n <= length(agegroups)) {
-
   temp <- Projections %>% filter(Age %in% agegroups[[n]])
-
-  temp <- temp %>% mutate(Age_Group = case_when(Age %in% agegroups[[1]] ~ names(agegroups[[1]]),
-                                                          Age %in% agegroups[[2]] ~ names(agegroups[[2]]),
-                                                          Age %in% agegroups[[3]]~ names(agegroups[[3]]),
-                                                          Age %in% agegroups[[4]] ~ names(agegroups[[4]]),
+  temp <- temp %>% mutate(Age_Group = case_when(Age %in% agegroups[[1]] ~ names(agegroups[1]),
+                                                          Age %in% agegroups[[2]] ~ names(agegroups[2]),
+                                                          Age %in% agegroups[[3]]~ names(agegroups[3]),
+                                                          Age %in% agegroups[[4]] ~ names(agegroups[4]),
                                                           TRUE ~ "9999" ) )
-
-  temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM = sum(NMs_Living))
-
+  temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM = sum(NMs_Living), .groups = "drop")
   NM_by_Age <- rbind(temp, NM_by_Age)
-
 
   n = n + 1
 }
@@ -312,17 +309,14 @@ n <- 1
 Abs_NM_by_Age <- tibble()
 temp <- tibble()
 
-while(n <= length(Age_Groups)) {
-
-  temp <- Projections %>% filter(Age %in% Age_Groups[[n]])
-
-  temp <- temp %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
-                                                Age %in% Age_Groups[[2]] ~ '25 to 39 years',
-                                                Age %in% Age_Groups[[3]]~ '40 to 69 years',
-                                                Age %in% Age_Groups[[4]] ~ '70 years and older'))
-
-  temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs))
-
+while(n <= length(agegroups)) {
+  temp <- Projections %>% filter(Age %in% agegroups[[n]])
+  temp <- temp %>% mutate(Age_Group = case_when(Age %in% agegroups[[1]] ~ names(agegroups[1]),
+                                                Age %in% agegroups[[2]] ~ names(agegroups[2]),
+                                                Age %in% agegroups[[3]]~ names(agegroups[3]),
+                                                Age %in% agegroups[[4]] ~ names(agegroups[4]),
+                                                TRUE ~ "9999" ))
+  temp <- temp %>% select(-Age) %>% group_by(Region, Sex, Age_Group) %>% summarise(sum_NM_Abs = sum(NMs_Living_Abs), .groups = "drop")
   Abs_NM_by_Age <- rbind(temp, Abs_NM_by_Age)
 
   n = n + 1
@@ -333,18 +327,15 @@ remove(n)
 
 NM <- full_join(NM_by_Age, Abs_NM_by_Age, by =c('Region', "Age_Group", "Sex"))
 
-
 # pull in target NM by sex, age group
 target_NM_Sex <- target_NM_Sex %>% select(Region, Sex, Age, TargetNM) %>% rename(Age_Group = Age) %>%
   full_join(NM, by=c('Region', 'Age_Group', 'Sex'))
 
 
-
-
-Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% Age_Groups[[1]] ~ '0 to 24 years',
-                                              Age %in% Age_Groups[[2]] ~ '25 to 39 years',
-                                              Age %in% Age_Groups[[3]]~ '40 to 69 years',
-                                              Age %in% Age_Groups[[4]] ~ '70 years and older'))
+Projections <- Projections %>% mutate(Age_Group = case_when(Age %in% agegroups[[1]] ~ names(agegroups[1]),
+                                              Age %in% agegroups[[2]] ~ names(agegroups[2]),
+                                              Age %in% agegroups[[3]]~ names(agegroups[3]),
+                                              Age %in% agegroups[[4]] ~ names(agegroups[4])))
 
 
 Projections <- Projections %>% left_join(target_NM_Sex, by=c('Region', 'Sex', 'Age_Group'))
@@ -387,6 +378,9 @@ if(zeromigrationoverride > 0){
   Projections <- Projections %>%
     ungroup() %>%
     mutate(projNetMigrants = 0)
+  print("ZERO migration forcing applied!")
+} else {
+  print("zero migration override NOT applied.")
 }
 
 # apply the number of net migrants to the total population (PROJECTION COMPLETE!)

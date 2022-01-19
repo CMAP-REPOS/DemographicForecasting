@@ -110,20 +110,25 @@ projectedBirths <- bind_cols(projectedBirths[1:2], projectedBirths$baseyrpop * p
   ungroup()
 
 # Step 3 part 2: Calculate the number of Births (by Sex and Region) that survive the projection period.
-# Survival rates for 0-1 and 1-4 are applied based on David ER's cohort method
 projectedBirths_bySex <- projectedBirths %>%
   left_join(bRatios, by="Region") %>%
   mutate(fBirths = totBirths*Female,
          mBirths = totBirths*Male, .keep = "unused")
 
+# Step 3 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
+
 #pull and rearrange 0-1 and 1-4 Survival Rates by sex and Region from Mort_MidPoint
+# Survival rates for 0-1 and 1-4 are applied based on David ER's cohort method
 Mort_0to4 <- Mort_MidPoint %>%
   filter(Age == "0 to 1 years" | Age == "1 to 4 years") %>%
   pivot_wider(names_from = c("Sex","Age"), values_from = starts_with("Mort"))
 names(Mort_0to4) <- make.names(names(Mort_0to4))
 
-# Step 3 part 3: calculate survivors by sex and year, then sum for total number of survivors by Region
 endyearBirths <- projectedBirths_bySex$Year %>% str_subset(lastyear)
+
+# Calculate the expected number of infants to survive to the next projection cycle
+# For those expected to be born in the last year of the projection cycle (aka Babies) they are only exposed to the 0-1 survival rates
+# Infants born in the first four years of the projection cycle are first exposed to the 0-1 survival rates and then the 1-4 rates
 
 projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   left_join(Mort_0to4, by="Region") %>%
@@ -135,6 +140,10 @@ projectedBirths_0to4surviving <- projectedBirths_bySex %>%
   summarize(Female = round(sum(fSurvivors),0), Male = round(sum(mSurvivors),0)) %>%
   pivot_longer(cols=c("Female","Male"), names_to = "Sex", values_to = "ProjectedPop") %>% mutate(Age = "0 to 4 years")
 
+# Calculate expected number of deaths for age 0-4 during the cycle
+# Subtract the expected 0-4 population at the end of the cycle from the total births expected during the cycle to estimate
+# how many infants born in the current 5 year period will not live to see the first year of the next cycle
+
 earlyDeaths <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "Sex", values_to = "Births") %>%
   group_by(Region, Sex) %>%
   summarize(totbirths = sum(Births), .groups = 'drop') %>%
@@ -144,7 +153,7 @@ earlyDeaths <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "S
   mutate(earlyDeaths = round(totbirths - ProjectedPop ,0)) %>%
   select(Region, Sex, Age, earlyDeaths)
 
-# Step 4: apply Survival Rates and calculate Expected 2025 population
+# Step 4: Apply Survival Rates and calculate Expected population for the end year of the current cycle
 
 expectedpop <- baseyearpoptable %>%
   arrange(Region, desc(Sex)) %>%
@@ -154,7 +163,7 @@ expectedpop <- baseyearpoptable %>%
 names(expectedpop) <- c("Age", "Region", "Sex", "baseyrpop", "Mort")
 
 expectedpop <- expectedpop %>%
-  mutate(ProjectedPop = case_when(!Age %in% c("0 to 4 years", "85 years and over") ~ (lag(baseyrpop) * Mort), #multiply prior 2020 age group population by survival rate for current age group
+  mutate(ProjectedPop = case_when(!Age %in% c("0 to 4 years", "85 years and over") ~ (lag(baseyrpop) * Mort), #to calculate projected pop: multiply prior age group population by survival rate for current age group
                                   Age == '85 years and over' ~ (baseyrpop + lag(baseyrpop))* Mort,
                                   TRUE ~ NA_real_) ) %>%
   select(-Mort) %>%

@@ -5,7 +5,7 @@ library(tidycensus)
 library(readxl)
 
 load("Output/PopData.Rdata")
-load("Output/GQData.Rdata")
+load("Output/GQData2.Rdata")
 
 
 # Set parameters ----------------------------------------------------------

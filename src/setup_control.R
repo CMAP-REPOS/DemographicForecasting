@@ -62,17 +62,16 @@ source("src/Age_0_4_PUMS_Breakdown.R")
 source("src/Mortality.R")
 source("src/GroupQuarters.R")
 
-if(fMethod = 1){
+if(fMethod == 1){
   ASFR_projections <- read_excel("Input/berger_ASFRs.xlsx") %>%
     filter(Age != "10 - 14") %>%
     filter(Age != "45 - 49")
   save(ASFR_projections, file="Output/ASFR.Rdata")
 
-}else if(fMethod = 0){
+}else if(fMethod == 0){
   source("src/Fertility.R")
 
 }else{
-
   print("ERROR! Invalid ASFR method chosen, edit fMethod variable and run script again." )
 
 }
@@ -82,5 +81,5 @@ source("src/recentMigration.R") # formerly "Migration.R"
 source("src/pastMigration_ageGroupSums.R")
 
 
-
+print("Set-up Script Complete!")
 

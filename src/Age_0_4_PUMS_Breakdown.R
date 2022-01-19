@@ -1,5 +1,9 @@
 # CMAP | Noel Peterson | 7/21
 
+# This script has two parts: first, it spatially relates 2010 PUMAs to each of the four modeling regions.
+# Second, it pulls 2019 ACS data (by PUMA) to determine an estimate of 0-1 and 1-4 year-old individuals
+# by Region. The result is a ratio of 0-1 year-olds to 0-4 year-olds that is used in Mortality.R
+
 #install.packages("devtools")
 
 library(devtools)
@@ -8,9 +12,10 @@ library(tidycensus)
 library(tigris)
 library(sf)
 
-install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
+#install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
 library(cmapgeo)
 
+####### Part 1 : spatially relate 21 counties to PUMAs
 
 # Get 21-county boundaries
 cmap_21co_sf <- filter(county_sf, travel_model)
@@ -46,11 +51,12 @@ puma_21co_sf <- pumas(state = "17") %>%
   ))
 
 # Plot PUMAs over counties to verify correctness of coverage and region assignment
-ggplot() +
+p <- ggplot() +
   geom_sf(data=cmap_21co_sf, lwd=2, col="#999999") +
   geom_sf(data=puma_21co_sf, mapping=aes(fill=Region), col="#000000", alpha=0.2) +
   #geom_sf_text(data=puma_21co_sf, mapping=aes(label=GEOID10), col="#990000") +
   theme_void()
+#p
 
 # Save data frame of PUMA region assignments to join to PUMS data
 puma_region <- puma_21co_sf %>%
@@ -58,6 +64,8 @@ puma_region <- puma_21co_sf %>%
   select(GEOID10, STATEFP10, PUMACE10, Region)
 
 #save(puma_region, file="Output/PumaRegions.Rdata")
+
+############ Part 2: pull 2019 ACS population data by PUMA, calculate proportion of 0-4 age group that is 0-1 yrs old
 
 # Get PUMS person-level age data
 pums_il <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "17", year = 2019, survey = "acs5",
@@ -83,5 +91,5 @@ AGE_0_4_FREQ <- pums_21co %>%
   mutate(Age_0_4_Share = Population / sum(Population)) %>%
   ungroup()
 
-# Save frequency table to output folder
-#save(AGE_0_4_FREQ, file="Output/Age_0_4_Freq.Rdata")
+# Save table to output folder
+save(AGE_0_4_FREQ, file="Output/Age_0_4_Freq.Rdata")

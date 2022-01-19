@@ -13,7 +13,7 @@
 #library(readxl)
 #library(ggplot2)
 
-######## create and save shared resources
+######## create and save shared resources -----------------
 
 #resources for importing data
 COUNTIES <- list(
@@ -29,7 +29,7 @@ save(COUNTIES, CMAP_GEOIDS, file="Output/importhelpers.Rdata")
 
 
 
-######### set options
+######### set options -----------------
 
 #### set External Illinois Adjustment area Base Population override
     # this option changes the Base Year (2020) population.
@@ -39,15 +39,33 @@ save(COUNTIES, CMAP_GEOIDS, file="Output/importhelpers.Rdata")
 
 EXTIL = 1
 
+#### fertility method choice
+    # this option changes the method of the fertility calculation.
+# if 1: model will use Approach A: log projection of 1990-2010 ASFRs, summed by Region
+# if 0: model will use Approach B: calculate recent (2014-2018) ASFRs, summed by Region,
+#       and project using trends outlined by Census Bureau's National Projections (2014)
+
+fMethod = 1
 
 
-
-########## run scripts to prepare set-up for projection
+########## run scripts to prepare set-up for projection -----------------
 
 source("src/POP_PEP.R")
 source("src/Age_0_4_PUMS_Breakdown.R")
 source("src/Mortality.R")
 source("src/GroupQuarters.R")
+
+if(fMethod = 1){
+
+
+
+}else if(fMethod = 0){
+
+  source("src/Fertility.R")
+
+}else{
+
+}
 
 
 

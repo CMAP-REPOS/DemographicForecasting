@@ -106,9 +106,9 @@ for(years in series){
 }
 
 
-#import in historical Net Migration data WITH summed migration by major age group ############## remove this section? not sure what it's for
-#load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums, derived from pastMigration_ageGroupSums.R
-#NetMig <- netMigSums %>% select(-Source)
+#import in historical Net Migration data WITH summed migration by major age group # used in Projection.R, c. line 167
+load("Output/pastMigration_ageGroupSums.Rdata") #netMigSums, derived from pastMigration_ageGroupSums.R
+NetMig <- netMigSums %>% select(-Source)
 
 ######## run the loop ---------------
 
@@ -123,6 +123,7 @@ while(i <= projnums){
       mutate(GEOID = as.character(GEOID))
   } else if (EXTIL == 0){
     # no modification to POP file.
+    print("ExtIL Area Adjustment override NOT implemented.")
   }else {
     print("ERROR! Improper EXTIL value supplied. Modify and run again.")
   }
@@ -130,6 +131,7 @@ while(i <= projnums){
   #c19 Adjustment
   if(c19deaths == 0){
     # no modificaiton to POP file.
+    print("c19 override NOT implemented.")
   } else if(c19deaths == 1){
     # placeholder!
   } else if(c19deaths == 2){

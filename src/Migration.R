@@ -1,22 +1,25 @@
 # CMAP | Alexis McAdams, Mary Weber | 7/12/2021
 
+# This script calculates estimated Net Migration rates by sex, age and region
+# for the most recent period of data we have (2014-2018).
+
+
 library(dplyr)
 library(tidyverse)
 library(tidycensus)
 library(readxl)
 
-source("src/Mortality.R")
 
 # Parameters ---------------------------------------------------------
 
-load("Output/PopData.Rdata") #POP
+load("Output/POP_PEP.Rdata") #POP
 load("Output/ASFR.Rdata") #ASFR_projections
-load("Output/LifeTables.Rdata") #LifeTable
+load("Output/Mort_Proj.Rdata") #Deaths, MORT_POP
+#load("Output/LifeTables.Rdata") #LifeTable
 
 MIG_YEARS <- c(2013:2014, 2018:2019)
 
-# Population by 5-Year Age Group, Sex and Region; 2013-14 and 2018-19 Averaged  ---------------------------------------------------------
-
+# Calculate population by 5-Year Age Group, Sex and Region; 2013-14 and 2018-19 Averaged  -----------------
 
 MIG_POP <- tibble()
 
@@ -29,23 +32,29 @@ MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>% group_by(Region, Year, Age, Se
                               mutate(Year2 = case_when(Year %in% 2013:2014  ~ 2014,
                                                        Year %in% 2018:2019 ~ 2018)) %>% select(-Year)
 
-MIG_POP <- MIG_POP %>% group_by(Age, Sex, Region, Year2) %>% mutate(Pop_Avg = case_when(Year2 == 2014 ~ round(mean(Population),0),
-                                                                                       Year2 == 2018 ~ round(mean(Population),0))) %>%
-                                ungroup() %>% select(Region, Age, Sex, Year2, Pop_Avg) %>% distinct(Age, Sex, Region, Year2, .keep_all = TRUE) %>%
-                                rename(Year = Year2) %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>% select(-x)
+MIG_POP <- MIG_POP %>%
+  group_by(Age, Sex, Region, Year2) %>%
+  mutate(Pop_Avg = case_when(Year2 == 2014 ~ round(mean(Population),0),
+                             Year2 == 2018 ~ round(mean(Population),0))) %>%
+  ungroup() %>%
+  select(Region, Age, Sex, Year2, Pop_Avg) %>%
+  distinct(Age, Sex, Region, Year2, .keep_all = TRUE) %>%
+  rename(Year = Year2) %>%
+  mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  arrange(x) %>%
+  select(-x)
 
+# Import table of Births by Region 2014-2018 ---------------------------------------------------------
 
-# Births by Region 2014-2018 ---------------------------------------------------------
-
-
-Births <- read_excel("Input/Births_CountyGender.xlsx") %>% filter(Year %in% 2014:2018) %>% select(-County, -State, -Year)
-
-Births <- Births %>% group_by(Region, Sex) %>% summarise(Births = sum(Births)) %>%
+# Import births by county, year, and sex
+Births <- read_excel("Input/Births_CountyGender.xlsx") %>%
+  filter(Year %in% 2014:2018) %>%
+  select(-County, -State, -Year) %>%
+  group_by(Region, Sex) %>%
+  summarise(Births = sum(Births)) %>%
           add_column(Age = '0 to 4 years')
 
-
 # Abridged Life Tables (do not separate 0-4 age group) ---------------------------------------------------------
-
 
 Deaths_Abg <- Deaths %>% mutate(Age =  case_when(Age %in% c('0 to 1 years', '1 to 4 years') ~ '0 to 4 years',
                                                   TRUE ~ Age)) %>%
@@ -57,7 +66,6 @@ LT_Age <- tibble(Age = unique(Deaths_Abg$Age)) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>%
   add_column(Ax = c(0.34,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
-
 
 # Join pop to abridged deaths data (just combines 0-1 and 1-4)
 MORT_DATA2 <- MORT_POP %>%
@@ -106,18 +114,23 @@ Base_Mig <- Base_Mig %>% left_join(MIG_POP, by=c('Region', 'Age', 'Sex', 'Year')
                                                    TRUE ~ Births)) %>% select(-Pop_Avg) %>% rename(Pop2014 = Births)
 
 # Pull in Survival Rates and calculate Expected Population for 2018
-Base_Mig <- Base_Mig %>% left_join(LT_Abg, by =c('Region', 'Sex', 'Age')) %>% select(Region, Age, Sex, Year, Pop2014, Sx) %>%
-                                  rename(SurvivalRate = Sx) %>% mutate(ExpectedPop2018 = Pop2014*SurvivalRate) %>% select(-Year)
+Base_Mig <- Base_Mig %>% left_join(LT_Abg, by =c('Region', 'Sex', 'Age')) %>%
+  select(Region, Age, Sex, Year, Pop2014, Sx) %>%
+  rename(SurvivalRate = Sx) %>%
+  mutate(ExpectedPop2018 = Pop2014 * SurvivalRate) %>%
+  select(-Year)
 
 # Pull in 2018 population counts
 Base_Mig <- MIG_POP %>% filter(Year == '2018') %>%
-  left_join(Base_Mig, by=c("Age", "Region", "Sex")) %>% select(Region, Age, Sex, Pop2014, SurvivalRate, ExpectedPop2018, Pop_Avg) %>% rename(PopActuals2018 = Pop_Avg)
-
+  left_join(Base_Mig, by=c("Age", "Region", "Sex")) %>%
+  select(Region, Age, Sex, Pop2014, SurvivalRate, ExpectedPop2018, Pop_Avg) %>%
+  rename(PopActuals2018 = Pop_Avg)
 
 # Calculate Surviving Migrants for 2018 & Net Migration rates, 2014-2018
-Base_Mig <- Base_Mig %>% mutate(SurvMigrants2018 = (PopActuals2018 - ExpectedPop2018), NetRates = SurvMigrants2018/ExpectedPop2018)
+recent_Base_Mig <- Base_Mig %>% mutate(SurvMigrants2018 = (PopActuals2018 - ExpectedPop2018), NetRates = SurvMigrants2018/ExpectedPop2018)
 
 
-#save(Base_Mig, file="Output/Base_Migration.Rdata")
+save(recent_Base_Mig, file="Output/Base_Migration.Rdata")
 
 #write.csv(Base_Mig, "/Users/mweber/Desktop/BaseMigRates.csv")
+#write.csv(Base_Mig, "C:/Users/amcadams/Documents/R/testing/basemig.csv")

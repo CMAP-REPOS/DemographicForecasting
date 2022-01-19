@@ -204,5 +204,5 @@ rm(btemp2)
 rm(bdata)
 rm(bRatiostemp)
 
-save(bRatios, file="Output/BirthRatios.Rdata")
+save(F_Groups, bRatios, file="Output/BirthRatios.Rdata")
 

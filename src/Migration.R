@@ -15,7 +15,6 @@ library(readxl)
 load("Output/POP_PEP.Rdata") #POP
 load("Output/ASFR.Rdata") #ASFR_projections
 load("Output/Mort_Proj.Rdata") #Deaths, MORT_POP
-#load("Output/LifeTables.Rdata") #LifeTable
 
 MIG_YEARS <- c(2013:2014, 2018:2019)
 

@@ -12,12 +12,12 @@ load("Output/ASFR.Rdata")         #named ASFR_projections
 load("Output/BirthRatios.Rdata")  #named bRatios
 
 #ASFR Data source OVERRIDE
-if(ASFRoverride == 1){
-  ASFR_projections <- bergerpop <- read_excel("Input/berger_ASFRs.xlsx") %>%
-    filter(Age != "10 - 14") %>%
-    filter(Age != "45 - 49")
-  print("ASFR Override in effect: Using Berger's Log Projection method")
-}
+#if(ASFRoverride == 1){
+#  ASFR_projections <- read_excel("Input/berger_ASFRs.xlsx") %>%
+#    filter(Age != "10 - 14") %>%
+#    filter(Age != "45 - 49")
+#  print("ASFR Override in effect: Using Berger's Log Projection method")
+#}
 
 #load in variables from projection_control
 baseyr = as.character(baseyear)    #"2020"

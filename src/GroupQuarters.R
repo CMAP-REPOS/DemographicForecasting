@@ -12,7 +12,6 @@ library(tidycensus)
 # Set parameters ----------------------------------------------------------
 
 load("Output/POP_PEP.Rdata") # POP
-#load("Output/PopData.Rdata") # POP, imported because we need the 2010 population values
 
 # import helpers
 load("Output/importhelpers.Rdata") # COUNTIES and CMAP_GEOIDS, see setup_control.R for details

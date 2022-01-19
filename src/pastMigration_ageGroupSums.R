@@ -48,5 +48,5 @@ netMigSums <- pastNetMig %>% group_by(Region, Period, Sex, Source, agegroup) %>%
   ungroup()
 
 # export
-save(netMigSums, file="Output/pastMigration_ageGroupSums.Rdata")
+save(agegroups, netMigSums, file="Output/pastMigration_ageGroupSums.Rdata")
 

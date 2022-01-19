@@ -170,7 +170,7 @@ save(ASFR_projections, file="Output/ASFR.Rdata") #this is not used unless line 7
 
 ###########------------ calculate sex by births ratios for each region
 
-#Import births by sex data (2014-2018)
+#Import county-level births by sex data (2014-2018)
 bdata <- read_excel("Input/Births_CountyGender.xlsx") %>% filter(Year %in% 2014:2018)
 
 #calculate totals by region, year and sex

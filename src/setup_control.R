@@ -65,5 +65,14 @@ source("src/recentMigration.R") # formerly "Migration.R"
 source("src/pastMigration_ageGroupSums.R")
 
 
+# set up recordkeeping list (holds settings and model run options)
+
+setup_options <- c('fMethod' = fMethod) # add additional named items when other options are implemented/exercised.
+
+SETTINGS <- list()
+SETTINGS[[1]] <- setup_options
+save(SETTINGS, "Output/recordkeeping.Rdata")
+
+
 print("Set-up Script Complete!")
 

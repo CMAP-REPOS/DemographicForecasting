@@ -44,12 +44,12 @@ if(startyr == baseyr){
   load("Output/Base_Migration.Rdata") # named recent_Base_Mig, from recentMigration.R
   Base_Mig <- recent_Base_Mig %>% select(Region, Age, Sex, NetRates)
 
-  #start_Base_Mig <- Base_Mig - only used at end of projection_control? consider removing
+  start_Base_Mig <- Base_Mig #- only used at end of projection_control? consider removing
 
 
 }else{
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))
-  print(paste("USING", tNMfile, "TARGET MIGRATION VALUES"))
+  print(paste("USING", TNMnote, "TARGET MIGRATION VALUES"))
 
   #Load in population data
 

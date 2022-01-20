@@ -140,19 +140,6 @@ while(i <= projnums){
     print("ERROR! Improper c19deaths value supplied. Modify and run again.")
   }
 
-
-
-# TOGGLE *MIGRATION* OVERRIDE (see Projection.R lines 363-375), 1 is ON, 0 is OFF
-# override = 1
-
-# TOGGLE *FERTILITY* OVERRIDE (see Projection.R lines 15-20), 1 is ON, 0 is OFF
-# ASFRoverride = 1
-
-# TOGGLE *ZERO MIGRATION* OVERRIDE (see Projection.R lines 383-388), 1 is ON, 0 is OFF
-# zeromigrationoverride = 0
-
-  ##### OVERRIDES #####}
-
 #set up variables for Projection.R
 projstart <- series[i]
 projend <- series[i+1]

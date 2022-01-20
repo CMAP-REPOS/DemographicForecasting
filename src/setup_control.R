@@ -70,8 +70,8 @@ source("src/pastMigration_ageGroupSums.R")
 setup_options <- c('fMethod' = fMethod) # add additional named items when other options are implemented/exercised.
 
 SETTINGS <- list()
-SETTINGS[[1]] <- setup_options
-save(SETTINGS, "Output/recordkeeping.Rdata")
+SETTINGS <- list("Setup Options" = setup_options, "Projection Options" = NULL, "Export Options" = NULL)
+save(SETTINGS, file = "Output/recordkeeping.Rdata")
 
 
 print("Set-up Script Complete!")

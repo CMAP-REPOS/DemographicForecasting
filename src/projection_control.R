@@ -216,6 +216,22 @@ Mig_Proj <- export %>% unique() %>% # we should think about renaming this variab
   mutate(TNMtype = TNMnote) #add column that documents WHICH SET of target net migrant values were used for this projection
 
 save(Mig_Proj, file="Output/Migration_Projections.Rdata")
+
+
+
+#Recordkeeping list ("SETTINGS")
+projection_options <- c('External IL Area Adjustment to Base Pop' = EXTIL,
+                        'COVID19 Deaths Adjustment to Base Pop' = c19deaths,
+                        'Total Net Migration Target Values' = TNMfilename,
+                        'Coarse Migration Characteristics Override' = override,
+                        'Zero Migration Scenario Override' = zeromigrationoverride
+                        )
+load("Output/recordkeeping.Rdata") # SETTINGS
+SETTINGS[[2]] <- projection_options
+save(SETTINGS, file = "Output/recordkeeping.Rdata")
+
+
+
 #write.csv(Mig_Proj, "/Users/mweber/Desktop/Mig_Proj.csv")
 #write.csv(target_NM_Sex_check, "/Users/mweber/Desktop/target_NM_Sex_check.csv")
 #write.csv(base_year_NM_check, "/Users/mweber/Desktop/base_year_NM_check.csv")

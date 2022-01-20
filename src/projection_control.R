@@ -67,6 +67,7 @@ zeromigrationoverride = 0
 
 
 ######## set-up projection start/end variables ---------------
+
 baseyear <- 2020
 startyear <- 2020
 endyear <- 2050
@@ -90,6 +91,7 @@ POPPROJ <- list() # total population
 for(years in series){
   POPPROJ[[as.character(years)]] <- tibble()
 }
+
 NETMIGPROJ <- list() # Net migrants
 for(years in series){
   NETMIGPROJ[[as.character(years)]] <- tibble()
@@ -158,6 +160,9 @@ POPPROJ[[as.character(projend)]] <- Projections
 
 #save the Net Migration rates
 NETMIGPROJ[[as.character(projend)]] <- Migration
+#belatedly pop in the starting migration rates (see Projection.R 1st proj period loop, ~ line 47)
+start_Base_Mig <- start_Base_Mig %>% select(Region, Age, Sex, NetRates) %>% rename(NMRs = NetRates)
+NETMIGPROJ[[1]] <- start_Base_Mig
 
 #save the Components of Change
 COMPONENTS[[as.character(projend)]] <- Components
@@ -175,48 +180,7 @@ MIG_DETAIL[[as.character(projend)]] <- detailedMigs
 save(POPPROJ, file="Output/PopProj.Rdata")
 save(NETMIGPROJ, file="Output/NMProj.Rdata")
 save(COMPONENTS, file="Output/ComponentsOfChange.Rdata")
-
-
-#export projections
-export <- tibble()
-i=1
-for(item in POPPROJ){
-  print(item)
-  temp <- item
-  temp$year <- names(POPPROJ)[i]
-  export <- bind_rows(export, temp)
-  i <- i + 1
-}
-
-#load("Output/Base_Migration.Rdata") # named Base_Mig
-start_Base_Mig <- start_Base_Mig %>% select(Region, Age, Sex, NetRates) %>% rename(NMRs = NetRates)
-NETMIGPROJ[[1]] <- start_Base_Mig
-
-projectedNetMigrationrates <- tibble()
-i=1
-for(item in NETMIGPROJ){
-  print(item)
-  temp <- item
-  temp$year <- names(NETMIGPROJ)[i]
-  projectedNetMigrationrates <- bind_rows(projectedNetMigrationrates, temp)
-  i <- i + 1
-}
-
-
-components_all <- tibble()
-i=1
-for(item in COMPONENTS){
-  temp <- item
-  temp$year <- names(COMPONENTS)[i]
-  components_all <- bind_rows(components_all, temp)
-  i <- i + 1
-}
-
-Mig_Proj <- export %>% unique() %>% # we should think about renaming this variable - it's not really a migration projection, it's a population projection with migration included
-  mutate(TNMtype = TNMnote) #add column that documents WHICH SET of target net migrant values were used for this projection
-
-save(Mig_Proj, file="Output/Migration_Projections.Rdata")
-
+save(MIG_DETAIL, file = "Output/MigTesting.Rdata")
 
 
 #Recordkeeping list ("SETTINGS")
@@ -225,10 +189,17 @@ projection_options <- c('External IL Area Adjustment to Base Pop' = EXTIL,
                         'Total Net Migration Target Values' = TNMfilename,
                         'Coarse Migration Characteristics Override' = override,
                         'Zero Migration Scenario Override' = zeromigrationoverride
-                        )
+)
 load("Output/recordkeeping.Rdata") # SETTINGS
 SETTINGS[[2]] <- projection_options
 save(SETTINGS, file = "Output/recordkeeping.Rdata")
+
+
+
+
+
+
+
 
 
 

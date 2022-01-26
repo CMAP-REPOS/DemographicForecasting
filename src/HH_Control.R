@@ -11,25 +11,34 @@ library(tidyverse)
 library(tidycensus)
 library(readxl)
 
-# run required scripts
-source("src/PUMS_Headship_Rates.R")
+# Headship source choice
 
-source("src/Adjusted_Headship_Rates.R")
-
-
-
+if(HeadshipSource == 1){
+    Headship <- read.csv("Input/Headships2010.csv") %>% select(Age, Region, Ratio_Adj) # Headship
+} else if(HeadshipSource == 0){
+    source("src/PUMS_Headship_Rates.R") # HEADSHIP_RATES
+    source("src/Adjusted_Headship_Rates.R") # Headship
+} else {
+    print("ERROR! Invalid Headship calculation method chosen, edit HeadshipSource variable and run script again." )
+}
 
 load("Output/GQData2.Rdata") # GQratios, GQ_Military
-load("Output/Head_of_HH.Rdata") # Headship
 load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/POP_PEP.Rdata") #POP
 
-#adjustment to POP_PEP (external IL boundary modification)
-POP[["2010"]] <- read.csv("Input/adjustedCensus2010_ExtIL.csv")
-POP[["2015"]] <- read.csv("Input/adjustedPEP2015_ExtIL.csv")
+# External IL Adjustment option
+if(EXTIL == 1){
+  POP[["2010"]] <- read.csv("Input/adjustedCensus2010_ExtIL.csv")
+  POP[["2015"]] <- read.csv("Input/adjustedPEP2015_ExtIL.csv")
+  POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020_ExtILadj.xlsx") # partial LOL counties
 
-#override Headship #s with 2010 Adjusted Headship Ratios (pulled from Berger)
-Headship <- read.csv("C:/Users/amcadams/Documents/R/Headships2010.csv") %>% select(Age, Region, Ratio_Adj)
+} else if(EXTIL == 0){
+  print("ExtIL Area Adjustment override NOT implemented.")
+} else {
+  print("ERROR! Improper EXTIL value supplied. Modify and run again.")
+}
+
+# set up loop -------------------
 
 startyear = 2010
 projectionstart = 2020

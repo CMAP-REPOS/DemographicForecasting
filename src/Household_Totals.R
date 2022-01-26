@@ -1,5 +1,9 @@
 # CMAP | Mary Weber | 8/18/2021
 
+# This script calculates the GQ population (Total Pop * GQ Ratio),
+# and Household population (Total Pop - GQ Pop) for each of the projection years.
+#
+
 # Parameters ---------------------------------------------------------
 
 startyear = as.character(projstart)  #"2020"

@@ -33,10 +33,10 @@ for(item in POPPROJ){
 ######### set options -----------------
 
 #### headship method choice
-# this option changes the method of the headship (# of households) calculation in HH_Control.R
+    # this option changes the method of the headship (# of households) calculation in HH_Control.R
 # if 1: model will use Approach A: 2010 Headship ratios by age and sex from Census bureau
-# if 0: model will use Approach B: 2019 Headship ratios by age estimated from PUMS data,
-#
+# if 0: model will use Approach B: estimated 2019 Headship ratios by age estimated from PUMS data
+#     WARNING: something is strange with the External IL 2019 Headship rates. Don't use until fixed!
 
 HeadshipSource = 1
 
@@ -55,8 +55,6 @@ source("src/GQ_by_RaceEth.R") # result: "GQRE_perc"
 
 # Households and GQ
 source("src/HH_Control.R") # result: "Households, GQ, HHRE_pop"
-
-
 
 
 ################ formatting model results

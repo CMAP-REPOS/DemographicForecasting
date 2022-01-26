@@ -29,7 +29,6 @@ if(startyr == baseyr){
   print(paste("GENERATING", baseyr, "PROJECTION"))
   print(paste("USING", TNMnote, "TARGET MIGRATION VALUES"))
 
-
   #Import the baseyear population data (2020)
   baseyearpoptable <- POP[[baseyr]] %>%
     group_by(Age, Region, Sex) %>% summarise(baseyrpop = sum(Population), .groups = "drop")
@@ -42,7 +41,6 @@ if(startyr == baseyr){
   Base_Mig <- recent_Base_Mig %>% select(Region, Age, Sex, NetRates)
 
   start_Base_Mig <- Base_Mig #- only used at end of projection_control? consider removing
-
 
 }else{
   print(paste("GENERATING", max(cycleyears)+1, "PROJECTION"))

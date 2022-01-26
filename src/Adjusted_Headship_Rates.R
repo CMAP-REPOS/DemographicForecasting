@@ -5,14 +5,14 @@ library(tidycensus)
 library(readxl)
 
 # This code calculates adjusted headship rates to use for head of household
-# projections 2025-2060.
+# projections 2025-2050 (see HH_Control.R)
 
 # Parameters ---------------------------------------------------------
 
 load("Output/Migration_Projections.Rdata") #Mig_Proj
-load("Output/PopData.Rdata") #POP
+load("Output/POP_PEP.Rdata") #POP
 load("Output/GQData2.Rdata") #GQratios
-load("Output/PUMS_HeadshipRates.Rdata") #HEADSHIP_RATES from PUMS data
+load("Output/PUMS_HeadshipRates.Rdata") #HEADSHIP_RATES from 2019 PUMS data
 
 # Lines 15-22 are duplicate from PEP code....should consolidate
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")

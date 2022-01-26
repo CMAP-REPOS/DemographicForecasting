@@ -1,9 +1,13 @@
 # CMAP | Noel Peterson, Alexis McAdams | 8/7/2021
 
+# This script uses tidycensus to fetch PUMS data on 2019 headship rates by
+# age (but not sex) for the 21-county modeling region
+
+
 library(tidyverse)
 library(tidycensus)
 
-load("Output/PumaRegions.Rdata") #"puma_region" - key for identifying CMAP region PUMAs. Created in Age_0_4_PUMS_Breakdown.R script
+load("Output/PumaRegions.Rdata") #"puma_region" - key for identifying CMAP region PUMAs. Created and saved in Age_0_4_PUMS_Breakdown.R
 
 # Get PUMS person-level age data ------------------------------------------
 
@@ -52,4 +56,4 @@ HEADSHIP_RATES <- left_join(householders, total_pop) %>%
 
 HEADSHIP_RATES <- HEADSHIP_RATES %>% rename(Age = AgeGroup) %>% select(-NumHouseholders, -TotalPop)
 
-#save(HEADSHIP_RATES, file="Output/PUMS_HeadshipRates.Rdata")
+save(HEADSHIP_RATES, file="Output/PUMS_HeadshipRates.Rdata")

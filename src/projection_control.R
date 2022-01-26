@@ -175,7 +175,7 @@ MIG_DETAIL[[as.character(projend)]] <- detailedMigs
 }
 
 
-######## Final Steps: unlist the population projections, last bits of formatting
+######## Final Steps
 
 #upload the finished projection lists to GitHub
 

@@ -160,9 +160,6 @@ POPPROJ[[as.character(projend)]] <- Projections
 
 #save the Net Migration rates
 NETMIGPROJ[[as.character(projend)]] <- Migration
-#belatedly pop in the starting migration rates (see Projection.R 1st proj period loop, ~ line 47)
-start_Base_Mig <- start_Base_Mig %>% select(Region, Age, Sex, NetRates) %>% rename(NMRs = NetRates)
-NETMIGPROJ[[1]] <- start_Base_Mig
 
 #save the Components of Change
 COMPONENTS[[as.character(projend)]] <- Components
@@ -173,6 +170,10 @@ MIG_DETAIL[[as.character(projend)]] <- detailedMigs
 #-------
   i <- i+1
 }
+
+#belatedly pop in the starting migration rates (see Projection.R 1st proj period loop, ~ line 47)
+start_Base_Mig <- start_Base_Mig %>% select(Region, Age, Sex, NetRates) %>% rename(NMRs = NetRates)
+NETMIGPROJ[[1]] <- start_Base_Mig
 
 
 ######## Final Steps

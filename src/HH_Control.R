@@ -1,16 +1,23 @@
 # CMAP | Alexis McAdams, Mary Weber | 8/18/2021
 
 # This code calculates Households and GQ population estimates for all
-# specified population years, past and forecast.
+# specified forecast years (probably 2025-2050)
+# AND this code pulls households and GQ population for add'l years (2010, 2015, 2020)
 
-# This code runs off of the projection outputs that are saved to GitHub, so if you're
-# working from a new Projection, make sure the projected population data is saved to GitHub!
 
-#--------------------
+# set-up --------------------
 
 library(tidyverse)
 library(tidycensus)
 library(readxl)
+
+# run required scripts
+source("src/PUMS_Headship_Rates.R")
+
+source("src/Adjusted_Headship_Rates.R")
+
+
+
 
 load("Output/GQData2.Rdata") # GQratios, GQ_Military
 load("Output/Head_of_HH.Rdata") # Headship
@@ -244,8 +251,8 @@ HHRE_pop <- GQRE_pop %>%
   select(Region, Year, variable, HHRE_pop_proj)
 
 #export
-write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQpop_RE.csv")
-write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/extILadj/export_HHpop_RE.csv")
+#write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQpop_RE.csv")
+#write.csv(HHRE_pop, file = "C:/Users/amcadams/Documents/R/extILadj/export_HHpop_RE.csv")
 
 
 

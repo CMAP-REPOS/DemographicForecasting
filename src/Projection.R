@@ -402,7 +402,7 @@ Projections <- Projections %>%
   select(Age, Region, Sex, ProjectedPop_final)
 
 
-# Step 9: Assemble Components of Change for each Region (Optional)
+# Step 9: Assemble Components of Change for each Region
 
 #Births (by Sex)
 projectedBirths_reformat <- projectedBirths_bySex %>% pivot_longer(cols=c(3:4), names_to = "Sex", values_to = "Births") %>%

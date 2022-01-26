@@ -176,12 +176,13 @@ MIG_DETAIL[[as.character(projend)]] <- detailedMigs
 
 
 ######## Final Steps: unlist the population projections, last bits of formatting
+
 #upload the finished projection lists to GitHub
+
 save(POPPROJ, file="Output/PopProj.Rdata")
 save(NETMIGPROJ, file="Output/NMProj.Rdata")
 save(COMPONENTS, file="Output/ComponentsOfChange.Rdata")
 save(MIG_DETAIL, file = "Output/MigTesting.Rdata")
-
 
 #Recordkeeping list ("SETTINGS")
 projection_options <- c('External IL Area Adjustment to Base Pop' = EXTIL,

@@ -30,10 +30,36 @@ for(item in POPPROJ){
   i <- i + 1
 }
 
+######### set options -----------------
+
+#### headship method choice
+# this option changes the method of the headship (# of households) calculation in HH_Control.R
+# if 1: model will use Approach A: 2010 Headship ratios by age and sex from Census bureau
+# if 0: model will use Approach B: 2019 Headship ratios by age estimated from PUMS data,
+#
+
+HeadshipSource = 1
+
+######### additional setup ------------
+
 # run add'l scripts
 
-#workforce
-source("src/workforce.R")
+# workforce
+source("src/workforce.R") # result: "workers"
+
+# population by Race/Ethnicity
+source("src/race_ethnicity_projection.R") # result: "raceeth_proj"
+
+# GQ rates by Race/Ethnicity (2010)
+source("src/GQ_by_RaceEth.R") # result: "GQRE_perc"
+
+# Households and GQ
+source("src/HH_Control.R") # result: "Households, GQ, HHRE_pop"
+
+
+
+
+################ formatting model results
 
 
 

@@ -171,7 +171,7 @@ MIG_DETAIL[[as.character(projend)]] <- detailedMigs
   i <- i+1
 }
 
-#belatedly pop in the starting migration rates (see Projection.R 1st proj period loop, ~ line 47)
+#belatedly put the starting migration rates in the final list (see Projection.R 1st proj period loop, ~ line 47)
 start_Base_Mig <- start_Base_Mig %>% select(Region, Age, Sex, NetRates) %>% rename(NMRs = NetRates)
 NETMIGPROJ[[1]] <- start_Base_Mig
 

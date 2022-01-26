@@ -6,6 +6,7 @@ library(readxl)
 
 # This code calculates adjusted headship rates to use for head of household
 # projections 2025-2050 (see HH_Control.R)
+#
 
 # Parameters ---------------------------------------------------------
 
@@ -14,15 +15,7 @@ load("Output/POP_PEP.Rdata") #POP
 load("Output/GQData2.Rdata") #GQratios
 load("Output/PUMS_HeadshipRates.Rdata") #HEADSHIP_RATES from 2019 PUMS data
 
-# Lines 15-22 are duplicate from PEP code....should consolidate
-CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
-
-COUNTIES <- list(
-  IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
-         7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
-  IN = c(89, 91, 127),                       # Indiana counties
-  WI = c(59, 101, 127)                       # Wisconsin counties
-)
+load("Output/importhelpers.Rdata") # COUNTIES, CMAP_GEOIDS
 
 HH_Year = 2019 #base year
 
@@ -95,6 +88,6 @@ Head_of_HH <- Head_of_HH %>%
 Headship <- Head_of_HH %>%
   select(Age, Region, Ratio_Adj)
 
-#save(Headship, Head_of_HH, file="Output/Head_of_HH.Rdata")
+save(Headship, Head_of_HH, file="Output/Head_of_HH.Rdata")
 
 

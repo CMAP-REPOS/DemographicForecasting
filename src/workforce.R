@@ -33,29 +33,28 @@ unemp <- read.csv("Input/unemploymentrates.csv") %>%
 load("Output/POP_PEP.Rdata")  # named POP
 POPrecent <- list()
 POPrecent[["2010"]] <- POP[["2010"]]
-POPrecent[["2015"]] <- POP[["2015"]]
-POPrecent[["2018"]] <- POP[["2018"]]
-POPrecent[["2019"]] <- POP[["2019"]]
+#POPrecent[["2015"]] <- POP[["2015"]]
+#POPrecent[["2018"]] <- POP[["2018"]]
+#POPrecent[["2019"]] <- POP[["2019"]]
 POPrecent[["2020"]] <- POP[["2020"]]
 for(i in names(POPrecent)){
   POPrecent[[i]] <- POPrecent[[i]] %>%
     group_by(Region, Sex, Age) %>%
-    summarize(Population = sum(Population)) %>%
-    ungroup()
+    summarize(Population = sum(Population), .groups = "drop")
 }
 
 #load in and format projected population data (2025-2050)
 POPPROJcopy <- POPPROJ
 POPPROJcopy[['2020']] <- NULL  #remove the blank 2020 from POPPROJ (investigate that later)
 for(i in names(POPPROJcopy)){
-  POPPROJcopy[[i]] <- POPPROJcopy[[i]] %>%
+  POPPROJcopy[[i]] <- POPPROJcopy[[i]] %>% ungroup() %>%
     rename(Population = ProjectedPop_final) #reformat Projected Population column
 }
 
 #combine the two lists created above into one list
 laborforce <- c(POPrecent, POPPROJcopy)
 
-#slight reformat to GQratios
+#slight reformat to GQratios (sum partial GQ ratios to get Total GQ ratio)
 GQratios2 <- GQratios %>%
   mutate(GQratio = GQ_NonInst_College + GQ_Inst_Corr + GQ_Inst_Juv + GQ_Inst_Nurs + GQ_Inst_Other + GQ_NonInst_Other)
 
@@ -69,9 +68,9 @@ for(i in names(laborforce)){
 
 #join the LFPRs to each of the tables in laborforce
 laborforce[["2010"]] <- laborforce[["2010"]] %>% left_join(LFPRs[c(1:2,3)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2010)
-laborforce[["2015"]] <- laborforce[["2015"]] %>% left_join(LFPRs[c(1:2,4)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2015)
-laborforce[["2018"]] <- laborforce[["2018"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2018)
-laborforce[["2019"]] <- laborforce[["2019"]] %>% left_join(LFPRs[c(1:2,6)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2019)
+#laborforce[["2015"]] <- laborforce[["2015"]] %>% left_join(LFPRs[c(1:2,4)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2015)
+#laborforce[["2018"]] <- laborforce[["2018"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2018)
+#laborforce[["2019"]] <- laborforce[["2019"]] %>% left_join(LFPRs[c(1:2,6)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2019)
 laborforce[["2020"]] <- laborforce[["2020"]] %>% left_join(LFPRs[c(1:2,7)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2020)
 laborforce[["2025"]] <- laborforce[["2025"]] %>% left_join(LFPRs[c(1:2,8)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2025)
 

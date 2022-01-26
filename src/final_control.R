@@ -9,27 +9,37 @@
 # and population by Race/Ethnicity), and export.
 
 
-
+outputfolder <- "C:/Users/amcadams/Documents/R/testprojection"
 
 # import forecast results
 
-save(file="Output/PopProj.Rdata") # POPPROJ
-save(file="Output/NMProj.Rdata") # NETMIGPROJ
-save(file="Output/ComponentsOfChange.Rdata") # COMPONENTS
-save(file = "Output/MigTesting.Rdata") # MIG_DETAIL
+load(file="Output/PopProj.Rdata") # POPPROJ
+load(file="Output/NMProj.Rdata") # NETMIGPROJ
+load(file="Output/ComponentsOfChange.Rdata") # COMPONENTS
+load(file = "Output/MigTesting.Rdata") # MIG_DETAIL
+load(file = "Output/recordkeeping.Rdata") #SETTINGS
 
-# copied from end of projection.R script
-
-#export projections
-export <- tibble()
+#unlist projection results (formerly called export)
+results <- tibble()
 i=1
 for(item in POPPROJ){
-  print(item)
+  #print(item)
   temp <- item
   temp$year <- names(POPPROJ)[i]
-  export <- bind_rows(export, temp)
+  results <- bind_rows(results, temp)
   i <- i + 1
 }
+
+# run add'l scripts
+
+#workforce
+source("src/workforce.R")
+
+
+
+
+
+
 
 projectedNetMigrationrates <- tibble()
 i=1

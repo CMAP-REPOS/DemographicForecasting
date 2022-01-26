@@ -63,7 +63,7 @@ puma_region <- puma_21co_sf %>%
   as.data.frame() %>%
   select(GEOID10, STATEFP10, PUMACE10, Region)
 
-#save(puma_region, file="Output/PumaRegions.Rdata")
+save(puma_region, file="Output/PumaRegions.Rdata") # puma_region, used in PUMS_Headship_Rates.R
 
 ############ Part 2: pull 2019 ACS population data by PUMA, calculate proportion of 0-4 age group that is 0-1 yrs old
 

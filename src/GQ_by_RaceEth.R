@@ -1,26 +1,18 @@
-# GQ_RaceEth.R
+# GQ_by_RaceEth.R
+
 # This script estimates and projects the percentage of Group Quarter population
 # by Race/Ethnicity groupings (Census 2010)
-# Calculation of the projected populations occurs in
-# HH_Control.R
+# Calculation of the projected populations occurs in HH_Control.R
 #
 # Alexis McAdams | 16 Nov 2021
 
 library(tidyverse)
-library(ggplot2)
 library(tidycensus)
 
 # set up parameters
 Decennial_YEARS <- c(2010) #ideally add 2020 when that data is available
 
-COUNTIES <- list(
-  IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
-         7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
-  IN = c(89, 91, 127),                       # Indiana counties
-  WI = c(59, 101, 127)                       # Wisconsin counties
-)
-
-CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
+load("Output/importhelpers.Rdata") #COUNTIES, CMAP_GEOIDS
 
 #pull the variables needed and reformat the name (Category)
 GQREvariables <- c("PCT020001", #total
@@ -54,7 +46,7 @@ for (YEAR in Decennial_YEARS) {
     GQ_RaceEth <- bind_rows(GQ_RaceEth, TEMP)
   }
 
-  GQ_RaceEth$Year = '2010'
+  GQ_RaceEth$Year = '2010' #
 
   GQ_RaceEth <- GQ_RaceEth %>%
     mutate(Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
@@ -66,19 +58,19 @@ for (YEAR in Decennial_YEARS) {
 #create summary table
 GQRE_summary <- GQ_RaceEth %>%
   group_by(Region, Year, variable) %>%
-  summarize(Population = sum(Population))
+  summarize(Population = sum(Population), .groups = "drop")
 
-# calculate NH_Other
+# calculate NH_Other ( Total - (Hispanic + NH_Asian + NH_Black + NH_White))
 NH_others <- GQRE_summary %>%
   pivot_wider(names_from = variable, values_from = Population) %>%
   rowwise() %>%
   mutate(NH_Other = total_GQ - Hispanic - NH_White - NH_Black - NH_Asian) %>%
   select(Region, NH_Other) %>%
   rename(Population = NH_Other) %>%
-  mutate(variable = "NH_Other")
+  mutate(variable = "NH_Other", Year = '2010')
 
 #add NH_Other to summary table
-GQRE_summary <- bind_rows(GQRE_summary, NH_others)
+GQRE_summary <- bind_rows(GQRE_summary, NH_others) %>% arrange(Region)
 
 #pivot out the GQ totals
 GQ_totals <- GQRE_summary %>% ungroup() %>%
@@ -88,9 +80,7 @@ GQ_totals <- GQRE_summary %>% ungroup() %>%
 
 GQRE_perc <- GQRE_summary %>% filter(variable != "total_GQ") %>%
   left_join(GQ_totals, by = "Region") %>%
-  rowwise() %>%
   mutate(GQ_perc = Population / totalGQ) %>%
-  ungroup() %>%
   select(Region, variable, GQ_perc)
 
 save(GQRE_perc, file="Output/GQRE_rates.Rdata")

@@ -27,8 +27,6 @@ CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 save(COUNTIES, CMAP_GEOIDS, file="Output/importhelpers.Rdata")
 
 
-
-
 ######### set options -----------------
 
 #### fertility method choice

@@ -1,6 +1,6 @@
 # CMAP | Alexis McAdams, Mary Weber | 8/18/2021
 
-# This code calculates Households and GQ population estimates for all
+# This code calculates Households, GQ population,  estimates for all
 # specified forecast years (probably 2025-2050)
 # AND this code pulls households and GQ population for add'l years (2010, 2015, 2020)
 
@@ -93,7 +93,7 @@ while(i <= cycles){
 
   }else{
     basepop <- results %>%
-      filter(year == startyear) %>%
+      filter(year == projstart) %>%
       rename(Population = ProjectedPop_final) %>%
       select(Sex, Age, Region, Population) %>%
       ungroup()
@@ -102,19 +102,21 @@ while(i <= cycles){
 
   # Join GQ ratios to Population, calculates GQ population
   GQ_Pop <- full_join(basepop, GQratios, by=c("Sex", "Age", "Region")) %>%
-    mutate(across(starts_with("GQ"), ~.*Population )) %>% # multiply every GQ column by Population
+    mutate(round(across(starts_with("GQ"), ~.*Population ),0)) %>% # multiply every GQ column by Population
     left_join(GQ_Military, by=c("Region", "Sex", "Age")) %>%
     rename(GQ_NonInst_Military = Value) #join the (held-constant over time) Military values
 
   # Subtract GQ from Population (Household Population), pivot wide, join Headship ratio & calculate Heads of Household (aka Households)
-  HouseholdPop <- GQ_Pop %>% select(Age, Sex, Region, Population, totalGQ) %>%
+  HouseholdPop <- GQ_Pop %>%
+    rowwise() %>% mutate(totalGQ = sum(across(starts_with("GQ")))) %>%
+    select(Age, Sex, Region, Population, totalGQ) %>%
     mutate(HH_Pop = Population - totalGQ) %>%
     select(-totalGQ) %>%
     pivot_wider(names_from = "Sex", values_from=c("Population", "HH_Pop")) %>%
     left_join(Headship, by=c("Age", "Region")) %>%
     mutate(Head_HH = round((HH_Pop_Male*Ratio_Adj)+(HH_Pop_Female*Ratio_Adj),0))
 
-  print(paste("Year", startyear, "households and GQ calculations complete!", sep=" "))
+  print(paste("Year", series[i], "households and GQ calculations complete!", sep=" "))
 
   # save results in lists
   HHPOP_PROJ [[projstart]] <- HouseholdPop %>% select(Age, Region, HH_Pop_Female, HH_Pop_Male)
@@ -124,144 +126,171 @@ while(i <= cycles){
   i <- i+1
 }
 
-
 #---------------------- End of loop
 
+# run script to collect % of GQ by Race/Ethnicity (2010 Census)
+source(GQ_by_RaceEth.R)
+load("Output/GQRE_rates.Rdata") # GQRE_perc
 
-###     De-list and reformat the outputs, generate summary tables
 
-### HOUSEHOLDS
+############# ARRANGING AND FORMATTING -----------------
 
-Households <- tibble()
+### HOUSEHOLD POPULATION
+
+HouseholdPops <- tibble()
 i=1
-for(item in HH_PROJ){
+for(item in HHPOP_PROJ){
   temp2 <- item
-  temp2$Year <- names(HH_PROJ)[i]
-  Households <- bind_rows(Households, temp2)
+  temp2$Year <- names(HHPOP_PROJ)[i]
+  HouseholdPops <- bind_rows(HouseholdPops, temp2)
   i <- i + 1
 }
 
-Households <- Households %>%
+HouseholdPop_byAge <- HouseholdPops %>%
   rowwise() %>%
-  mutate(TotalPop = sum(Population_Female, Population_Male), .after = Region) %>%
-  mutate(TotalHHPop = sum(HH_Pop_Female, HH_Pop_Male), .after = Population_Male)
+  mutate(TotalHHPop = sum(HH_Pop_Female, HH_Pop_Male), .keep = "unused")
 
-HouseholdSummary <- Households %>%
-  group_by(Year, Region) %>%
-  summarize(FemaleHHPop = sum(HH_Pop_Female),
-            MaleHHPop = sum(HH_Pop_Male),
-            HH_total = sum(Head_HH)) %>%
-  rowwise() %>% mutate(TotHHPop = FemaleHHPop + MaleHHPop, .after = Region)
+HouseholdPop_bySex <- HouseholdPops %>%
+  pivot_longer(cols = c("HH_Pop_Female", "HH_Pop_Male"), names_to = "Sex", values_to = "TotalHHPop") %>%
+  mutate(Sex = case_when(Sex == "HH_Pop_Female" ~ "Female",
+                         TRUE ~ "Male")) %>%
+  group_by(Region, Year, Sex) %>%
+  summarize(TotalHHPop = sum(TotalHHPop), .groups = "drop")
 
-#calculate the household Size (HHpop / HH) for each region and year
+HouseholdPop_Summary <- HouseholdPop_bySex %>%
+  group_by(Region, Year) %>%
+  summarize(TotalHHPop = sum(TotalHHPop), .groups = "drop")
 
-HouseholdSize <- Households %>% group_by(Region, Year) %>%
-  summarise(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH)) %>% #sum up HHpop and Heads(aka # Households) by Region&Year
-  rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
+### HOUSEHOLDS
 
-#calculate the HHpop, total Household Heads, and household size by Travel Model age group (<35, 35-65, 65+)
-#NOTE: household size calculation really only useful for 65+
-travelModelHHs <- Households %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+HeadofHH_by_Age <- tibble()
+i=1
+for(item in HH_PROJ){
+  temp2 <- item
+  temp2$Year <- names(HHPOP_PROJ)[i]
+  HeadofHH_by_Age <- bind_rows(HeadofHH_by_Age, temp2)
+  i <- i + 1
+}
+
+Households_summary <- HeadofHH_by_Age %>%
+  group_by(Region, Year) %>%
+  summarize(Households = sum(Households), .groups = "drop")
+
+# Average Household Size (HHpop / HH) for each region and year
+HouseholdSize <- full_join(Households_summary, HouseholdPop_Summary, by = c("Region", "Year")) %>%
+  rowwise() %>%
+  mutate(HHSize = TotalHHPop / Households, .keep = "unused")
+
+# calculate the HHpop by Travel Model age group (<35, 35-64, 65+)
+travelModelHHpop <- HouseholdPop_byAge %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
+  mutate(agegroup = case_when(x < 35 ~ "a_lessthan35",
+                              x >= 65 ~ "c_over65",           # define age groups
+                              TRUE ~ "b_between35_65")) %>%   # "a,b,c" is only for helping to sort the table
+  group_by(Region, agegroup, Year) %>%
+  summarize(TotalHHPop = sum(TotalHHPop), .groups = "drop") %>% arrange(Year)
+
+#calculate # of Heads of Household by Travel Model age group (<35, 35-64, 65+)
+travelModelHeadsofHHs <- HeadofHH_by_Age %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   mutate(agegroup = case_when(x < 35 ~ "a_lessthan35",
                               x >= 65 ~ "c_over65",           #define age groups
                               TRUE ~ "b_between35_65")) %>%   # a,b,c is for table sorting only
   group_by(Region, agegroup, Year) %>%
-  summarize(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH))
-
-#calculate the HHpop, total Household Heads, and household size by <65 and 65+
-
-HHs_65split <- Households %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
-  mutate(agegroup = case_when(x >= 65 ~ "b_over65",
-                              TRUE ~ "a_lessthan65")) %>%
-  group_by(Region, agegroup, Year) %>%
-  summarize(totHHpop = sum(TotalHHPop), totHH = sum(Head_HH)) %>%
-  rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
+  summarize(totalHeadsofHHs = sum(Households), .groups = "drop") %>% arrange(Year)
 
 ### GROUP QUARTERS
-GQ_Pop <- full_join(basepop, GQratios, by=c("Sex", "Age", "Region")) %>%
-  mutate(across(starts_with("GQ"), ~.*Population )) %>% # multiply every GQ column by Population
-  left_join(GQ_Military, by=c("Region", "Sex", "Age")) %>%
-  rename(GQ_NonInst_Military = Value) %>% #join the (held-constant) Military values ###########
-  rowwise() %>%##############
-  mutate(Inst_GQ = round(sum(across(starts_with("GQ_Inst"))), 0),############
-         nonInst_GQ = round(sum(across(starts_with("GQ_NonInst"))),0) ) %>%#############
-  mutate(totalGQ = sum(across(ends_with("GQ"))))#########
 
-
-
-
-
-GQ_full <- tibble()
+GQresult <- tibble()
 i=1
 for(item in GQ_PROJ){
   temp2 <- item
   temp2$Year <- names(GQ_PROJ)[i]
-  GQ_full <- bind_rows(GQ_full, temp2)
+  GQresult <- bind_rows(GQresult, temp2)
   i <- i + 1
 }
-GQ_full  <- GQ_full  %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
-  arrange(x) %>% select(-x) %>% arrange(Region, Year, desc(Sex)) %>%
-  #filter(Year != "2010" & Year != "2015") %>%
-  relocate(c(Year, totalGQ, Inst_GQ, nonInst_GQ), .after = Population) %>%
+
+GQ_detailed <- GQresult %>%
+  select(-Population) %>%
+  relocate(Year, .after = Region) %>%
+  rowwise() %>%
+  mutate(Inst_GQ = round(sum(across(starts_with("GQ_Inst"))), 0),
+         nonInst_GQ = round(sum(across(starts_with("GQ_NonInst"))),0) ) %>%
+  mutate(totalGQ = sum(across(ends_with("GQ")))) %>%
+  relocate(c(totalGQ, Inst_GQ, nonInst_GQ), .after = Year) %>%
   relocate(starts_with("GQ_Inst_"), .after = Inst_GQ) %>%
   relocate(GQ_NonInst_Military, .before = GQ_NonInst_Other)
 
-GQ_basic_summary <- GQ_full %>%
-  group_by(Region, Year) %>%
-  summarize(totalGQ = sum(totalGQ),
-            totalGQ_Inst = sum(Inst_GQ),
-            totalGQ_NonInst = sum(nonInst_GQ))
+GQ_summarybyAge <- GQ_detailed %>%
+  pivot_longer(cols = contains("GQ"), names_to = "type", values_to = "value") %>%
+  group_by(Region, Year, Age, type) %>%
+  summarize(value = sum(value), .groups = "drop") %>%
+  pivot_wider(names_from = "type", values_from = "value") %>%
+  relocate(c(totalGQ, Inst_GQ, nonInst_GQ), .after = Age) %>%
+  relocate(starts_with("GQ_Inst_"), .after = Inst_GQ) %>%
+  relocate(GQ_NonInst_Military, .before = GQ_NonInst_Other)
 
-GQ_summary <- GQ_full %>% group_by(Region, Sex, Age, Year) %>%
+travelModel_GQNonInst_byAge <- GQ_summarybyAge %>%
+  select(!contains("GQ") | "GQ_NonInst_Military" | "GQ_NonInst_College" | "GQ_NonInst_Other") %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
-  arrange(x) %>%
   mutate(Agegroup = case_when(x < 15 ~ "14 and Under",
                               x >= 65 ~ "65 and Over",
                               TRUE ~ "15 - 64" )) %>%
-  arrange(x) %>% select(-x) %>% arrange(Region, Year, Sex) %>%
+  select(-x) %>%
   group_by(Region, Year, Agegroup) %>%
   summarize(GQ_NonInst_Military = sum(GQ_NonInst_Military),
             GQ_NonInst_College = sum(GQ_NonInst_College),
-            GQ_NonInst_Other = sum(GQ_NonInst_Other))
+            GQ_NonInst_Other = sum(GQ_NonInst_Other), .groups = "drop")
 
-GQ_Other  <- GQ_full %>% #break down the GQ_NonInst_Other into the age group totals required by the travel model (16-64, 65+)
-  select(Sex, Age, Region, Year, GQ_NonInst_Other) %>%
+travelModel_GQOther_byAge <- GQ_summarybyAge %>%
+  select(!contains("GQ") | "GQ_NonInst_Other") %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>% arrange(x) %>%
-  filter(x > 10) %>% # remove Age groups 10-14 and below
-  mutate(Agegroup = case_when(x == 15 ~ "GQ_NonInst_Other_15_to_19",
+  mutate(Agegroup = case_when(x < 15 ~ "GQ_NonInst_Other_lessthan15",
+                              x == 15 ~ "GQ_NonInst_Other_15_to_19",
                               x >= 65 ~ "GQ_NonInst_Other_65_plus",
-                              TRUE ~ "GQ_NonInst_Other_20_to_64" ) ) %>%
-  group_by(Region, Sex, Year, Agegroup) %>%
-  summarize(Othertot = sum(GQ_NonInst_Other)) %>%
+                              TRUE ~ "GQ_NonInst_Other_20_to_64") ) %>%
+  group_by(Region, Year, Agegroup) %>%
+  summarize(Othertot = sum(GQ_NonInst_Other), .groups = "drop") %>%
   pivot_wider(names_from = Agegroup, values_from = Othertot) %>%
-  mutate(GQ_NonInst_Other_16_to_64 = round(GQ_NonInst_Other_20_to_64 + 0.8 * GQ_NonInst_Other_15_to_19,0),
-         GQ_NonInst_Other_65_plus = round(GQ_NonInst_Other_65_plus,0)) %>%
-  select(Sex, Region, Year, GQ_NonInst_Other_16_to_64,GQ_NonInst_Other_65_plus)
+  mutate(GQ_NonInst_lessthan16 = round(GQ_NonInst_Other_lessthan15 + GQ_NonInst_Other_15_to_19 * 0.2, 0),
+         GQ_NonInst_Other_16_to_64 = round(GQ_NonInst_Other_20_to_64 + 0.8 * GQ_NonInst_Other_15_to_19, 0),
+         GQ_NonInst_Other_65_plus = round(GQ_NonInst_Other_65_plus, 0)) %>%
+  select(-GQ_NonInst_Other_lessthan15, -GQ_NonInst_Other_20_to_64, -GQ_NonInst_Other_15_to_19) %>%
+  relocate(GQ_NonInst_Other_65_plus, .after = last_col())
 
-GQ_summary_collegemil <- GQ_full %>% group_by(Region, Year, Sex) %>%
+travelModel_collegemil <- GQ_summarybyAge %>%
+  group_by(Region, Year) %>%
   summarize(GQ_Military = sum(GQ_NonInst_Military),
-            GQ_College = round(sum(GQ_NonInst_College)))
+            GQ_College = round(sum(GQ_NonInst_College)), .groups = "drop")
 
-GQ_summary_travelmodel <- left_join(GQ_summary_collegemil, GQ_Other, by = c("Region", "Year", "Sex")) %>%
-  group_by(Region,Year) %>%
-  summarize(GQ_Military = sum(GQ_Military),
-            GQ_College = sum(GQ_College),
-            GQ_NonInst_Other_16_to_64 = sum(GQ_NonInst_Other_16_to_64),
-            GQ_NonInst_Other_65_plus = sum(GQ_NonInst_Other_65_plus))
-
-#another way to look at the full GQ population
-#GQ_full2 <- GQ_full %>% relocate(Year, .after = Region) %>%
-#  pivot_longer(cols = c(5:15), names_to = "Type", values_to = "Population") %>%
-#  group_by(Region, Year, Type) %>%
-#  summarize(Population = sum(Population)) %>%
-#  pivot_wider(names_from = Year, values_from = Population)
-
-#write.csv(GQ_full2, "C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/GQ_review/GQ_full2.csv")
+travelModel_GQ <- left_join(travelModel_collegemil,
+                            travelModel_GQOther_byAge %>% select(-GQ_NonInst_lessthan16),
+                            by = c("Region", "Year"))
 
 
-#View(HouseholdSummary)
-#View(HouseholdSize)
-#View(GQ_basic_summary)
+
+
+
+
+
+
+
+
+
+
+
+
+################# EXPORT ---------------------
+
+# General Summary Data
+
+
+# Detailed Data
+
+
+# Specialty Formatting (Travel Model)
+
+
+# Specialty Formatting (Other)
+
 
 
 write.csv(Households, file = "C:/Users/amcadams/Documents/R/extILadj/export_Households.csv")

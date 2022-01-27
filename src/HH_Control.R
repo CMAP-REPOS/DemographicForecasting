@@ -23,7 +23,6 @@ if(HeadshipSource == 1){
 }
 
 load("Output/GQData2.Rdata") # GQratios, GQ_Military
-load("Output/Migration_Projections.Rdata") #Mig_Proj
 load("Output/POP_PEP.Rdata") #POP
 
 # External IL Adjustment option
@@ -38,26 +37,45 @@ if(EXTIL == 1){
   print("ERROR! Improper EXTIL value supplied. Modify and run again.")
 }
 
-# set up loop -------------------
+# Load in and unlist projection results (used in loop below)
+load(file="Output/PopProj.Rdata") # POPPROJ
+results <- tibble()
+i=1
+for(item in POPPROJ){
+  #print(item)
+  temp <- item
+  temp$year <- names(POPPROJ)[i]
+  results <- bind_rows(results, temp)
+  i <- i + 1
+}
+
+
+# set up Household and GQ Population Calculation loop -------------------
 
 startyear = 2010
 projectionstart = 2020
 endyear = 2050
 
 series <- c(2010,
-            2015, 2020,
+            2015,
+            2020,
   2025, 2030, 2035, 2040, 2045, 2050, 2055, 2060)
 
 cycles <- ((endyear - startyear) / 5) + 1 #number of 5-year projection cycles to complete
 
-#-------------------- Start of loop
+#-------------------- Start of loop:
 
-HH_PROJ <- list()
+HHPOP_PROJ <- list() # for household population
+for(years in series){
+  HH_POPPROJ[[as.character(years)]] <- tibble()
+}
+
+HH_PROJ <- list() # for number of households
 for(years in series){
   HH_PROJ[[as.character(years)]] <- tibble()
 }
 
-GQ_PROJ <- list()
+GQ_PROJ <- list() # for group quarters populations
 for(years in series){
   GQ_PROJ[[as.character(years)]] <- tibble()
 }
@@ -65,18 +83,47 @@ for(years in series){
 
 i <- 1
 while(i <= cycles){
-  projstart <- series[i]
+  projstart <- series[i] %>% as.character()
 
-  source("src/Household_Totals.R")
+  if(projstart <= projectionstart) {
+    basepop <- POP[[series[i] %>% as.character()]] %>%
+      group_by(Sex, Age, Region) %>%
+      summarize(Population = sum(Population), .groups = "drop")
+    print(paste("Pulling past data:", startyear, sep=" "))
 
-  HH_PROJ[[as.character(projstart)]] <- HouseholdPop
+  }else{
+    basepop <- results %>%
+      filter(year == startyear) %>%
+      rename(Population = ProjectedPop_final) %>%
+      select(Sex, Age, Region, Population) %>%
+      ungroup()
+    print(paste("Pulling projected data:", startyear, sep=" "))
+  }
 
-  GQ_PROJ[[as.character(projstart)]] <- GQ_Pop
+  # Join GQ ratios to Population, calculates GQ population
+  GQ_Pop <- full_join(basepop, GQratios, by=c("Sex", "Age", "Region")) %>%
+    mutate(across(starts_with("GQ"), ~.*Population )) %>% # multiply every GQ column by Population
+    left_join(GQ_Military, by=c("Region", "Sex", "Age")) %>%
+    rename(GQ_NonInst_Military = Value) #join the (held-constant over time) Military values
 
-  #save(HH_PROJ, file="Output/HH_Proj.Rdata")
+  # Subtract GQ from Population (Household Population), pivot wide, join Headship ratio & calculate Heads of Household (aka Households)
+  HouseholdPop <- GQ_Pop %>% select(Age, Sex, Region, Population, totalGQ) %>%
+    mutate(HH_Pop = Population - totalGQ) %>%
+    select(-totalGQ) %>%
+    pivot_wider(names_from = "Sex", values_from=c("Population", "HH_Pop")) %>%
+    left_join(Headship, by=c("Age", "Region")) %>%
+    mutate(Head_HH = round((HH_Pop_Male*Ratio_Adj)+(HH_Pop_Female*Ratio_Adj),0))
+
+  print(paste("Year", startyear, "households and GQ calculations complete!", sep=" "))
+
+  # save results in lists
+  HHPOP_PROJ [[projstart]] <- HouseholdPop %>% select(Age, Region, HH_Pop_Female, HH_Pop_Male)
+  HH_PROJ[[projstart]] <- HouseholdPop %>% select(Age, Region, Head_HH) %>% rename(Households = Head_HH)
+  GQ_PROJ[[projstart]] <- GQ_Pop
 
   i <- i+1
 }
+
 
 #---------------------- End of loop
 
@@ -131,6 +178,18 @@ HHs_65split <- Households %>% mutate(x = as.numeric(str_split_fixed(Age, " ", 2)
   rowwise() %>% mutate(householdSize = totHHpop / totHH) #calculate householdSize
 
 ### GROUP QUARTERS
+GQ_Pop <- full_join(basepop, GQratios, by=c("Sex", "Age", "Region")) %>%
+  mutate(across(starts_with("GQ"), ~.*Population )) %>% # multiply every GQ column by Population
+  left_join(GQ_Military, by=c("Region", "Sex", "Age")) %>%
+  rename(GQ_NonInst_Military = Value) %>% #join the (held-constant) Military values ###########
+  rowwise() %>%##############
+  mutate(Inst_GQ = round(sum(across(starts_with("GQ_Inst"))), 0),############
+         nonInst_GQ = round(sum(across(starts_with("GQ_NonInst"))),0) ) %>%#############
+  mutate(totalGQ = sum(across(ends_with("GQ"))))#########
+
+
+
+
 
 GQ_full <- tibble()
 i=1

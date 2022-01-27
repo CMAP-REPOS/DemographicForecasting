@@ -48,13 +48,13 @@ if(EXTIL == 1){
   print("ERROR! Improper EXTIL value supplied. Modify and run again.")
 }
 
-knownpop <- bind_rows(POP[['2015']], POP[['2020']]) %>%
+knownpop <- bind_rows(POP[['2010']], POP[['2015']], POP[['2020']]) %>%
   group_by(Year, Region) %>%
   summarize(TotPopulation = sum(Population), .groups = "drop") %>%
   mutate(year = as.character(Year)) %>%
   select(-Year)
 
-# Join R/E rates and projected population totals
+# Join Census and and projected population totals
 pop_summary <- results %>%
   group_by(year, Region) %>%
   summarize(TotPopulation = sum(ProjectedPop_final), .groups = "drop") %>%

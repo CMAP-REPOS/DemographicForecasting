@@ -4,8 +4,8 @@ library(tidyverse)
 library(tidycensus)
 library(readxl)
 
-load("Output/POP_PEP.Rdata")
-load("Output/GQData2.Rdata")
+load("Output/POP_PEP.Rdata") # POP
+load("Output/GQData2.Rdata") # GQ, GQ_Military, GQratios
 
 
 # Set parameters ----------------------------------------------------------

@@ -119,5 +119,5 @@ HH_incomes <- Households %>%
   select(Region, Year, households, quantile, mininc, maxinc) %>%
   ungroup()
 
-save(HH_incomes, "Output/HH_income_byQuantile.Rdata")
+save(HH_incomes, file="Output/HH_income_byQuantile.Rdata")
 

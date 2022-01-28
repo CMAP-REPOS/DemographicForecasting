@@ -126,10 +126,15 @@ while(i <= cycles){
   i <- i+1
 }
 
+#save(HHPOP_PROJ, file="Output/HHPOP_PROJ.Rdata")
+#save(HH_PROJ, file="Output/HH_Proj.Rdata")
+#save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+
+
 #---------------------- End of loop
 
 # run script to collect % of GQ by Race/Ethnicity (2010 Census)
-source(GQ_by_RaceEth.R)
+source("src/GQ_by_RaceEth.R")
 load("Output/GQRE_rates.Rdata") # GQRE_perc
 
 
@@ -228,6 +233,14 @@ GQ_summarybyAge <- GQ_detailed %>%
   relocate(starts_with("GQ_Inst_"), .after = Inst_GQ) %>%
   relocate(GQ_NonInst_Military, .before = GQ_NonInst_Other)
 
+GQ_summary <- GQ_summarybyAge %>%
+  select(!contains("GQ") | ends_with("GQ")) %>%
+  group_by(Region, Year) %>%
+  summarize(totalGQ = sum(totalGQ),
+            Inst_GQ = sum(Inst_GQ),
+            nonInst_GQ = sum(nonInst_GQ), .groups = "drop")
+
+
 travelModel_GQNonInst_byAge <- GQ_summarybyAge %>%
   select(!contains("GQ") | "GQ_NonInst_Military" | "GQ_NonInst_College" | "GQ_NonInst_Other") %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
@@ -265,10 +278,58 @@ travelModel_GQ <- left_join(travelModel_collegemil,
                             travelModel_GQOther_byAge %>% select(-GQ_NonInst_lessthan16),
                             by = c("Region", "Year"))
 
+placement_ratios <- GQ_summarybyAge %>%
+  select(!contains("GQ") | starts_with("GQ")) %>%
+  pivot_longer(cols = starts_with("GQ_"), names_to = "type", values_to = "value") %>%
+  group_by(Region, Year, type) %>%
+  summarize(value = sum(value), .groups = "drop") %>%
+  mutate(Year = paste("y_",Year,sep = "")) %>%
+  pivot_wider(names_from = "Year", values_from = "value")
+write.csv(placement_ratios, "C:/Users/amcadams/Documents/R/gq/placement_ratios.csv")
+
+write.csv()
+
+
+placement_InstGQfactors <- placement_InstGQ %>%
+  mutate(across(starts_with("y_"), ~./y_2010))
+
+  mutate(round(across(starts_with("GQ"), ~.*Population ),0))
+
+temp <- GQ_summary %>%
+  select(Region, Year, Inst_GQ) %>%
+  rename(TotalInstGQ = Inst_GQ)
 
 
 
 
+###   GROUP QUARTERS and HOUSEHOLDS BY RACE AND ETHNICITY
+# total GQ pop by RE
+GQRE_pop <- GQ_summary %>%
+  select(!contains("GQ") | "totalGQ") %>%
+  full_join(GQRE_perc, by = "Region") %>%
+  rowwise() %>% mutate(GQRE_pop_proj = round(totalGQ * GQ_perc,0), .keep = "unused")
+
+# total HH pop by RE
+load("Output/totalPop_RE_projection.Rdata") #raceeth_proj
+#reformat R/E groupings
+raceeth_proj <- raceeth_proj %>%
+  mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",
+                              RACE == "Asian alone" ~ "NH_Asian",
+                              RACE == "Black alone" ~ "NH_Black",
+                              RACE == "White alone" ~ "NH_White",
+                              RACE == "NH_Other" ~ "NH_Other"))  %>%
+  select(Region, Year, variable, calcPop) %>%
+  rename(totalRE_pop = calcPop)
+
+#join the GQ pops to total R/E populations, subtract to get HH pop
+HHRE_pop <- GQRE_pop %>%
+  full_join(raceeth_proj, by=c("Region", "Year", "variable")) %>%
+  rowwise() %>%
+  mutate(HHRE_pop_proj = totalRE_pop - GQRE_pop_proj) %>%
+  select(Region, Year, variable, HHRE_pop_proj)
+
+
+################ TACK ON / OVERWRITE WITH KNOWN DATA (2010-2020)
 
 
 
@@ -279,17 +340,6 @@ travelModel_GQ <- left_join(travelModel_collegemil,
 
 
 ################# EXPORT ---------------------
-
-# General Summary Data
-
-
-# Detailed Data
-
-
-# Specialty Formatting (Travel Model)
-
-
-# Specialty Formatting (Other)
 
 
 
@@ -307,8 +357,7 @@ write.csv(GQ_summary_travelmodel, file = "C:/Users/amcadams/Documents/R/extILadj
 
 
 
-save(HH_PROJ, file="Output/HH_Proj.Rdata")
-save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+
 
 
 
@@ -328,24 +377,7 @@ GQRE_pop <- GQ_basic_summary %>%
   #filter(Year >=2025)
 
 #import total R/E populations
-load("Output/totalPop_RE_projection.Rdata") #raceeth_proj
-#reformat R/E groupings
-raceeth_proj <- raceeth_proj %>%
-  mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",
-                              RACE == "Asian alone" ~ "NH_Asian",
-                              RACE == "Black alone" ~ "NH_Black",
-                              RACE == "White alone" ~ "NH_White",
-                              RACE == "NH_Other" ~ "NH_Other",
-                              TRUE ~ "99999999")) %>%
-  select(Region, Year, variable, calcPop) %>%
-  rename(totalRE_pop = calcPop)
 
-#join the GQ pops to total R/E populations, subtract to get HH pop
-HHRE_pop <- GQRE_pop %>%
-  full_join(raceeth_proj, by=c("Region", "Year", "variable")) %>%
-  rowwise() %>%
-  mutate(HHRE_pop_proj = totalRE_pop - GQRE_pop_proj) %>%
-  select(Region, Year, variable, HHRE_pop_proj)
 
 #export
 #write.csv(GQRE_pop, file = "C:/Users/amcadams/Documents/R/extILadj/export_GQpop_RE.csv")

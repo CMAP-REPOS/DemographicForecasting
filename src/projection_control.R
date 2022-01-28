@@ -9,8 +9,9 @@
 # For each projection period, the Population projection and Net Migration
 # are saved in lists (POPPROJ and NETMIGPROJ, respectively) and are used as
 # input for the subsequent projection period.
-# When the loop is complete, the POPPROJ list is reformatted into a table
-# called "Mig_Proj".
+#
+# Formatting, export, and secondary projection products are handled in
+# the script called "final_control.R"
 
 ######## load libraries ----------------
 

@@ -47,7 +47,7 @@ if(EXTIL == 1){
 #create POPrecent list
 POPrecent <- list()
 POPrecent[["2010"]] <- POP[["2010"]]
-#POPrecent[["2015"]] <- POP[["2015"]] # TO-DO: build in option to look at 15,18,19 (for comparison to EMP employment forecast)
+POPrecent[["2015"]] <- POP[["2015"]] # TO-DO: build in option to look at 15,18,19 (for comparison to EMP employment forecast)
 #POPrecent[["2018"]] <- POP[["2018"]]
 #POPrecent[["2019"]] <- POP[["2019"]]
 POPrecent[["2020"]] <- POP[["2020"]]
@@ -82,8 +82,8 @@ for(i in names(laborforce)){
 
 #join the LFPRs to each of the tables in laborforce
 laborforce[["2010"]] <- laborforce[["2010"]] %>% left_join(LFPRs[c(1:2,3)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2010)
-#laborforce[["2015"]] <- laborforce[["2015"]] %>% left_join(LFPRs[c(1:2,4)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2015) #see line 49 above
-#laborforce[["2018"]] <- laborforce[["2018"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2018)
+laborforce[["2015"]] <- laborforce[["2015"]] %>% left_join(LFPRs[c(1:2,4)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2015)
+#laborforce[["2018"]] <- laborforce[["2018"]] %>% left_join(LFPRs[c(1:2,5)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2018) #see line 49 above
 #laborforce[["2019"]] <- laborforce[["2019"]] %>% left_join(LFPRs[c(1:2,6)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2019)
 laborforce[["2020"]] <- laborforce[["2020"]] %>% left_join(LFPRs[c(1:2,7)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2020)
 laborforce[["2025"]] <- laborforce[["2025"]] %>% left_join(LFPRs[c(1:2,8)], by=c("Age","Sex")) %>% rename(LFPR = LFPR2025)

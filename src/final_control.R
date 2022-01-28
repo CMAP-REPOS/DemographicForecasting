@@ -29,6 +29,7 @@ load(file = "Output/recordkeeping.Rdata") #SETTINGS
 HeadshipSource = 1
 
 #### best available data option
+# NOT YET IMPLEMENTED
     # this option will splice in known data for the years 2015 and 2020 when possible.
     # example: Group Quarters data by county is available for 2020, though not at age/sex
 # if 1: model will fetch known data from the Census and work it into the appropriate summary tables.
@@ -93,16 +94,11 @@ race_eth <- raceeth_proj %>%
   rename(TotalHHPop = HHRE_pop_proj) %>%
   relocate(variable, .after = Year)
 
-
-
-
-
-
 ################ export files -----------
 
 setwd(outputfolder)
 
-# General Summary Data
+###### General Summary Data
 dir.create("summary")
 setwd("summary")
 
@@ -112,8 +108,7 @@ write.csv(GQ_summary, "GQ_summary.csv")
 write.csv(race_eth, "pop_by_race_ethnicity.csv")
 write.csv()
 
-
-# Detailed Data
+###### Detailed Data
 setwd(outputfolder)
 dir.create("detail")
 setwd("detail")
@@ -127,8 +122,7 @@ write.csv(GQ_detailed, "GQ_detailed.csv")
 #write.csv(GQRE_pop, "GQPop_byRaceEthnicity.csv")
 #write.csv(HHRE_pop, "HHPop_byRaceEthnicity.csv")
 
-
-# Specialty Formatting (Travel Model)
+###### Specialty Formatting (Travel Model)
 setwd(outputfolder)
 dir.create("travelmodel")
 setwd("travelmodel")
@@ -138,15 +132,14 @@ write.csv(travelModelHeadsofHHs, "travelModelHeadsofHHs.csv")
 write.csv(travelModel_GQNonInst_byAge, "travelModel_GQNonInst_byAge.csv")
 write.csv(travelModel_GQNIOther_byAge, "travelModel_GQNIOther_byAge.csv")
 write.csv(travelModel_collegemil, "travelModel_collegemil.csv")
-write.csv()
-write.csv()
 
-
-# Specialty Formatting (Other)
+###### Specialty Formatting (Other)
 setwd(outputfolder)
+dir.create("otheroutput")
+setwd("otheroutput")
 
 write.csv(HouseholdSize, "HouseholdSize.csv")
 write.csv(workers, "workers.csv")
 write.csv(HH_incomes, "Households_IncomeQuantiles.csv")
-write.csv()
+
 

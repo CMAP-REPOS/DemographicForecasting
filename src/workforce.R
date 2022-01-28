@@ -35,6 +35,8 @@ load("Output/POP_PEP.Rdata")  # named POP
 
 # apply EXTIL adjustment (if necessary)
 if(EXTIL == 1){
+  POP[["2010"]] <- read.csv("Input/adjustedCensus2010_ExtIL.csv")
+  POP[["2015"]] <- read.csv("Input/adjustedPEP2015_ExtIL.csv")
   POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020_ExtILadj.xlsx") %>% # partial LOL counties
     mutate(GEOID = as.character(GEOID))
 } else if (EXTIL == 0){

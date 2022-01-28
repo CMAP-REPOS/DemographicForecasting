@@ -47,7 +47,11 @@ source("src/workforce.R") # result: "workers"
 source("src/race_ethnicity_projection.R") # result: "raceeth_proj"
 
 # Households and GQ
-source("src/HH_Control.R") #
+source("src/HH_Control.R")
+
+# Households by Income quartile
+source("src/income.R") # result: HH_incomes
+
 
 
 ################ formatting model results -----------
@@ -63,6 +67,32 @@ for(item in POPPROJ){
   i <- i + 1
 }
 
+# unlist projection components
+components_tbl <- tibble()
+i=1
+for(item in COMPONENTS){
+  #print(item)
+  temp <- item
+  temp$year <- names(COMPONENTS)[i]
+  components_tbl <- bind_rows(components_tbl, temp)
+  i <- i + 1
+}
+
+#combine all race/eth population data into one table
+
+race_eth <- raceeth_proj %>%
+  rename(TotalPop = calcPop) %>%
+  mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",
+                              RACE == "Asian alone" ~ "NH_Asian",
+                              RACE == "Black alone" ~ "NH_Black",
+                              RACE == "White alone" ~ "NH_White",
+                              TRUE ~ "NH_Other"), .keep = "unused") %>%
+  full_join(GQRE_pop, by = c("Region", "Year", "variable")) %>%
+  rename(TotalGQPop = GQRE_pop_proj) %>%
+  full_join(HHRE_pop, by = c("Region", "Year", "variable")) %>%
+  rename(TotalHHPop = HHRE_pop_proj) %>%
+  relocate(variable, .after = Year)
+
 
 
 
@@ -70,67 +100,53 @@ for(item in POPPROJ){
 
 ################ export files -----------
 
+setwd(outputfolder)
+
 # General Summary Data
+dir.create("summary")
+setwd("summary")
+
+write.csv(Households_summary, "Households_summary.csv")
+write.csv(GQ_summarybyAge, "GQ_summarybyAge.csv")
+write.csv(GQ_summary, "GQ_summary.csv")
+write.csv(race_eth, "pop_by_race_ethnicity.csv")
+write.csv()
 
 
 # Detailed Data
+setwd(outputfolder)
+dir.create("detail")
+setwd("detail")
+
+write.csv(results, "export_popproj.csv")
+write.csv(components_tbl, "componentsofchange.csv")
+write.csv(HeadofHH_by_Age, "HeadofHH_by_Age.csv")
+write.csv(GQ_detailed, "GQ_detailed.csv")
+
+#write.csv(raceeth_proj, "totalPop_raceandethnicity.csv")
+#write.csv(GQRE_pop, "GQPop_byRaceEthnicity.csv")
+#write.csv(HHRE_pop, "HHPop_byRaceEthnicity.csv")
 
 
 # Specialty Formatting (Travel Model)
+setwd(outputfolder)
+dir.create("travelmodel")
+setwd("travelmodel")
+
+write.csv(travelModelHHpop, "travelModelHHpop.csv")
+write.csv(travelModelHeadsofHHs, "travelModelHeadsofHHs.csv")
+write.csv(travelModel_GQNonInst_byAge, "travelModel_GQNonInst_byAge.csv")
+write.csv(travelModel_GQNIOther_byAge, "travelModel_GQNIOther_byAge.csv")
+write.csv(travelModel_collegemil, "travelModel_collegemil.csv")
+write.csv()
+write.csv()
 
 
 # Specialty Formatting (Other)
+setwd(outputfolder)
 
+write.csv(HouseholdSize, "HouseholdSize.csv")
+write.csv(workers, "workers.csv")
+write.csv(HH_incomes, "Households_IncomeQuantiles.csv")
+write.csv()
 
-
-#unlist projection results (formerly called export)
-results <- tibble()
-i=1
-for(item in POPPROJ){
-  #print(item)
-  temp <- item
-  temp$year <- names(POPPROJ)[i]
-  results <- bind_rows(results, temp)
-  i <- i + 1
-}
-
-
-
-
-
-projectedNetMigrationrates <- tibble()
-i=1
-for(item in NETMIGPROJ){
-  print(item)
-  temp <- item
-  temp$year <- names(NETMIGPROJ)[i]
-  projectedNetMigrationrates <- bind_rows(projectedNetMigrationrates, temp)
-  i <- i + 1
-}
-
-components_all <- tibble()
-i=1
-for(item in COMPONENTS){
-  temp <- item
-  temp$year <- names(COMPONENTS)[i]
-  components_all <- bind_rows(components_all, temp)
-  i <- i + 1
-}
-
-# EXPORT: Create alternate-formatted summary version (total pop by race)
-raceeth_proj_summary <- raceeth_proj %>%
-  pivot_wider(names_from = Year, values_from = calcPop)
-# plot a graph, because of course
-library(ggplot2)
-p <- raceeth_proj %>%
-  mutate(Category = paste(RACE, HISP, sep = "_")) %>%
-  filter(RACE != "White alone") %>%
-  ggplot(aes(x= Year, y=calcPop, group = Category, color = Category)) + geom_line() + facet_wrap(~ Region, scales = "free")
-#p
-
-
-# Mig_Proj is just POPPROJ delisted - need to find what scripts are dependent on this item (or "export")
-Mig_Proj <- export %>% unique() %>% # we should think about renaming this variable - it's not really a migration projection, it's a population projection with migration included
-  mutate(TNMtype = TNMnote) #add column that documents WHICH SET of target net migrant values were used for this projection
-
-save(Mig_Proj, file="Output/Migration_Projections.Rdata")

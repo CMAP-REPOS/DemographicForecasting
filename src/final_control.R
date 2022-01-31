@@ -8,7 +8,7 @@
 # production of secondary forecast products (such as Household population
 # and population by Race/Ethnicity), and export.
 
-outputfolder <- "C:/Users/amcadams/Documents/R/testprojection"
+outputfolder <- "C:/Users/amcadams/Documents/R/testprojection_extIL"
 
 # import forecast results
 
@@ -79,8 +79,14 @@ for(item in COMPONENTS){
   i <- i + 1
 }
 
+# small projection summary
+pop_summary <- results %>%
+  group_by(year, Region) %>%
+  summarize(population = sum(ProjectedPop_final), .groups ="drop")
+
 #combine all race/eth population data into one table
 
+load("Output/totalPop_RE_projection.Rdata") #raceeth_proj
 race_eth <- raceeth_proj %>%
   rename(TotalPop = calcPop) %>%
   mutate(variable = case_when(HISP == "Hispanic" ~ "Hispanic",
@@ -99,19 +105,20 @@ race_eth <- raceeth_proj %>%
 setwd(outputfolder)
 
 ###### General Summary Data
-dir.create("summary")
-setwd("summary")
+dir.create("1_summary")
+setwd("1_summary")
 
+write.csv(pop_summary, "totalpop_summary.csv")
 write.csv(Households_summary, "Households_summary.csv")
 write.csv(GQ_summarybyAge, "GQ_summarybyAge.csv")
 write.csv(GQ_summary, "GQ_summary.csv")
 write.csv(race_eth, "pop_by_race_ethnicity.csv")
-write.csv()
+
 
 ###### Detailed Data
 setwd(outputfolder)
-dir.create("detail")
-setwd("detail")
+dir.create("2_detail")
+setwd("2_detail")
 
 write.csv(results, "export_popproj.csv")
 write.csv(components_tbl, "componentsofchange.csv")
@@ -124,22 +131,22 @@ write.csv(GQ_detailed, "GQ_detailed.csv")
 
 ###### Specialty Formatting (Travel Model)
 setwd(outputfolder)
-dir.create("travelmodel")
-setwd("travelmodel")
+dir.create("3_travelmodel")
+setwd("3_travelmodel")
 
 write.csv(travelModelHHpop, "travelModelHHpop.csv")
 write.csv(travelModelHeadsofHHs, "travelModelHeadsofHHs.csv")
-write.csv(travelModel_GQNonInst_byAge, "travelModel_GQNonInst_byAge.csv")
+#write.csv(travelModel_GQNonInst_byAge, "travelModel_GQNonInst_byAge.csv") #check if needed?
 write.csv(travelModel_GQNIOther_byAge, "travelModel_GQNIOther_byAge.csv")
 write.csv(travelModel_collegemil, "travelModel_collegemil.csv")
 
 ###### Specialty Formatting (Other)
 setwd(outputfolder)
-dir.create("otheroutput")
-setwd("otheroutput")
+dir.create("4_otheroutput")
+setwd("4_otheroutput")
 
 write.csv(HouseholdSize, "HouseholdSize.csv")
 write.csv(workers, "workers.csv")
 write.csv(HH_incomes, "Households_IncomeQuantiles.csv")
 
-
+#setwd("~/GitHub/DemographicForecasting")

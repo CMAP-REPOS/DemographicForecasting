@@ -275,11 +275,12 @@ travelModel_collegemil <- GQ_summarybyAge %>%
             GQ_College = round(sum(GQ_NonInst_College)), .groups = "drop")
 
 travelModel_GQ <- left_join(travelModel_collegemil,
-                            travelModel_GQOther_byAge %>% select(-GQ_NonInst_lessthan16),
+                            travelModel_GQNIOther_byAge %>% select(-GQ_NonInst_lessthan16),
                             by = c("Region", "Year"))
 
 ###   GROUP QUARTERS and HOUSEHOLDS BY RACE AND ETHNICITY
 # total GQ pop by RE
+
 GQRE_pop <- GQ_summary %>%
   select(!contains("GQ") | "totalGQ") %>%
   full_join(GQRE_perc, by = "Region") %>%

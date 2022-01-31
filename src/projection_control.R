@@ -29,7 +29,7 @@ library(ggplot2)
 #   if 1: model will use travel model boundary-adjusted population for LOL (Lee, Ogle, LaSalle) counties
 #   if 0: model will use full county populations for the LOL counties, no adjustment will be applied.
 
-EXTIL = 0
+EXTIL = 1
 
 #### COVID-19 Base Population Adjustment (***NOT YET IMPLEMENTED)
 # this option will change the Base Year (2020) population to account for the Covid-19 pandemic.

@@ -91,7 +91,7 @@ temp <- pums_perc %>% select(quantile, x_min, x_max) %>%
                             TRUE ~ maxinc ))
 
 # total up percentage of HH in each quantile
-quantiles2 <- pums_perc %>% select(quantile, incperc) %>% group_by(quantile) %>%
+quantiles <- pums_perc %>% select(quantile, incperc) %>% group_by(quantile) %>%
   summarize(hh_quant_perc = sum(incperc), .groups = "drop") %>%
   left_join(temp, by=c("quantile")) %>%
   mutate(JoinCol = "All") #used for joining to Households data later

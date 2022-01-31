@@ -67,7 +67,7 @@ cycles <- ((endyear - startyear) / 5) + 1 #number of 5-year projection cycles to
 
 HHPOP_PROJ <- list() # for household population
 for(years in series){
-  HH_POPPROJ[[as.character(years)]] <- tibble()
+  HHPOP_PROJ[[as.character(years)]] <- tibble()
 }
 
 HH_PROJ <- list() # for number of households

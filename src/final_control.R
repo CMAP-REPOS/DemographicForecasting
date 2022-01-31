@@ -12,11 +12,11 @@ outputfolder <- "C:/Users/amcadams/Documents/R/testprojection"
 
 # import forecast results
 
-load(file="Output/PopProj.Rdata") # POPPROJ
-load(file="Output/NMProj.Rdata") # NETMIGPROJ
-load(file="Output/ComponentsOfChange.Rdata") # COMPONENTS
+load("Output/PopProj.Rdata") # POPPROJ
+load("Output/NMProj.Rdata") # NETMIGPROJ
+load("Output/ComponentsOfChange.Rdata") # COMPONENTS
 #load(file = "Output/MigTesting.Rdata") # MIG_DETAIL
-load(file = "Output/recordkeeping.Rdata") #SETTINGS
+load("Output/recordkeeping.Rdata") #SETTINGS
 
 ######### set options -----------------
 

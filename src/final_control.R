@@ -125,6 +125,7 @@ write.csv(components_tbl, "componentsofchange.csv")
 write.csv(HeadofHH_by_Age, "HeadofHH_by_Age.csv")
 write.csv(GQ_detailed, "GQ_detailed.csv")
 write.csv(HouseholdPop_byAge, "HouseholdPop_byAge.csv")
+write.csv(HouseholdPop_bySex, "HouseholdPop_bySex.csv")
 
 #write.csv(raceeth_proj, "totalPop_raceandethnicity.csv")
 #write.csv(GQRE_pop, "GQPop_byRaceEthnicity.csv")

@@ -131,5 +131,3 @@ full_longer <- full_longer %>% select(c("GEOID", "County", "State", "Year", "Rac
 # export csv file
 write.csv(full_longer,"C:/Users/hshi/Desktop/Demographic_Prediction/Census_1990_head_rate.csv", row.names = FALSE)
 
-
-##### Bundle with the head rate data from

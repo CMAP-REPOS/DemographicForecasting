@@ -1,0 +1,217 @@
+---
+title: "Projection"
+author: "Haoyu Shi"
+date: "1/21/2022"
+output: html_document
+---
+Using ACS-2005 to 2019
+```{r setup, include=FALSE}
+library(tidyverse)
+library(plyr)
+library(ggplot2)
+library(cowplot)
+```
+
+```{r}
+df <- read.csv("ACS_HeadRate_2005_to_2019.csv") %>% select(-"X") %>%
+  filter(GEOID %in% c(17031, 17043, 17089, 17093, 17097, 17111, 17197))
+
+df$Population <- as.numeric(df$Population)
+df$Householder <- as.numeric(df$Householder)
+
+county_list <- unique(df$County)
+```
+
+```{r}
+for (county in county_list){
+  df_i = df[df$County == county,] %>% drop_na() %>% group_by(Race)
+  
+  rows_for_projection <- df_i[df_i$Year %in% c(2011, 2012, 2013),] %>%
+    mutate(Year = case_when(Year == 2011 ~ 2030,
+                            Year == 2012 ~ 2040,
+                            Year == 2013 ~ 2050))
+  
+  df_i <- rbind(df_i,rows_for_projection)
+  
+  assign(county, df_i)
+}
+```
+
+## Projecton
+```{r}
+for (county in county_list){
+  df_i <- get(county)
+# Linear:  
+  lm_POP <- dlply(df_i, "Race", function(df_i) 
+    lm(Population ~ Year, data = df_i))
+  par_lm_POP <- ldply(lm_POP, coef)
+  lm_HH <- dlply(df_i, "Race", function(df_i) 
+    lm(Householder ~ Year, data = df_i))
+  par_lm_HH <- ldply(lm_HH, coef)
+  
+# Log  
+  lg_POP <- dlply(df_i, "Race", function(df_i) 
+    lm(Population ~ log(Year-2004), data = df_i))
+  par_lg_POP <- ldply(lg_POP, coef)
+  lg_HH <- dlply(df_i, "Race", function(df_i) 
+    lm(Householder ~ log(Year-2004), data = df_i))
+  par_lg_HH <- ldply(lg_HH, coef)
+  
+  df_i <- df_i %>% mutate(
+    POP_linear = case_when(Race == "All"~ Year*par_lm_POP[1,3] + par_lm_POP[1,2],
+                           Race == "Asian"~ Year*par_lm_POP[2,3] + par_lm_POP[2,2],
+                           Race == "Black"~ Year*par_lm_POP[3,3] + par_lm_POP[3,2],
+                           Race == "Hispanic"~ Year*par_lm_POP[4,3] + par_lm_POP[4,2],
+                           Race == "NH"~ Year*par_lm_POP[5,3] + par_lm_POP[5,2],
+                           Race == "NH_White"~ Year*par_lm_POP[6,3] + par_lm_POP[6,2],
+                           Race == "Other"~ Year*par_lm_POP[7,3] + par_lm_POP[7,2],
+                           Race == "White"~ Year*par_lm_POP[8,3] + par_lm_POP[8,2]
+                           ),
+    
+    POP_log = case_when(Race == "All"~ log(Year-2004)*par_lg_POP[1,3] + par_lg_POP[1,2],
+                           Race == "Asian"~ log(Year-2004)*par_lg_POP[2,3] + par_lg_POP[2,2],
+                           Race == "Black"~ log(Year-2004)*par_lg_POP[3,3] + par_lg_POP[3,2],
+                           Race == "Hispanic"~ log(Year-2004)*par_lg_POP[4,3] + par_lg_POP[4,2],
+                           Race == "NH"~ log(Year-2004)*par_lg_POP[5,3] + par_lg_POP[5,2],
+                           Race == "NH_White"~ log(Year-2004)*par_lg_POP[6,3] + par_lg_POP[6,2],
+                           Race == "Other"~ log(Year-2004)*par_lg_POP[7,3] + par_lg_POP[7,2],
+                           Race == "White"~ log(Year-2004)*par_lg_POP[8,3] + par_lg_POP[8,2]
+                           ),
+    
+    POP_mixed = (POP_linear + POP_log)/2,
+    
+    HH_linear = case_when(Race == "All"~ Year*par_lm_HH[1,3] + par_lm_HH[1,2],
+                           Race == "Asian"~ Year*par_lm_HH[2,3] + par_lm_HH[2,2],
+                           Race == "Black"~ Year*par_lm_HH[3,3] + par_lm_HH[3,2],
+                           Race == "Hispanic"~ Year*par_lm_HH[4,3] + par_lm_HH[4,2],
+                           Race == "NH"~ Year*par_lm_HH[5,3] + par_lm_HH[5,2],
+                           Race == "NH_White"~ Year*par_lm_HH[6,3] + par_lm_HH[6,2],
+                           Race == "Other"~ Year*par_lm_HH[7,3] + par_lm_HH[7,2],
+                           Race == "White"~ Year*par_lm_HH[8,3] + par_lm_HH[8,2]
+                           ),
+    
+    HH_log = case_when(Race == "All"~ log(Year-2004)*par_lg_HH[1,3] + par_lg_HH[1,2],
+                           Race == "Asian"~ log(Year-2004)*par_lg_HH[2,3] + par_lg_HH[2,2],
+                           Race == "Black"~ log(Year-2004)*par_lg_HH[3,3] + par_lg_HH[3,2],
+                           Race == "Hispanic"~ log(Year-2004)*par_lg_HH[4,3] + par_lg_HH[4,2],
+                           Race == "NH"~ log(Year-2004)*par_lg_HH[5,3] + par_lg_HH[5,2],
+                           Race == "NH_White"~ log(Year-2004)*par_lg_HH[6,3] + par_lg_HH[6,2],
+                           Race == "Other"~ log(Year-2004)*par_lg_HH[7,3] + par_lg_HH[7,2],
+                           Race == "White"~ log(Year-2004)*par_lg_HH[8,3] + par_lg_HH[8,2]
+                           ),
+    HH_mixed = (HH_linear + HH_log)/2,
+    
+    hr_linear = HH_linear/POP_linear,
+    hr_log = HH_log/POP_log,
+    hr_mixed = HH_mixed/POP_mixed
+    )
+  
+  df_i <- df_i %>% mutate( 
+    Population = case_when(
+      Year > 2019 ~ POP_mixed,
+      TRUE ~ as.numeric(Population)
+    ),
+    
+    Householder = case_when(
+      Year > 2019 ~ HH_mixed,
+      TRUE ~ as.numeric(Householder)
+      ),
+    head.rate = Householder/Population)
+    assign(county, df_i)
+}
+```
+
+
+
+
+
+```{r}
+for (i in county_list){
+  df <- get(i) %>% filter(Race %in% c("Asian", "Black", "Hispanic", "Other"))
+  
+  p.POP <- ggplot(df %>% filter(Year < 2020), aes(x = Year, y = Population)) +
+      geom_line(aes(color = Race)) +
+      geom_point(aes(color = Race)) + 
+      geom_line(data = df, aes(x = Year, y = POP_log, color = Race), linetype = "dashed") +
+      geom_point(aes(color = Race))
+
+  p.HH <- ggplot(df %>% filter(Year < 2020), aes(x = Year, y = Householder)) +
+  geom_point(aes(color = Race)) +
+  geom_line(aes(color = Race)) +
+  geom_line(data = df, aes(x = Year, y = HH_log, color = Race), linetype = "dashed") +
+  geom_point(aes(color = Race))
+
+  # p.head_rate <- ggplot(df %>% filter(Year < 2020), aes(x = Year, y = head.rate)) +
+  # geom_point(aes(color = Race)) +
+  # geom_line(aes(color = Race)) +
+  # geom_line(data = df, aes(x = Year, y = hr_log, color = Race), linetype = "dashed") +
+  # geom_point(aes(color = Race))
+
+  plot_grid(p.POP, p.HH, ncol = 1, labels = i)
+  
+  ggsave(paste0(df$County, ".png"), device = 'png', 
+         path = "Projection/log")
+}
+  
+```
+
+```{r}
+for (i in county_list){
+  df <- get(i) %>% filter(Race %in% c("Asian", "Black", "Hispanic", "NH_White", "Other"))
+
+  p.head_rate <- ggplot(df %>% filter(Year < 2020), aes(x = Year, y = head.rate)) +
+  geom_point(aes(color = Race)) +
+  geom_line(aes(color = Race)) +
+  geom_line(data = df, aes(x = Year, y = hr_mixed, color = Race), linetype = "dashed") +
+  geom_point(aes(color = Race))
+
+  ggsave(paste0(df$County, ".png"), device = 'png', 
+         path = "Projection/mixed/Headship_rate")
+}
+  
+```
+## Sum up to get all population:
+Asian + Black + Other + White = 10,392,118
+```{r}
+df_0 <- `Cook County` %>% filter(Year == 2020)
+for (i in county_list){
+  df <- get(i) %>% filter(Race %in% c("Asian", "Black", "White", "Other"),
+                          Year == 2050)
+  df_0 <- rbind(df_0, df)
+}
+POP_2050_forcast <- sum(df_0$Population)
+```
+
+
+```{r}
+df_0_All <- `Cook County` %>% filter(Year == 2020)
+for (i in county_list){
+  df <- get(i) %>% filter(Race %in% c("All"),
+                          Year == 2050)
+  df_0_All <- rbind(df_0_All, df)
+}
+
+POP_2050_using_all_pop <- sum(df_0_All$Population)
+```
+
+# Calculate headship rate in CMAP by race/ethnicity
+```{r}
+df_0_hr <- `Cook County` %>% filter(Year == 2020)
+for (i in county_list){
+  df <- get(i) %>% filter(Race %in% c("Asian", "Black", "Hispanic", "NH_White", "White", "NH", "Other"),
+                          Year == 2050)
+  df_0_hr <- rbind(df_0_hr, df)
+}
+
+POP_by_race <- aggregate(df_0_hr$POP_mixed, by = list(df_0_hr$Race), sum)
+names(POP_by_race) <- c("Race","Population")
+HH_by_race <- aggregate(df_0_hr$HH_mixed, by = list(df_0_hr$Race), sum)
+hr_by_race <- POP_by_race %>% mutate(Householder = HH_by_race$x,
+                                     avg.HHSize = Population/Householder,
+                                     head.rate = Householder/Population)
+```
+
+```{r}
+hr_by_race
+```
+

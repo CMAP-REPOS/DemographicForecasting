@@ -13,7 +13,7 @@ library(tigris)
 library(sf)
 
 #install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
-library(cmapgeo)
+#library(cmapgeo)
 
 ####### Part 1 : spatially relate 21 counties to PUMAs
 
@@ -31,7 +31,7 @@ intersects_21co <- function(in_sf) {
 puma_21co_sf <- pumas(state = "17") %>%
   bind_rows(pumas(state = "18")) %>%
   bind_rows(pumas(state = "55")) %>%
-  st_transform(cmap_crs) %>%
+  st_transform(3435) %>%
   filter(., intersects_21co(.)) %>%
   select(GEOID10, STATEFP10, PUMACE10, NAMELSAD10) %>%
   arrange(GEOID10) %>%

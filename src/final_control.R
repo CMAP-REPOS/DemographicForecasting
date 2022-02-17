@@ -8,7 +8,7 @@
 # production of secondary forecast products (such as Household population
 # and population by Race/Ethnicity), and export.
 
-outputfolder <- "C:/Users/amcadams/Documents/R/testprojection_extIL"
+outputfolder <- "C:/Users/amcadams/Documents/R/testprojection"
 
 # import forecast results
 

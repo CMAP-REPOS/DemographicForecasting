@@ -1,3 +1,5 @@
+#
+#
 
 
 # load in required packages
@@ -8,9 +10,9 @@ library(ggplot2)
 library(cmapplot)
 
 #run required scripts
-source("src/employment.R") # for Job Forecast graphs (for graphing purposes ONLY)
+#source("src/employment.R") # for Job Forecast graphs (for graphing purposes ONLY)
 
-source("src/workforce.R") # for Worker calculation graphs, is built off of Projection results
+#source("src/workforce.R") # for Worker calculation graphs, is built off of Projection results
 
 
 ######### GRAPHS OF JOB FORECASTS

@@ -89,7 +89,7 @@ while(i <= cycles){
     basepop <- POP[[series[i] %>% as.character()]] %>%
       group_by(Sex, Age, Region) %>%
       summarize(Population = sum(Population), .groups = "drop")
-    print(paste("Pulling past data:", startyear, sep=" "))
+    print(paste("Pulling past data:", projstart, sep=" "))
 
   }else{
     basepop <- results %>%
@@ -97,7 +97,7 @@ while(i <= cycles){
       rename(Population = ProjectedPop_final) %>%
       select(Sex, Age, Region, Population) %>%
       ungroup()
-    print(paste("Pulling projected data:", startyear, sep=" "))
+    print(paste("Pulling projected data:", projstart, sep=" "))
   }
 
   # Join GQ ratios to Population, calculates GQ population

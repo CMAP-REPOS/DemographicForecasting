@@ -43,8 +43,8 @@ c19deaths = 0
 
 #### set Target Net Migration (TNM) values
 # (see target_netmigration folder for options)
-# NOTE: due to modifications to how Net Migration is calculated, these TNM values are
-# a ballpark figure and may not be reached exactly for each projection period.
+# NOTE: due to modifications to how Net Migration is calculated and allocated across sex and age groups,
+# these TNM values are a ballpark figure and may not be reached for each projection period.
 
 TNMfilename <- "target_netmigration/TNM_workerjobbalance.xlsx"
 

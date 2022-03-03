@@ -8,7 +8,7 @@
 # production of secondary forecast products (such as Household population
 # and population by Race/Ethnicity), and export.
 
-outputfolder <- "C:/Users/amcadams/Documents/R/testprojection"
+outputfolder <- "C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/_Finalization/ModelOutput"
 
 # import forecast results
 
@@ -29,13 +29,13 @@ load("Output/recordkeeping.Rdata") #SETTINGS
 HeadshipSource = 1
 
 #### best available data option
-# NOT YET IMPLEMENTED
+########################### NOT YET IMPLEMENTED
     # this option will splice in known data for the years 2015 and 2020 when possible.
     # example: Group Quarters data by county is available for 2020, though not at age/sex
 # if 1: model will fetch known data from the Census and work it into the appropriate summary tables.
 # if 0: model will NOT grab known data and will only work with data and rates from the 2010 Census.
 
-recentData = 1
+recentData = 0
 
 ######### additional setup ------------
 
@@ -51,7 +51,7 @@ source("src/race_ethnicity_projection.R") # result: "raceeth_proj"
 source("src/HH_Control.R")
 
 # Households by Income quartile
-#source("src/income.R") # result: HH_incomes
+source("src/income.R") # result: HH_incomes
 
 
 
@@ -151,4 +151,4 @@ write.csv(HouseholdSize, "HouseholdSize.csv")
 write.csv(workers, "workers.csv")
 write.csv(HH_incomes, "Households_IncomeQuantiles.csv")
 
-#setwd("~/GitHub/DemographicForecasting")
+setwd("~/GitHub/DemographicForecasting")

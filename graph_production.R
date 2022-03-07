@@ -515,3 +515,26 @@ q <- pastNetMig %>% group_by(Period, Region, agegroup, Source) %>% summarize(Net
 q
 
 
+##### Chart of ASFRs, CMAP only
+dfASFRs <- ASFR_projections %>% filter(Region == "CMAP Region") %>%
+  pivot_longer(cols = starts_with("ASFR"), names_to = "Year", values_to = "ASFR") %>%
+  rowwise() %>%
+  mutate(Year = as.numeric(str_split(Year, "R")[[1]][2]),
+         ASFR = ASFR * 1000) %>%
+  arrange(Year) %>%
+  filter(Year %% 5 == 0)
+
+asfrp <- ggplot(dfASFRs, aes(x = Year, y = ASFR, group = Age, color = Age)) +
+  cmap_color_discrete("community") +
+  labs(title = "CMAP Region Age-Specific Fertility Rates") +
+  ylab("ASFR (Births per 1000)") +
+  geom_line() + geom_point() +
+  scale_y_continuous(limits = c(0,125), breaks = seq(0,125,20)) +
+  scale_x_continuous(breaks = seq(1990,2050,10)) +
+  theme_cmap(legend.max.columns = 6)
+
+finalize_plot(asfrp, sidebar_width = 0, mode = c("plot", "png"),
+              filename = "ASFR_plot.png",
+              caption = "Source: Census Bureau 1990-2010, CMAP Demographic Projection 2020-2050")
+
+

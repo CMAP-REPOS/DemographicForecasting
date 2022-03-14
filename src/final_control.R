@@ -8,7 +8,7 @@
 # production of secondary forecast products (such as Household population
 # and population by Race/Ethnicity), and export.
 
-outputfolder <- "C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/_Finalization/ModelOutput"
+outputfolder <- "C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/_Finalization/zeroMig_ModelOutput"
 
 # import forecast results
 
@@ -51,7 +51,7 @@ source("src/race_ethnicity_projection.R") # result: "raceeth_proj"
 source("src/HH_Control.R")
 
 # Households by Income quartile
-source("src/income.R") # result: HH_incomes
+#source("src/income.R") # result: HH_incomes
 
 
 

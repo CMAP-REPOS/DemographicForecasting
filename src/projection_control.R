@@ -54,7 +54,7 @@ TNMfilename <- "target_netmigration/TNM_workerjobbalance.xlsx"
 #   if 0: no override applied
 #   if 1: migration overrides will be applied. (see Projection.R lines 363-375)
 
-override = 1
+override = 0
 
 #### Zero Net Migration
 # This option will force net migration to 0.

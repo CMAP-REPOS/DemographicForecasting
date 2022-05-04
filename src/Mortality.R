@@ -112,7 +112,7 @@ temp[7:13] <- temp$'2035'
 
 Mort_Proj <- rbind(Mort_Proj, temp)
 Mort_Proj <- Mort_Proj %>% filter_at(vars(4:13), all_vars(. < 1))
-
+#Mort_Proj_full <- Mort_Proj
 
 # Calculate midpoints
 Mort_Proj <- Mort_Proj %>% mutate('Mort2022.5'=rowMeans(across('2020':'2025')),

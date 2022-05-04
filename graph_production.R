@@ -526,7 +526,7 @@ dfASFRs <- ASFR_projections %>% filter(Region == "CMAP Region") %>%
 
 asfrp <- ggplot(dfASFRs, aes(x = Year, y = ASFR, group = Age, color = Age)) +
   cmap_color_discrete("community") +
-  labs(title = "CMAP Region Age-Specific Fertility Rates") +
+  labs(title = "CMAP region age-specific fertility rates") +
   ylab("ASFR (Births per 1000)") +
   geom_line() + geom_point() +
   scale_y_continuous(limits = c(0,125), breaks = seq(0,125,20)) +
@@ -534,7 +534,7 @@ asfrp <- ggplot(dfASFRs, aes(x = Year, y = ASFR, group = Age, color = Age)) +
   theme_cmap(legend.max.columns = 6)
 
 finalize_plot(asfrp, sidebar_width = 0, mode = c("plot", "png"),
-              filename = "ASFR_plot.png",
+              filename = "ASFR_plot_titlefix.png",
               caption = "Source: Census Bureau 1990-2010, CMAP Demographic Projection 2020-2050")
 
 

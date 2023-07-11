@@ -22,7 +22,6 @@ PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=
 
 ### import helpers
 # COUNTIES and CMAP_GEOIDS
-load("Output/importhelpers.Rdata") # see setup_control.R for details
 
 # Table names for Decennial Census data pull
 POP_TABLES <- c(

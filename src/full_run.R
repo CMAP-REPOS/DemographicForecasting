@@ -2,7 +2,7 @@
 
 ##### full_run.R
 
-#what the diff fertliity things are/how to program them in -- set up control
+#what the diff fertility things are/how to program them in -- set up control
 
 #set params (maybe this should be its own file; think of what else could go in)
 

@@ -26,10 +26,12 @@ for (YEAR in MIG_YEARS) {
   MIG_POP <- bind_rows(MIG_POP, POP[[as.character(YEAR)]])
 }
 
-MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>% group_by(Region, Year, Age, Sex) %>%
-                              summarise(Population = sum(Population), .groups="drop") %>% #remember to remove this filter
-                              mutate(Year2 = case_when(Year %in% 2013:2014  ~ 2014,
-                                                       Year %in% 2018:2019 ~ 2018)) %>% select(-Year)
+MIG_POP <- MIG_POP %>% select(-GEOID, -State) %>%
+  group_by(Region, Year, Age, Sex) %>%
+  summarise(Population = sum(Population), .groups="drop") %>% #remember to remove this filter
+  mutate(Year2 = case_when(Year %in% 2013:2014  ~ 2014,
+                           Year %in% 2018:2019 ~ 2018)) %>%
+  select(-Year)
 
 MIG_POP <- MIG_POP %>%
   group_by(Age, Sex, Region, Year2) %>%

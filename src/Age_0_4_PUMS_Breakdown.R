@@ -13,7 +13,7 @@ library(tigris)
 library(sf)
 
 #install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
-#library(cmapgeo)
+library(cmapgeo)
 
 ####### Part 1 : spatially relate 21 counties to PUMAs
 

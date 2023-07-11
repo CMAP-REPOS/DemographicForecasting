@@ -61,31 +61,35 @@ LT <- tibble(Age = unique(Deaths$Age)) %>%
   mutate(x = as.numeric(str_split_fixed(Age, " ", 2)[,1])) %>%
   arrange(x) %>%
   add_column(Ax = c(0.1,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5))
+#i think Ax is an assumption about when in the internal people will die; we assume the average person that dies in the five year interval dies halfway through
+#but for babies, much more likely to die earlier in interval; we expect more deaths right after birth than 9 months after birth
 
+
+#see page 54 of forecast book for variable definitions
 LifeTable <- MORT_DATA %>%
   left_join(LT, by="Age") %>%
   select(Region, Sex, Age, Mortality, Population, x, Ax) %>%
   arrange(Region, desc(Sex), x) %>%
   group_by(Region, Sex) %>%
-  mutate(Mx = (Mortality/as.numeric(Population)),
-    n = case_when(Age == '0 to 1 years' ~ 1,
+  mutate(Mx = (Mortality/as.numeric(Population)), #Mortality rate (using mid-year population)
+    n = case_when(Age == '0 to 1 years' ~ 1, # n -- number of years in interval
                   Age == '1 to 4 years' ~ 4,
                   Age == '85 years and over' ~ 2/Mx,
                   TRUE ~ 5),
     Qx = ifelse(Age == '85 years and over', 1,  # 85+ should always be 1
-                (n*Mx/(1+n*(1-Ax)*Mx))),
-    Px = (1-Qx),
-    Ix = head(accumulate(Px, `*`, .init=100000), -1), # 0-1 should always be 100000
-    Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))),
-    Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))),
+                (n*Mx/(1+n*(1-Ax)*Mx))), #proportion that will die during that age internal; formula to adjust for mid-year population denom
+    Px = (1-Qx), #probabilty of living through age period
+    Ix = head(accumulate(Px, `*`, .init=100000), -1), # 0-1 should always be 100000 -- number of people who reach age interval; 100000*p
+    Dx = (ifelse(Age == '85 years and over', Ix, Ix -lead(Ix))), #number of people that will die during internal
+    Lx = (ifelse(Age == '85 years and over', Ix/Mx, n*(lead(Ix)+(Ax*Dx)))), # of person years lived
     temp = ifelse(Age == '85 years and over', Lx, 0),
-    Tx = (ifelse(Age == '85 years and Over', Lx, accumulate(Lx, `+`, .dir = "backward"))),
-    Ex = (Tx/Ix),
+    Tx = (ifelse(Age == '85 years and Over', Lx, accumulate(Lx, `+`, .dir = "backward"))), #cumulative number of person years lived after internval
+    Ex = (Tx/Ix), #life expectancy, number of people over number of future person years
     Sx = case_when(Age == '0 to 1 years' ~ Lx/Ix,
                    Age == '1 to 4 years' ~ Lx/(lag(Lx)*4),
                    Age == '5 to 9 years' ~ Lx/(lag(Lx) + lag(Lx, n = 2)),
                    Age == '85 years and over' ~ Lx/(Lx +lag(Lx)),
-                   TRUE ~ Lx/lag(Lx))
+                   TRUE ~ Lx/lag(Lx)) #survival rate in life years
   ) %>%
   select(-temp) %>%
   relocate(c(x, n, Ax), .before= Mortality)%>%

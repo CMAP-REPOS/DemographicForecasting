@@ -8,7 +8,7 @@
 # production of secondary forecast products (such as Household population
 # and population by Race/Ethnicity), and export.
 
-outputfolder <- "C:/Users/amcadams/OneDrive - Chicago Metropolitan Agency for Planning/Documents/Demographic Model Project/_Finalization/zeroMig_ModelOutput"
+# outputfolder <- "output_testing/"
 
 # import forecast results
 
@@ -102,11 +102,11 @@ race_eth <- raceeth_proj %>%
 
 ################ export files -----------
 
-setwd(outputfolder)
+# setwd(outputfolder)
 
 ###### General Summary Data
-dir.create("1_summary")
-setwd("1_summary")
+# dir.create("1_summary")
+# setwd("1_summary")
 
 write.csv(pop_summary, "totalpop_summary.csv")
 write.csv(Households_summary, "Households_summary.csv")
@@ -116,9 +116,9 @@ write.csv(race_eth, "pop_by_race_ethnicity.csv")
 
 
 ###### Detailed Data
-setwd(outputfolder)
-dir.create("2_detail")
-setwd("2_detail")
+# setwd(outputfolder)
+# dir.create("2_detail")
+# setwd("2_detail")
 
 write.csv(results, "export_popproj.csv")
 write.csv(components_tbl, "componentsofchange.csv")
@@ -132,9 +132,9 @@ write.csv(HouseholdPop_bySex, "HouseholdPop_bySex.csv")
 #write.csv(HHRE_pop, "HHPop_byRaceEthnicity.csv")
 
 ###### Specialty Formatting (Travel Model)
-setwd(outputfolder)
-dir.create("3_travelmodel")
-setwd("3_travelmodel")
+# setwd(outputfolder)
+# dir.create("3_travelmodel")
+# setwd("3_travelmodel")
 
 write.csv(travelModelHHpop, "travelModelHHpop.csv")
 write.csv(travelModelHeadsofHHs, "travelModelHeadsofHHs.csv")
@@ -143,12 +143,12 @@ write.csv(travelModel_GQNIOther_byAge, "travelModel_GQNIOther_byAge.csv")
 write.csv(travelModel_collegemil, "travelModel_collegemil.csv")
 
 ###### Specialty Formatting (Other)
-setwd(outputfolder)
-dir.create("4_otheroutput")
-setwd("4_otheroutput")
+# setwd(outputfolder)
+# dir.create("4_otheroutput")
+# setwd("4_otheroutput")
 
 write.csv(HouseholdSize, "HouseholdSize.csv")
 write.csv(workers, "workers.csv")
-write.csv(HH_incomes, "Households_IncomeQuantiles.csv")
+# write.csv(HH_incomes, "Households_IncomeQuantiles.csv")
 
-setwd("~/GitHub/DemographicForecasting")
+# setwd("~/github_repos/DemographicForecasting")

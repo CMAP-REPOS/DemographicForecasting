@@ -12,7 +12,7 @@ library(tidycensus)
 # set up parameters
 Decennial_YEARS <- c(2010) #ideally add 2020 when that data is available
 
-load("Output/importhelpers.Rdata") #COUNTIES, CMAP_GEOIDS
+# load("Output/importhelpers.Rdata") #COUNTIES, CMAP_GEOIDS
 
 #pull the variables needed and reformat the name (Category)
 GQREvariables <- c("PCT020001", #total

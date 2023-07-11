@@ -14,7 +14,7 @@ library(tidycensus)
 load("Output/POP_PEP.Rdata") # POP
 
 # import helpers
-load("Output/importhelpers.Rdata") # COUNTIES and CMAP_GEOIDS, see setup_control.R for details
+# load("Output/importhelpers.Rdata") # COUNTIES and CMAP_GEOIDS, see setup_control.R for details
 
 GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
 

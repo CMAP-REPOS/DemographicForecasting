@@ -126,9 +126,9 @@ while(i <= cycles){
   i <- i+1
 }
 
-#save(HHPOP_PROJ, file="Output/HHPOP_PROJ.Rdata")
-#save(HH_PROJ, file="Output/HH_Proj.Rdata")
-#save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
+save(HHPOP_PROJ, file="Output/HHPOP_PROJ.Rdata")
+save(HH_PROJ, file="Output/HH_Proj.Rdata")
+save(GQ_PROJ, file="Output/GQ_Proj.Rdata")
 
 
 #---------------------- End of loop

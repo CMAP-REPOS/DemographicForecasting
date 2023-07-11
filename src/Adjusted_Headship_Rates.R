@@ -10,12 +10,12 @@ library(readxl)
 
 # Parameters ---------------------------------------------------------
 
-load("Output/Migration_Projections.Rdata") #Mig_Proj
+# load("Output/Migration_Projections.Rdata") #Mig_Proj -- no longer seems to exist; hopefully not needed
 load("Output/POP_PEP.Rdata") #POP
 load("Output/GQData2.Rdata") #GQratios
 load("Output/PUMS_HeadshipRates.Rdata") #HEADSHIP_RATES from 2019 PUMS data
 
-load("Output/importhelpers.Rdata") # COUNTIES, CMAP_GEOIDS
+# load("Output/importhelpers.Rdata") # COUNTIES, CMAP_GEOIDS
 
 HH_Year = 2019 #base year
 

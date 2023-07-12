@@ -6,6 +6,21 @@
 
 #set params (maybe this should be its own file; think of what else could go in)
 
+
+# fMethod = 1 # see set up controls
+# HeadshipSource = 1 #see final control file
+# recentData = 0  #see final control file
+#
+# EXTIL = 0 #see projection control
+#
+#
+# setup_options <- c('fMethod' = fMethod) # add additional named items when other options are implemented/exercised.
+#
+# SETTINGS <- list()
+# SETTINGS <- list("Setup Options" = setup_options, "Projection Options" = NULL, "Export Options" = NULL)
+# save(SETTINGS, file = "Output/recordkeeping.Rdata")
+
+
 COUNTIES <- list(
   IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
          7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties
@@ -13,19 +28,6 @@ COUNTIES <- list(
   WI = c(59, 101, 127)                       # Wisconsin counties
 )
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
-
-fMethod = 1 # see set up controls
-HeadshipSource = 1 #see final control file
-recentData = 0  #see final control file
-
-EXTIL = 0 #see projection control
-
-
-setup_options <- c('fMethod' = fMethod) # add additional named items when other options are implemented/exercised.
-
-SETTINGS <- list()
-SETTINGS <- list("Setup Options" = setup_options, "Projection Options" = NULL, "Export Options" = NULL)
-save(SETTINGS, file = "Output/recordkeeping.Rdata")
 
 source("src/POP_PEP.R") #1
 

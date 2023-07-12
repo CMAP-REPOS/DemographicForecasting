@@ -1,4 +1,9 @@
-# CMAP | Noel Peterson | 7/21
+# CMAP | Noel Peterson, Alex Bahls | 7/12
+
+# AB -- still need to update PUMAs, not sure if automated way to get 2020 boundaries yet
+#https://www.census.gov/geographies/mapping-files/2020/geo/tiger-line-file.html ; https://www2.census.gov/geo/tiger/TIGER2020/PUMA20/
+
+# ab -- updated the year of the ACS but it may be running iwth the old PUMA files;
 
 # This script has two parts: first, it spatially relates 2010 PUMAs to each of the four modeling regions.
 # Second, it pulls 2019 ACS data (by PUMA) to determine an estimate of 0-1 and 1-4 year-old individuals
@@ -56,7 +61,7 @@ p <- ggplot() +
   geom_sf(data=puma_21co_sf, mapping=aes(fill=Region), col="#000000", alpha=0.2) +
   #geom_sf_text(data=puma_21co_sf, mapping=aes(label=GEOID10), col="#990000") +
   theme_void()
-#p
+# p
 
 # Save data frame of PUMA region assignments to join to PUMS data
 puma_region <- puma_21co_sf %>%
@@ -65,14 +70,14 @@ puma_region <- puma_21co_sf %>%
 
 save(puma_region, file="Output/PumaRegions.Rdata") # puma_region, used in PUMS_Headship_Rates.R and income.R
 
-############ Part 2: pull 2019 ACS population data by PUMA, calculate proportion of 0-4 age group that is 0-1 yrs old
+############ Part 2: pull 2021 ACS population data by PUMA, calculate proportion of 0-4 age group that is 0-1 yrs old
 
 # Get PUMS person-level age data
-pums_il <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "17", year = 2019, survey = "acs5",
+pums_il <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "17", year = 2021, survey = "acs5",
                     variables_filter = list(AGEP = 0:4), show_call = TRUE)
-pums_in <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "18", year = 2019, survey = "acs5",
+pums_in <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "18", year = 2021, survey = "acs5",
                     variables_filter = list(AGEP = 0:4), show_call = TRUE)
-pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "55", year = 2019, survey = "acs5",
+pums_wi <- get_pums(variables = c("PUMA", "AGEP", "SEX"), state = "55", year = 2021, survey = "acs5",
                     variables_filter = list(AGEP = 0:4), show_call = TRUE)
 
 # Join PUMS data to PUMA region assignments

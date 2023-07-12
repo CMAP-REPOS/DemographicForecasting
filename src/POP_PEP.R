@@ -18,7 +18,7 @@ library(readxl)
 
 ### Years for which to pull data
 #Census Population
-POP_YEARS <- c(2010, 2020)  # 1990 not available via API
+POP_YEARS <- c(2000, 2010, 2020)  # 1990 not available via API
 #Census Population Estimates Program (PEP)
 PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019)
 # PEP_YEARS <- c(2016, 2017, 2018, 2019,2021)
@@ -31,7 +31,7 @@ PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=
 
 # Table names for Decennial Census data pull
 POP_TABLES <- c(
-  # `2000` = "PCT0130",
+  `2000` = "PCT0130",
   `2010` = "P0120",
   `2020` = "P12_"
 )
@@ -48,7 +48,7 @@ POP_DATA <- tibble()
 POP <- list()
 for (YEAR in POP_YEARS) {
 
-  if (YEAR == 2010) {
+  if (YEAR <= 2010) {
 
   # Compile list of variables to download
   SF1_VARS <- load_variables(YEAR, "sf1")

@@ -78,11 +78,15 @@ GQ <- GQ %>%
 
 # Remove the rows for Population Totals, sum up the GQ populations by GQ type age and sex, fix 0-4 Age value
 
+new_age_groups <- c("Under 20 years","Under 25 years","25 years and over", "65 years and over")
+
 GQlong <- GQ %>% filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%
   group_by(Region, Sex, Age, Concept) %>%
   summarize(Population = sum(Value)) %>%
   mutate(Age = case_when(Age == "Under 5 years" ~ "0 to 4 years",
-                         TRUE ~ Age)) %>%
+                         TRUE ~ Age),
+         Age = gsub("\u00A0", " ", Age)) %>% #somehow a utf charecter space got in; I blame the API for now
+  filter(!Age %in% new_age_groups) %>%
   ungroup()
 
 
@@ -95,8 +99,7 @@ pop2020 <- POP[["2020"]] %>%
 
 # Join the GQ sums to 2020 population, calculate the GQ ratios for every GQ type
 # GQ ratio = GQ pop / (GQ pop + nonGQ pop)
-GQratios <- left_join(GQlong, pop2020, by=c("Region", "Age", "Sex"))
-%>%
+GQratios <- left_join(GQlong, pop2020, by=c("Region", "Age", "Sex")) %>%
   mutate(ratio = Population / (Population + nonGQpop)) %>%
   mutate(Concept = word(Concept, start = 5, end = 6 )) %>% #shorten the Concept col values (types of GQs)
   select(-Population, -nonGQpop) %>%
@@ -113,7 +116,7 @@ GQratios <- GQratios %>%
          GQ_NonInst_Other = OTHER.NONINSTITUTIONAL) %>%
   select(-MILITARY.QUARTERS)
 
-# split out Military population total by age and sex - this value is held constant in future projections
+# split out Military population total by age and sex - this value is held constant in future projections -- note that everywhere outside of CMAP region has been 0 mliitary in past few analyses
 GQ_Military <- GQ %>%
   filter(Concept == "GROUP QUARTERS POPULATION IN MILITARY QUARTERS BY SEX BY AGE") %>%
   filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Female Total')) %>%

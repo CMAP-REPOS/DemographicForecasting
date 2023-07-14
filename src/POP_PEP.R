@@ -66,25 +66,6 @@ for (YEAR in POP_YEARS) {
     POP_DATA <- bind_rows(POP_DATA, TEMP)
   }
 
-  }
-
-  else {
-    DHC_VARS <- load_variables(YEAR, "dhc")
-    POP_VARS <- DHC_VARS %>%
-      filter(str_starts(name, paste0("^", POP_TABLES[[as.character(YEAR)]]))) %>%
-      mutate(
-        Category = str_replace_all(label, "!!.*?", " "),
-        Category = str_replace(Category, ".*? ", "")
-      )
-
-    for (STATE in names(COUNTIES)) {
-      TEMP <- get_decennial(geography = "county", variables = POP_VARS$name,
-                            county = COUNTIES[[STATE]], state = STATE,
-                            year = YEAR, sumfile = "dhc", cache_table = TRUE)
-      POP_DATA <- bind_rows(POP_DATA, TEMP)
-    }
-  }
-
   POP[[as.character(YEAR)]] <- POP_DATA %>%
     left_join(POP_VARS, by = c("variable" = "name")) %>%
     select(-variable, -label, -concept) %>%
@@ -108,7 +89,54 @@ for (YEAR in POP_YEARS) {
     summarize(Population = sum(Population)) %>%
     drop_na() %>%
     ungroup()
+
+  }
+
+  else {
+    DHC_VARS <- load_variables(YEAR, "dhc")
+    POP_VARS <- DHC_VARS %>%
+      filter(str_starts(name, paste0("^", POP_TABLES[[as.character(YEAR)]]))) %>%
+      mutate(
+        Category = str_replace_all(label, "!!.*?", " "),
+        Category = str_replace(Category, ".*? ", "")
+      )
+
+    for (STATE in names(COUNTIES)) {
+      TEMP <- get_decennial(geography = "county", variables = POP_VARS$name,
+                            county = COUNTIES[[STATE]], state = STATE,
+                            year = YEAR, sumfile = "dhc", cache_table = TRUE)
+      POP_DATA <- bind_rows(POP_DATA, TEMP)
+    }
+
+    POP[[as.character(YEAR)]] <- POP_DATA %>%
+      left_join(POP_VARS, by = c("variable" = "name")) %>%
+      select(-variable, -label, -concept) %>%
+      separate_wider_delim(NAME, delim = ", ",names = c("County", "State")) %>%
+      separate_wider_delim(Category, delim = ":", names = c(NA,"Sex","Age") ,too_few = "align_end") %>%
+      mutate(Age = case_when(Age == "" ~ "Total",
+                             T ~ str_trim(Age)),
+             Sex = str_trim(Sex),
+             Year = YEAR,
+             Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+                                State == "Illinois" ~ "External IL",
+                                State == "Indiana" ~ "External IN",
+                                State == "Wisconsin" ~ "External WI"),
+             Age = case_when(Age %in% c("Under 5 years") ~ "0 to 4 years",
+                             Age %in% c("15 to 17 years", "18 and 19 years") ~ "15 to 19 years",
+                             Age %in% c("20 years", "21 years", "22 to 24 years") ~ "20 to 24 years",
+                             Age %in% c("60 and 61 years", "62 to 64 years") ~ "60 to 64 years",
+                             Age %in% c("65 and 66 years", "67 to 69 years") ~ "65 to 69 years",
+                             TRUE ~ Age)
+      ) %>%
+      filter(Sex != "Total" & Age != "Total" ) #probably a way to make efficient
+      rename(Population = value) %>%
+      group_by(GEOID, County, State, Sex, Age, Year, Region) %>%
+      summarize(Population = sum(Population)) %>%
+      drop_na() %>%
+      ungroup()
+  }
 }
+
 
 # Pull PEP data ------------------------
 PEP_DATA <- tibble()

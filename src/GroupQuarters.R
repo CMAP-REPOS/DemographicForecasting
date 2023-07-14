@@ -1,4 +1,7 @@
-# CMAP | Mary Weber, Alexis McAdams | 12/4/2020
+# CMAP | Mary Weber, Alexis McAdams, Alex Bahls | 7/14/2023
+
+#why dont we pull PC07?
+#getting diff nubmer of results, confirm why
 
 ##### GroupQuarters.R
 
@@ -16,15 +19,15 @@ load("Output/POP_PEP.Rdata") # POP
 # import helpers
 # load("Output/importhelpers.Rdata") # COUNTIES and CMAP_GEOIDS, see setup_control.R for details
 
-GQ_TABLES <- c("PCO010", "PCO009", "PCO008", "PCO006", "PCO005", "PCO004", "PCO003")
+GQ_TABLES <- c("PCO10", "PCO9", "PCO8", "PCO6", "PCO5", "PCO4", "PCO3")
 
-YEAR <- 2010
+YEAR <- 2020
 
 # Step 1: fetch historical GQ data ------------------------------------------
 
 # Compile list of variables to download
-SF1_VARS <- load_variables(YEAR, "sf1")
-GQ_VARS <- SF1_VARS %>%
+DHC_VARS <- load_variables(YEAR, "dhc")
+GQ_VARS <- DHC_VARS %>%
   filter(str_starts(name, paste0("^", paste(GQ_TABLES, collapse="|^")))) %>%
   mutate(
     Category = str_replace_all(label, ".*\\)!!", ""),
@@ -36,7 +39,7 @@ GQ_DATA <- tibble()
 for (STATE in names(COUNTIES)) {
   TEMP <- get_decennial(geography = "county", variables = GQ_VARS$name,
                         county = COUNTIES[[STATE]], state = STATE,
-                        year = YEAR, survey = "sf1", cache_table = TRUE)
+                        year = YEAR, sumfile = "dhc", cache_table = TRUE)
   GQ_DATA <- bind_rows(GQ_DATA, TEMP)
 }
 
@@ -47,13 +50,17 @@ GQ <- GQ_DATA %>%
   rename(Concept = concept,
          Value = value,
          Variable = variable) %>%
-  separate(NAME, c("County", "State"), sep = "\\, ") %>%
-  mutate(
+  separate_wider_delim(NAME, delim = ", ",names = c("County", "State")) %>%
+  separate_wider_delim(Category, delim = ":", names = c(NA,"Sex","Age") ,too_few = "align_end") %>%  #might want to remove the last command
+  mutate(Age = case_when(Age == "" ~ "Total",
+                         T ~ str_trim(Age)),
+         Sex = case_when(str_detect(Sex,"Total") ~ "Total",
+                         T ~ str_trim(Sex)),
     Year = YEAR,
-    Category = case_when(str_starts(Category, "^Total") ~ "County Total",
-                         Category == "Male" ~ "County Male Total",
-                         Category == "Female" ~ "County Female Total",
-                         TRUE ~ Category),
+    Category = case_when(Age == "Total" & Sex == "Total" ~ "County Total",
+                         Age == "Total" & Sex == "Male" ~ "County Male Total",
+                         Age == "Total" & Sex == "Female"  ~ "County Female Total",
+                         TRUE ~ paste0(Sex," ",Age)),
     Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
                        State == "Illinois" ~ "External IL",
                        State == "Indiana" ~ "External IN",
@@ -82,13 +89,14 @@ GQlong <- GQ %>% filter(Sex != "All") %>% filter(!Age %in% c('Male Total', 'Fema
 # Step 2: calculate GQ Ratios ------------------------------------------
 
 # import the 2010 Census Population (these values are the NON GQ population)
-pop2010 <- POP[["2010"]] %>%
+pop2020 <- POP[["2020"]] %>%
   group_by(Region, Age, Sex) %>%
   summarize(nonGQpop = sum(Population))
 
-# Join the GQ sums to 2010 population, calculate the GQ ratios for every GQ type
+# Join the GQ sums to 2020 population, calculate the GQ ratios for every GQ type
 # GQ ratio = GQ pop / (GQ pop + nonGQ pop)
-GQratios <- left_join(GQlong, pop2010, by=c("Region", "Age", "Sex")) %>%
+GQratios <- left_join(GQlong, pop2020, by=c("Region", "Age", "Sex"))
+%>%
   mutate(ratio = Population / (Population + nonGQpop)) %>%
   mutate(Concept = word(Concept, start = 5, end = 6 )) %>% #shorten the Concept col values (types of GQs)
   select(-Population, -nonGQpop) %>%

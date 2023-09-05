@@ -48,7 +48,7 @@ c19deaths = 0
 
 TNMfilename <- "target_netmigration/TNM_workerjobbalance.xlsx"
 
-#### set coarse Migration overrides
+#### set coarse Migration overrides (not used in other code)
 # these options crudely modify the CMAP Region's projected Net Migration values in order to more closely
 # match the recent distribution of Net Migrants (aka shape of # net migrants v age plot).
 #   if 0: no override applied
@@ -56,7 +56,7 @@ TNMfilename <- "target_netmigration/TNM_workerjobbalance.xlsx"
 
 override = 1
 
-#### Zero Net Migration
+#### Zero Net Migration (not used in other code)
 # This option will force net migration to 0.
 # Used to examine Natural Increase (or Decrease) impacts on population.
 #   if 0: no override applied

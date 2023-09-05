@@ -1,8 +1,7 @@
-# CMAP | Alexis McAdams, Mary Weber | 7/12/2021
+# CMAP | Alexis McAdams, Mary Weber, Alex Bahls | 7/17/2023
 
 # This script calculates estimated Net Migration rates by sex, age and region
 # for the most recent period of data we have (2014-2018).
-
 
 library(dplyr)
 library(tidyverse)

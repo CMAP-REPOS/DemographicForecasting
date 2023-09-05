@@ -3,7 +3,7 @@
 ##### full_run.R
 
 #what the diff fertility things are/how to program them in -- set up control
-
+#elim many to many as much as possible
 #set params (maybe this should be its own file; think of what else could go in)
 
 

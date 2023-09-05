@@ -16,6 +16,7 @@ library(tidyverse)
 library(tidycensus)
 library(tigris)
 library(sf)
+library(units)
 
 #install_github("CMAP-REPOS/cmapgeo", build_vignettes=TRUE)
 library(cmapgeo)
@@ -33,23 +34,32 @@ intersects_21co <- function(in_sf) {
 }
 
 # Get PUMAs overlapping the 21-counties, and assign each to a model region
-puma_21co_sf <- pumas(state = "17") %>%
-  bind_rows(pumas(state = "18")) %>%
-  bind_rows(pumas(state = "55")) %>%
+puma_21co_sf <- pumas(state = "17", year= 2022) %>% #default year is 2021 -- comes with 2010 GEOids and boundaries
+  bind_rows(pumas(state = "18", year= 2022)) %>%
+  bind_rows(pumas(state = "55", year= 2022)) %>%
   st_transform(3435) %>%
   filter(., intersects_21co(.)) %>%
-  select(GEOID10, STATEFP10, PUMACE10, NAMELSAD10) %>%
-  arrange(GEOID10) %>%
-  filter(!(GEOID10 %in% c(  # Exclude PUMAs with only a small overlap
-    "1702200", "1702501",
-    "1800402", "1800700",
-    "5500800", "5501001", "5502400", "5540301", "5570101", "5570201"
-  ))) %>%
+  select(GEOID20, STATEFP20, PUMACE20, NAMELSAD20) %>%
+  arrange(GEOID20)
+
+calc_intersect <- st_intersection(puma_21co_sf, cmap_21co_sf) %>%
+  mutate(intersect_area = st_area(.)) %>%   # create new column with shape area
+  dplyr::select(GEOID20, intersect_area) %>%   # only select columns needed to merge
+  st_drop_geometry() %>%
+  group_by(GEOID20) %>%
+  mutate(total_intersect = sum(intersect_area)) %>%
+  distinct(GEOID20,total_intersect)
+
+puma_21co_sf <- puma_21co_sf %>%
+  left_join(calc_intersect) %>%
+  mutate(area = st_area(puma_21co_sf)) %>%
+  filter(total_intersect > set_units(1, US_survey_foot^2)) %>% #need over one foot of intersect -- drops 10 PUMAs
+  #mutate(percent_area = total_intersect/area) %>%  #the ones with little intersectoin include water and are fine; one has 20% overlap which seems fine?
   mutate(Region = case_when(
-    STATEFP10 == "18" ~ "External IN",
-    STATEFP10 == "55" ~ "External WI",
+    STATEFP20 == "18" ~ "External IN",
+    STATEFP20 == "55" ~ "External WI",
     TRUE ~ if_else(
-      str_detect(NAMELSAD10,"(?i)Chicago|Cook|DuPage|Kane|Kendall|Lake|McHenry|Will"),
+      str_detect(NAMELSAD20,"(?i)Chicago|Cook|DuPage|Kane|Kendall|Lake|McHenry|Will"),
       "CMAP Region",
       "External IL"
     )
@@ -66,7 +76,7 @@ p <- ggplot() +
 # Save data frame of PUMA region assignments to join to PUMS data
 puma_region <- puma_21co_sf %>%
   as.data.frame() %>%
-  select(GEOID10, STATEFP10, PUMACE10, Region)
+  select(GEOID20, STATEFP20, PUMACE20, Region)
 
 save(puma_region, file="Output/PumaRegions.Rdata") # puma_region, used in PUMS_Headship_Rates.R and income.R
 
@@ -87,7 +97,7 @@ pums_21co <- bind_rows(pums_il, pums_in) %>%
   mutate(AgeGroup = if_else(ExactAge == 0, "Less than 1 year", "1 to 4 years"),
          Sex = if_else(SEX == 1, "Male", "Female")) %>%
   select(SERIALNO, PUMA, ST, PWGTP, ExactAge, AgeGroup, Sex) %>%
-  right_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10"))
+  right_join(puma_region, by=c("PUMA" = "PUMACE20", "ST" = "STATEFP20"))
 
 # Summarize PUMS by age and region
 AGE_0_4_FREQ <- pums_21co %>%

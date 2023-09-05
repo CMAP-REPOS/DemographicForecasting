@@ -19,9 +19,9 @@ library(readxl)
 ### Years for which to pull data
 #Census Population
 POP_YEARS <- c(2000, 2010, 2020)  # 1990 not available via API
+
 #Census Population Estimates Program (PEP)
-PEP_YEARS <- c(`4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019)
-# PEP_YEARS <- c(2016, 2017, 2018, 2019,2021)
+PEP_YEARS <- c(2021, 2022) #2020 is based on 2010 vintage and doesnt use census
 
 #  note: `#` names in PEP_YEARS are necessary to filter correct years of data from PEP pull (see tidycensus documentation, "time_series" argument)
 # PEP DATE_CODE documentation: https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-county-detail.html
@@ -128,7 +128,7 @@ for (YEAR in POP_YEARS) {
                              Age %in% c("65 and 66 years", "67 to 69 years") ~ "65 to 69 years",
                              TRUE ~ Age)
       ) %>%
-      filter(Sex != "Total" & Age != "Total" ) #probably a way to make efficient
+      filter(Sex != "Total" & Age != "Total") %>% #probably a way to make efficient
       rename(Population = value) %>%
       group_by(GEOID, County, State, Sex, Age, Year, Region) %>%
       summarize(Population = sum(Population)) %>%
@@ -145,17 +145,16 @@ for (STATE in names(COUNTIES)) {
     PEP_TEMP <- get_estimates(product="characteristics", geography = "county",
                               county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"),
                               breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
-      filter(DATE %in% names(PEP_YEARS), SEX %in% c("Male", "Female")) %>%
+      filter(year %in% PEP_YEARS, SEX %in% c("Male", "Female")) %>%
       rename(Population = value, Age = AGEGROUP, Sex = SEX) %>%
       separate(NAME, c("County", "State"), sep = "\\, ") %>%
-      mutate(Year = PEP_YEARS[as.character(DATE)],
+      mutate(Year = year,
              Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
                                 State == "Illinois" ~ "External IL",
                                 State == "Indiana" ~ "External IN",
                                 State == "Wisconsin" ~ "External WI"),
              Age = str_replace_all(Age, "Age ", "")) %>%
-      select(-DATE)
-    names(PEP_TEMP$Year) <- NULL
+      select(-year)
 
     PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
 }

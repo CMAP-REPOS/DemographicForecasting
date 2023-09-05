@@ -21,7 +21,7 @@ library(readxl)
 POP_YEARS <- c(2000, 2010, 2020)  # 1990 not available via API
 
 #Census Population Estimates Program (PEP)
-PEP_YEARS <- c(2021, 2022) #2020 is based on 2010 vintage and doesnt use census
+PEP_YEARS <- c(`2021` = 2021, `2022` = 2022, `4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019) #2020 is based on 2010 vintage and doesnt use census
 
 #  note: `#` names in PEP_YEARS are necessary to filter correct years of data from PEP pull (see tidycensus documentation, "time_series" argument)
 # PEP DATE_CODE documentation: https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-county-detail.html
@@ -38,9 +38,9 @@ POP_TABLES <- c(
 
 #extra age groupings to remove (PEP includes some overlapping categories)
 PEP_remove <- c("Under 18 years", "16 years and over", "18 years and over", "65 years and over",
-            "85 years and older", "5 to 13 years", "14 to 17 years", "15 to 44 years",
+            "5 to 13 years", "14 to 17 years", "15 to 44 years",
             "18 to 24 years", "18 to 64 years", "25 to 44 years", "45 to 64 years",
-            "Median age", "All ages")
+            "Median age", "All ages", "85 years and over")
 
 # Extract Decennial Census variables from SF1 and join to decennial pop data ---------------------------------
 
@@ -142,10 +142,11 @@ for (YEAR in POP_YEARS) {
 PEP_DATA <- tibble()
 
 for (STATE in names(COUNTIES)) {
+
     PEP_TEMP <- get_estimates(product="characteristics", geography = "county",
                               county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"),
                               breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE) %>%
-      filter(year %in% PEP_YEARS, SEX %in% c("Male", "Female")) %>%
+      filter(year %in% as.numeric(names(PEP_YEARS)), SEX %in% c("Male", "Female")) %>%
       rename(Population = value, Age = AGEGROUP, Sex = SEX) %>%
       separate(NAME, c("County", "State"), sep = "\\, ") %>%
       mutate(Year = year,
@@ -156,7 +157,22 @@ for (STATE in names(COUNTIES)) {
              Age = str_replace_all(Age, "Age ", "")) %>%
       select(-year)
 
-    PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP)
+    PEP_TEMP_old <- get_estimates(product="characteristics", geography = "county",
+                              county = COUNTIES[[STATE]], state = STATE, breakdown = c("SEX", "AGEGROUP"),
+                              breakdown_labels = TRUE, time_series=TRUE, show_call=TRUE, year = 2019) %>% #adding the year gives us the pre-2020 data
+      filter(DATE %in% names(PEP_YEARS), SEX %in% c("Male", "Female")) %>%
+      rename(Population = value, Age = AGEGROUP, Sex = SEX) %>%
+      separate(NAME, c("County", "State"), sep = "\\, ") %>%
+      mutate(Year = PEP_YEARS[as.character(DATE)],
+             Region = case_when(GEOID %in% CMAP_GEOIDS ~ "CMAP Region",
+                                State == "Illinois" ~ "External IL",
+                                State == "Indiana" ~ "External IN",
+                                State == "Wisconsin" ~ "External WI"),
+             Age = str_replace_all(Age, "Age ", "")) %>%
+      select(-DATE)
+      names(PEP_TEMP$Year) <- NULL
+
+    PEP_DATA <- bind_rows(PEP_DATA, PEP_TEMP, PEP_TEMP_old)
 }
 
 

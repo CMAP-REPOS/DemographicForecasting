@@ -35,6 +35,7 @@ Deaths <- read_excel(DEATHS_XLSX) %>%
 
 # Join pop to deaths
 MORT_DATA <- MORT_POP %>%
+  mutate(Age = ifelse(Age == "85 years and older","85 years and over", Age)) %>%
   full_join(Deaths, by=c('GEOID', 'Age', 'Sex', 'Year', 'Region')) %>%
   group_by(Age, Sex, Region) %>%
   summarise(Population = sum(Population),

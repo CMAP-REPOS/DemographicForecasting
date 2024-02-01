@@ -1,0 +1,79 @@
+"Notes"	"County of Residence"	"County of Residence Code"	"Mother's Nativity"	"Mother's Nativity Code"	Births
+	"Champaign County, IL"	"17019"	"Born in the U.S. (50 US States)"	"1"	1598
+	"Champaign County, IL"	"17019"	"Born outside the U.S. (includes possessions)"	"2"	392
+	"Cook County, IL"	"17031"	"Born in the U.S. (50 US States)"	"1"	36747
+	"Cook County, IL"	"17031"	"Born outside the U.S. (includes possessions)"	"2"	15144
+	"Cook County, IL"	"17031"	"Unknown or Not Stated"	"3"	27
+	"DeKalb County, IL"	"17037"	"Born in the U.S. (50 US States)"	"1"	888
+	"DeKalb County, IL"	"17037"	"Born outside the U.S. (includes possessions)"	"2"	129
+	"DuPage County, IL"	"17043"	"Born in the U.S. (50 US States)"	"1"	6808
+	"DuPage County, IL"	"17043"	"Born outside the U.S. (includes possessions)"	"2"	2928
+	"Kane County, IL"	"17089"	"Born in the U.S. (50 US States)"	"1"	4000
+	"Kane County, IL"	"17089"	"Born outside the U.S. (includes possessions)"	"2"	1495
+	"Kankakee County, IL"	"17091"	"Born in the U.S. (50 US States)"	"1"	1069
+	"Kankakee County, IL"	"17091"	"Born outside the U.S. (includes possessions)"	"2"	80
+	"Kendall County, IL"	"17093"	"Born in the U.S. (50 US States)"	"1"	1249
+	"Kendall County, IL"	"17093"	"Born outside the U.S. (includes possessions)"	"2"	272
+	"Lake County, IL"	"17097"	"Born in the U.S. (50 US States)"	"1"	4767
+	"Lake County, IL"	"17097"	"Born outside the U.S. (includes possessions)"	"2"	1957
+	"LaSalle County, IL"	"17099"	"Born in the U.S. (50 US States)"	"1"	1055
+	"LaSalle County, IL"	"17099"	"Born outside the U.S. (includes possessions)"	"2"	68
+	"McHenry County, IL"	"17111"	"Born in the U.S. (50 US States)"	"1"	2600
+	"McHenry County, IL"	"17111"	"Born outside the U.S. (includes possessions)"	"2"	557
+	"McLean County, IL"	"17113"	"Born in the U.S. (50 US States)"	"1"	1417
+	"McLean County, IL"	"17113"	"Born outside the U.S. (includes possessions)"	"2"	211
+	"Macon County, IL"	"17115"	"Born in the U.S. (50 US States)"	"1"	1118
+	"Macon County, IL"	"17115"	"Born outside the U.S. (includes possessions)"	"2"	49
+	"Madison County, IL"	"17119"	"Born in the U.S. (50 US States)"	"1"	2510
+	"Madison County, IL"	"17119"	"Born outside the U.S. (includes possessions)"	"2"	137
+	"Madison County, IL"	"17119"	"Unknown or Not Stated"	"3"	10
+	"Peoria County, IL"	"17143"	"Born in the U.S. (50 US States)"	"1"	1875
+	"Peoria County, IL"	"17143"	"Born outside the U.S. (includes possessions)"	"2"	205
+	"Rock Island County, IL"	"17161"	"Born in the U.S. (50 US States)"	"1"	1241
+	"Rock Island County, IL"	"17161"	"Born outside the U.S. (includes possessions)"	"2"	272
+	"St. Clair County, IL"	"17163"	"Born in the U.S. (50 US States)"	"1"	2413
+	"St. Clair County, IL"	"17163"	"Born outside the U.S. (includes possessions)"	"2"	165
+	"St. Clair County, IL"	"17163"	"Unknown or Not Stated"	"3"	14
+	"Sangamon County, IL"	"17167"	"Born in the U.S. (50 US States)"	"1"	1833
+	"Sangamon County, IL"	"17167"	"Born outside the U.S. (includes possessions)"	"2"	159
+	"Tazewell County, IL"	"17179"	"Born in the U.S. (50 US States)"	"1"	1189
+	"Tazewell County, IL"	"17179"	"Born outside the U.S. (includes possessions)"	"2"	35
+	"Will County, IL"	"17197"	"Born in the U.S. (50 US States)"	"1"	5501
+	"Will County, IL"	"17197"	"Born outside the U.S. (includes possessions)"	"2"	1484
+	"Winnebago County, IL"	"17201"	"Born in the U.S. (50 US States)"	"1"	2787
+	"Winnebago County, IL"	"17201"	"Born outside the U.S. (includes possessions)"	"2"	498
+	"Unidentified Counties, IL"	"17999"	"Born in the U.S. (50 US States)"	"1"	18548
+	"Unidentified Counties, IL"	"17999"	"Born outside the U.S. (includes possessions)"	"2"	804
+	"Unidentified Counties, IL"	"17999"	"Unknown or Not Stated"	"3"	24
+"---"
+"Dataset: Natality, 2016-2022 expanded"
+"Query Parameters:"
+"States: Illinois (17)"
+"Year: 2022"
+"Group By: County of Residence; Mother's Nativity"
+"Show Totals: Disabled"
+"Show Zero Values: False"
+"Show Suppressed: False"
+"Calculate Rates Per: 1,000"
+"---"
+"Help: See http://wonder.cdc.gov/wonder/help/Natality-expanded.html for more information."
+"---"
+"Query Date: Oct 30, 2023 6:10:00 PM"
+"---"
+"Suggested Citation: Centers for Disease Control and Prevention, National Center for Health Statistics. National Vital Statistics"
+"System, Natality on CDC WONDER Online Database. Data are from the Natality Records 2016-2022, as compiled from data provided by"
+"the 57 vital statistics jurisdictions through the Vital Statistics Cooperative Program. Accessed at"
+"http://wonder.cdc.gov/natality-expanded-current.html on Oct 30, 2023 6:10:00 PM"
+"---"
+Messages:
+"1. Totals are not available for these results due to suppression constraints. More Information:"
+"http://wonder.cdc.gov/wonder/help/faq.html#Privacy."
+"2. Rows with zero Births are hidden. Use Quick Options above to show zero rows."
+"3. Rows with suppressed Births are hidden. Use Quick Options above to show suppressed rows."
+"---"
+Caveats:
+"1. 'Suppressed' appears when the data do not meet the criteria for confidentiality constraints. More information:"
+"http://wonder.cdc.gov/wonder/help/Natality-expanded.html#Assurance of Confidentiality."
+"2. Each birth record represents one liveborn infant."
+"3. County-level data are shown only for counties with populations of 100,000 persons or more. Within each state, data for all"
+"counties with fewer than 100,000 persons are combined together under the label ""Unidentified Counties."""

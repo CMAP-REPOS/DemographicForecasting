@@ -38,7 +38,7 @@ puma_21co_sf <- pumas(state = "17", year= 2022) %>% #default year is 2021 -- com
   bind_rows(pumas(state = "18", year= 2022)) %>%
   bind_rows(pumas(state = "55", year= 2022)) %>%
   st_transform(3435) %>%
-  filter(., intersects_21co(.)) %>%
+  filter(intersects_21co(.)) %>%
   select(GEOID20, STATEFP20, PUMACE20, NAMELSAD20) %>%
   arrange(GEOID20)
 
@@ -65,10 +65,11 @@ puma_21co_sf <- puma_21co_sf %>%
     )
   ))
 
-# Plot PUMAs over counties to verify correctness of coverage and region assignment
+# Plot PUMAs over counties to verify correctness of coverage and region assignment -- not perfect because some PUMAs encompass
+# a modelling region county AND a non-modelling region county
 p <- ggplot() +
   geom_sf(data=cmap_21co_sf, lwd=2, col="#999999") +
-  geom_sf(data=puma_21co_sf, mapping=aes(fill=Region), col="#000000", alpha=0.2) +
+  geom_sf(data=puma_21co_sf, col="#000000", alpha=0.2) +
   #geom_sf_text(data=puma_21co_sf, mapping=aes(label=GEOID10), col="#990000") +
   theme_void()
 # p
@@ -104,7 +105,8 @@ AGE_0_4_FREQ <- pums_21co %>%
   group_by(Region, Sex, AgeGroup) %>%
   summarize(Population = sum(PWGTP)) %>%
   mutate(Age_0_4_Share = Population / sum(Population)) %>%
-  ungroup()
+  ungroup() %>%
+  filter(!is.na(Sex))
 
 # Save table to output folder
 save(AGE_0_4_FREQ, file="Output/Age_0_4_Freq.Rdata")

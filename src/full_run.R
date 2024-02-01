@@ -29,11 +29,13 @@ COUNTIES <- list(
 )
 CMAP_GEOIDS <- c("17031", "17043", "17089", "17093", "17097", "17111", "17197")
 
-source("src/POP_PEP.R") #1
+source("src/POP_PEP.R") #1 -- update with new PEP data; no real decisions being made
+
+# load("Output/POP_PEP.Rdata")
 
 #these two need to be run sequentially 2a
-source("src/Age_0_4_PUMS_Breakdown.R")
-source("src/Mortality.R")
+source("src/Age_0_4_PUMS_Breakdown.R") #PUMAs updated; need ACS PUMA data
+source("src/Mortality.R") #need to think about baseline years; currently using 2014-2018; also whther SSA
 
 
 #these two need to be run sequentially; can be 2b

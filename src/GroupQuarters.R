@@ -5,7 +5,7 @@
 
 ##### GroupQuarters.R
 
-# This script fetches detailed 2010 Group Quarters populations and calculates ratios of
+# This script fetches detailed 2020 Group Quarters populations and calculates ratios of
 # GQ type to Pop for each Age group and Sex by Region (with the exception of Military).
 #
 

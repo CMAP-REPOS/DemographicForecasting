@@ -21,7 +21,7 @@ library(readxl)
 POP_YEARS <- c(2000, 2010, 2020)  # 1990 not available via API
 
 #Census Population Estimates Program (PEP)
-PEP_YEARS <- c(`2021` = 2021, `2022` = 2022, `4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019) #2020 is based on 2010 vintage and doesnt use census
+PEP_YEARS <- c(`2023`= 2023, `2021` = 2021, `2022` = 2022, `4`=2011, `5`=2012, `6`=2013, `7`=2014, `8`=2015, `9`=2016, `10`=2017, `11`=2018, `12`=2019) #2020 is based on 2010 vintage and doesnt use census
 
 #  note: `#` names in PEP_YEARS are necessary to filter correct years of data from PEP pull (see tidycensus documentation, "time_series" argument)
 # PEP DATE_CODE documentation: https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-county-detail.html

@@ -33,18 +33,20 @@ unemp <- read.csv("Input/unemploymentrates.csv") %>%
 # POP was originally retrieved in Projection.R
 load("Output/POP_PEP.Rdata")  # named POP
 
-# apply EXTIL adjustment (if necessary)
-if(EXTIL == 1){
-  POP[["2010"]] <- read.csv("Input/adjustedCensus2010_ExtIL.csv")
-  POP[["2015"]] <- read.csv("Input/adjustedPEP2015_ExtIL.csv")
-  POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020_ExtILadj.xlsx") %>% # partial LOL counties
-    mutate(GEOID = as.character(GEOID))
-} else if (EXTIL == 0){
-  # no modification to POP file.
-  print("ExtIL Area Adjustment override NOT implemented.")
-}else {
-  print("ERROR! Improper EXTIL value supplied. Modify and run again.")
-}
+load("Output/PopProj.Rdata")
+
+# # apply EXTIL adjustment (if necessary)
+# if(EXTIL == 1){
+#   POP[["2010"]] <- read.csv("Input/adjustedCensus2010_ExtIL.csv")
+#   POP[["2015"]] <- read.csv("Input/adjustedPEP2015_ExtIL.csv")
+#   POP[["2020"]] <- read_excel("Input/censusadjustedPEP2020_ExtILadj.xlsx") %>% # partial LOL counties
+#     mutate(GEOID = as.character(GEOID))
+# } else if (EXTIL == 0){
+#   # no modification to POP file.
+#   print("ExtIL Area Adjustment override NOT implemented.")
+# }else {
+#   print("ERROR! Improper EXTIL value supplied. Modify and run again.")
+# }
 
 #create POPrecent list
 POPrecent <- list()
@@ -72,6 +74,7 @@ laborforce <- c(POPrecent, POPPROJcopy)
 
 #slight reformat to GQratios (sum partial GQ ratios to get Total GQ ratio)
 GQratios2 <- GQratios %>%
+  mutate_at(vars(GQ_Inst_Juv:GQ_Inst_Nurs),  ~ if_else(is.na(.), 0, .)) |>
   mutate(GQratio = GQ_NonInst_College + GQ_Inst_Corr + GQ_Inst_Juv + GQ_Inst_Nurs + GQ_Inst_Other + GQ_NonInst_Other)
 
 #join the GQ ratios to the population for every year

@@ -1,0 +1,140 @@
+"Notes"	"County of Residence"	"County of Residence Code"	"Mother's Single Race 6"	"Mother's Single Race 6 Code"	Births	Total Population	Birth Rate	Female Population	Fertility Rate
+	"Champaign County, IL"	"17019"	"Asian"	"A"	144	22701	6.34	7128	20.20
+	"Champaign County, IL"	"17019"	"Black or African American"	"2054-5"	481	30113	15.97	8177	58.82
+	"Champaign County, IL"	"17019"	"White"	"2106-3"	1285	145848	8.81	34255	37.51
+	"Champaign County, IL"	"17019"	"More than one race"	"M"	80	6855	11.67	1786	44.79
+	"Cook County, IL"	"17031"	"American Indian or Alaska Native"	"1002-5"	78	38947	2.00	9409	8.29
+	"Cook County, IL"	"17031"	"Asian"	"A"	4676	422911	11.06	97718	47.85
+	"Cook County, IL"	"17031"	"Black or African American"	"2054-5"	11590	1205734	9.61	258474	44.84
+	"Cook County, IL"	"17031"	"Native Hawaiian or Other Pacific Islander"	"NHOPI"	15	3510	4.27	834	17.99
+	"Cook County, IL"	"17031"	"White"	"2106-3"	34870	3325604	10.49	682485	51.09
+	"Cook County, IL"	"17031"	"More than one race"	"M"	689	112586	6.12	26544	25.96
+	"DeKalb County, IL"	"17037"	"Asian"	"A"	21	2800	7.50	986	21.30
+	"DeKalb County, IL"	"17037"	"Black or African American"	"2054-5"	158	9173	17.22	3172	49.81
+	"DeKalb County, IL"	"17037"	"White"	"2106-3"	809	85191	9.50	18686	43.29
+	"DeKalb County, IL"	"17037"	"More than one race"	"M"	28	2421	11.57	647	43.28
+	"DuPage County, IL"	"17043"	"Asian"	"A"	1387	124676	11.12	25689	53.99
+	"DuPage County, IL"	"17043"	"Black or African American"	"2054-5"	612	50808	12.05	12058	50.75
+	"DuPage County, IL"	"17043"	"White"	"2106-3"	7597	720457	10.54	130183	58.36
+	"DuPage County, IL"	"17043"	"More than one race"	"M"	137	20417	6.71	4558	30.06
+	"Kane County, IL"	"17089"	"Asian"	"A"	292	24369	11.98	5290	55.20
+	"Kane County, IL"	"17089"	"Black or African American"	"2054-5"	331	30909	10.71	6625	49.96
+	"Kane County, IL"	"17089"	"White"	"2106-3"	4798	442260	10.85	81938	58.56
+	"Kane County, IL"	"17089"	"More than one race"	"M"	66	10658	6.19	2463	26.80
+	"Kankakee County, IL"	"17091"	"Black or African American"	"2054-5"	233	16135	14.44	3437	67.79
+	"Kankakee County, IL"	"17091"	"White"	"2106-3"	878	85645	10.25	16120	54.47
+	"Kankakee County, IL"	"17091"	"More than one race"	"M"	28	2546	11.00	511	54.79
+	"Kendall County, IL"	"17093"	"Asian"	"A"	83	5434	15.27	1244	66.72
+	"Kendall County, IL"	"17093"	"Black or African American"	"2054-5"	142	12597	11.27	2901	48.95
+	"Kendall County, IL"	"17093"	"White"	"2106-3"	1276	115055	11.09	23666	53.92
+	"Kendall County, IL"	"17093"	"More than one race"	"M"	20	3174	6.30	672	29.76
+	"Lake County, IL"	"17097"	"Asian"	"A"	579	65971	8.78	14112	41.03
+	"Lake County, IL"	"17097"	"Black or African American"	"2054-5"	568	54481	10.43	12328	46.07
+	"Lake County, IL"	"17097"	"White"	"2106-3"	5446	564971	9.64	100499	54.19
+	"Lake County, IL"	"17097"	"More than one race"	"M"	119	16596	7.17	3609	32.97
+	"LaSalle County, IL"	"17099"	"Black or African American"	"2054-5"	35	3108	11.26	451	77.61
+	"LaSalle County, IL"	"17099"	"White"	"2106-3"	1057	101703	10.39	17491	60.43
+	"LaSalle County, IL"	"17099"	"More than one race"	"M"	20	1661	12.04	358	55.87
+	"McHenry County, IL"	"17111"	"Asian"	"A"	124	10121	12.25	2151	57.65
+	"McHenry County, IL"	"17111"	"Black or African American"	"2054-5"	83	6168	13.46	1259	65.93
+	"McHenry County, IL"	"17111"	"White"	"2106-3"	2901	287868	10.08	51576	56.25
+	"McHenry County, IL"	"17111"	"More than one race"	"M"	45	5607	8.03	1274	35.32
+	"McLean County, IL"	"17113"	"Asian"	"A"	109	8957	12.17	2247	48.51
+	"McLean County, IL"	"17113"	"Black or African American"	"2054-5"	202	15510	13.02	4093	49.35
+	"McLean County, IL"	"17113"	"White"	"2106-3"	1255	141255	8.88	31968	39.26
+	"McLean County, IL"	"17113"	"More than one race"	"M"	59	4720	12.50	1187	49.71
+	"Macon County, IL"	"17115"	"Asian"	"A"	16	1261	12.69	284	56.34
+	"Macon County, IL"	"17115"	"Black or African American"	"2054-5"	325	18805	17.28	4141	78.48
+	"Macon County, IL"	"17115"	"White"	"2106-3"	769	77426	9.93	13443	57.20
+	"Macon County, IL"	"17115"	"More than one race"	"M"	54	3627	14.89	807	66.91
+	"Madison County, IL"	"17119"	"Asian"	"A"	37	2897	12.77	728	50.82
+	"Madison County, IL"	"17119"	"Black or African American"	"2054-5"	364	25244	14.42	6353	57.30
+	"Madison County, IL"	"17119"	"White"	"2106-3"	2179	228342	9.54	42013	51.86
+	"Madison County, IL"	"17119"	"More than one race"	"M"	72	6271	11.48	1340	53.73
+	"Peoria County, IL"	"17143"	"Asian"	"A"	84	7795	10.78	1709	49.15
+	"Peoria County, IL"	"17143"	"Black or African American"	"2054-5"	598	34379	17.39	7774	76.92
+	"Peoria County, IL"	"17143"	"White"	"2106-3"	1334	129299	10.32	23326	57.19
+	"Peoria County, IL"	"17143"	"More than one race"	"M"	61	5908	10.32	1410	43.26
+	"Rock Island County, IL"	"17161"	"Asian"	"A"	44	3926	11.21	829	53.08
+	"Rock Island County, IL"	"17161"	"Black or African American"	"2054-5"	327	17046	19.18	3515	93.03
+	"Rock Island County, IL"	"17161"	"White"	"2106-3"	1072	114800	9.34	20128	53.26
+	"Rock Island County, IL"	"17161"	"More than one race"	"M"	62	4745	13.07	1007	61.57
+	"St. Clair County, IL"	"17163"	"Asian"	"A"	43	4007	10.73	880	48.86
+	"St. Clair County, IL"	"17163"	"Black or African American"	"2054-5"	1018	77798	13.09	16849	60.42
+	"St. Clair County, IL"	"17163"	"White"	"2106-3"	1455	162236	8.97	29139	49.93
+	"St. Clair County, IL"	"17163"	"More than one race"	"M"	72	7384	9.75	1626	44.28
+	"Sangamon County, IL"	"17167"	"Asian"	"A"	66	4603	14.34	1095	60.27
+	"Sangamon County, IL"	"17167"	"Black or African American"	"2054-5"	443	26777	16.54	6365	69.60
+	"Sangamon County, IL"	"17167"	"White"	"2106-3"	1388	156930	8.84	27895	49.76
+	"Sangamon County, IL"	"17167"	"More than one race"	"M"	90	5615	16.03	1274	70.64
+	"Tazewell County, IL"	"17179"	"Asian"	"A"	13	1251	10.39	329	39.51
+	"Tazewell County, IL"	"17179"	"Black or African American"	"2054-5"	19	2067	9.19	358	53.07
+	"Tazewell County, IL"	"17179"	"White"	"2106-3"	1168	123907	9.43	21896	53.34
+	"Tazewell County, IL"	"17179"	"More than one race"	"M"	22	2160	10.19	461	47.72
+	"Will County, IL"	"17197"	"Asian"	"A"	469	46931	9.99	10015	46.83
+	"Will County, IL"	"17197"	"Black or African American"	"2054-5"	892	89034	10.02	19009	46.93
+	"Will County, IL"	"17197"	"White"	"2106-3"	5527	542063	10.20	101288	54.57
+	"Will County, IL"	"17197"	"More than one race"	"M"	92	14730	6.25	3307	27.82
+	"Winnebago County, IL"	"17201"	"Asian"	"A"	120	8316	14.43	1711	70.13
+	"Winnebago County, IL"	"17201"	"Black or African American"	"2054-5"	708	40801	17.35	9224	76.76
+	"Winnebago County, IL"	"17201"	"White"	"2106-3"	2319	221745	10.46	39192	59.17
+	"Winnebago County, IL"	"17201"	"More than one race"	"M"	132	9417	14.02	2114	62.44
+	"Unidentified Counties, IL"	"17999"	"American Indian or Alaska Native"	"1002-5"	32	8486	3.77	1427	22.42
+	"Unidentified Counties, IL"	"17999"	"Asian"	"A"	122	16414	7.43	3934	31.01
+	"Unidentified Counties, IL"	"17999"	"Black or African American"	"2054-5"	891	84785	10.51	14430	61.75
+	"Unidentified Counties, IL"	"17999"	"Native Hawaiian or Other Pacific Islander"	"NHOPI"	16	1137	14.07	271	59.04
+	"Unidentified Counties, IL"	"17999"	"White"	"2106-3"	17929	1800001	9.96	305264	58.73
+	"Unidentified Counties, IL"	"17999"	"More than one race"	"M"	386	35298	10.94	6983	55.28
+"---"
+"Dataset: Natality, 2016-2022 expanded"
+"Query Parameters:"
+"States: Illinois (17)"
+"Year: 2022"
+"Group By: County of Residence; Mother's Single Race 6"
+"Show Totals: Disabled"
+"Show Zero Values: False"
+"Show Suppressed: False"
+"Calculate Rates Per: 1,000"
+"---"
+"Help: See http://wonder.cdc.gov/wonder/help/Natality-expanded.html for more information."
+"---"
+"Query Date: Oct 30, 2023 6:06:49 PM"
+"---"
+"Suggested Citation: Centers for Disease Control and Prevention, National Center for Health Statistics. National Vital Statistics"
+"System, Natality on CDC WONDER Online Database. Data are from the Natality Records 2016-2022, as compiled from data provided by"
+"the 57 vital statistics jurisdictions through the Vital Statistics Cooperative Program. Accessed at"
+"http://wonder.cdc.gov/natality-expanded-current.html on Oct 30, 2023 6:06:49 PM"
+"---"
+Messages:
+"1. Totals are not available for these results due to suppression constraints. More Information:"
+"http://wonder.cdc.gov/wonder/help/faq.html#Privacy."
+"2. Rows with zero Births are hidden. Use Quick Options above to show zero rows."
+"3. Rows with suppressed Births are hidden. Use Quick Options above to show suppressed rows."
+"---"
+Caveats:
+"1. 'Not Available' appears when the denominator population for a rate measure is not available."
+"2. 'Suppressed' appears when the data do not meet the criteria for confidentiality constraints. More information:"
+"http://wonder.cdc.gov/wonder/help/Natality-expanded.html#Assurance of Confidentiality."
+"3. Each birth record represents one liveborn infant."
+"4. County-level data are shown only for counties with populations of 100,000 persons or more. Within each state, data for all"
+"counties with fewer than 100,000 persons are combined together under the label ""Unidentified Counties."""
+"5. Birth rates are calculated as the number of births divided by total population in the given year(s). When the numerator is"
+"sub-set by mother's race, mother's hispanicity, location, or year of birth, then the same sub-set for age, race, hispanicity,"
+"location and year applies to the denominator population."
+"6. Fertility rates are calculated as the number of births divided by the number of females age 15 - 44 years old in the given"
+"year(s). When the numerator is sub-set by mother's age, mother's race, mother's hispanicity, location, or year of birth, then"
+"the same sub-set for age, race, hispanicity, location and year applies to the denominator population. However, if you sub-set"
+"mother's age selecting some years not in the 15 - 44 range, those years of mother's age ouside this range will not be included"
+"in the denominator population. If you sub-set mother's age selecting only years outside the 15 - 44 range, then ""Not"
+"Available"" is reported for the denominator population."
+"7. Birth rates and fertility rates are calculated using the following populations: The populations for year 2021 are from the"
+"postcensal single race series of July 1st estimates of the resident population, released by Census Bureau on June 30, 2022. The"
+"2021 population estimates are based on the Blended Base produced by the US Census Bureau in lieu of the April 1, 2020 decennial"
+"population count. The populations for year 2020 are from the postcensal single race series of July 1st estimates of the resident"
+"population, released by Census Bureau on July 27, 2021. The populations for year 2019 are from the postcensal single race series"
+"of July 1st estimates of the resident population, released by Census Bureau on June 25, 2020; The populations for year 2018 are"
+"from the postcensal single race series of July 1st estimates of the resident population, released by Census Bureau on June 21,"
+"2019; The populations for year 2017 are from the postcensal single race series of July 1st estimates of the resident population,"
+"released by Census Bureau on June 21, 2018; The populations for year 2016 are from the postcensal single race series of July 1st"
+"estimates of the resident population, released by Census Bureau on June 22, 2017. More information:"
+"http://wonder.cdc.gov/wonder/help/Natality-expanded.html#Denominator-Population-Sources."

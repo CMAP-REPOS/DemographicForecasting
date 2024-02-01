@@ -31,8 +31,8 @@ pums_21co <- bind_rows(pums_il, pums_in) %>%
   select(SERIALNO, PUMA, ST, PWGTP, IsHouseholder, ExactAge, AgeGroup)
 
 pums_21co <- pums_21co %>%
-  right_join(puma_region, by=c("PUMA" = "PUMACE10", "ST" = "STATEFP10")) %>%
-  select(-SERIALNO, -GEOID10)
+  right_join(puma_region, by=c("PUMA" = "PUMACE20", "ST" = "STATEFP20")) %>%
+  select(-SERIALNO, -GEOID20)
 
 # Calculate headship rates for each age group by PUMA ---------------------
 

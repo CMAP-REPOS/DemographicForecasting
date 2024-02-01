@@ -1,0 +1,194 @@
+"Notes"	"County of Residence"	"County of Residence Code"	"Mother's Single Race 6"	"Mother's Single Race 6 Code"	"Mother's Hispanic Origin"	"Mother's Hispanic Origin Code"	Births	Total Population	Birth Rate	Female Population	Fertility Rate
+	"Champaign County, IL"	"17019"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	143	22458	6.37	7054	20.27
+	"Champaign County, IL"	"17019"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	471	29134	16.17	7939	59.33
+	"Champaign County, IL"	"17019"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	238	11681	20.37	3387	70.27
+	"Champaign County, IL"	"17019"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	1041	134167	7.76	30868	33.72
+	"Champaign County, IL"	"17019"	"More than one race"	"M"	"Hispanic or Latino"	"2135-2"	13	692	18.79	138	94.20
+	"Champaign County, IL"	"17019"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	67	6163	10.87	1648	40.66
+	"Cook County, IL"	"17031"	"American Indian or Alaska Native"	"1002-5"	"Hispanic or Latino"	"2135-2"	49	32944	1.49	8112	6.04
+	"Cook County, IL"	"17031"	"American Indian or Alaska Native"	"1002-5"	"Not Hispanic or Latino"	"2186-5"	29	6003	4.83	1297	22.36
+	"Cook County, IL"	"17031"	"Asian"	"A"	"Hispanic or Latino"	"2135-2"	56	9580	5.85	2232	25.09
+	"Cook County, IL"	"17031"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	4602	413331	11.13	95486	48.20
+	"Cook County, IL"	"17031"	"Asian"	"A"	"Unknown or Not Stated"	"9"	18	Not Available	Not Available	Not Available	Not Available
+	"Cook County, IL"	"17031"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	321	46662	6.88	11483	27.95
+	"Cook County, IL"	"17031"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	11208	1159072	9.67	246991	45.38
+	"Cook County, IL"	"17031"	"Black or African American"	"2054-5"	"Unknown or Not Stated"	"9"	61	Not Available	Not Available	Not Available	Not Available
+	"Cook County, IL"	"17031"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	15502	1226782	12.64	280315	55.30
+	"Cook County, IL"	"17031"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	19204	2098822	9.15	402170	47.75
+	"Cook County, IL"	"17031"	"White"	"2106-3"	"Unknown or Not Stated"	"9"	164	Not Available	Not Available	Not Available	Not Available
+	"Cook County, IL"	"17031"	"More than one race"	"M"	"Hispanic or Latino"	"2135-2"	97	27167	3.57	6281	15.44
+	"Cook County, IL"	"17031"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	589	85419	6.90	20263	29.07
+	"DeKalb County, IL"	"17037"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	20	2620	7.63	879	22.75
+	"DeKalb County, IL"	"17037"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	152	8770	17.33	3073	49.46
+	"DeKalb County, IL"	"17037"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	205	11769	17.42	3054	67.13
+	"DeKalb County, IL"	"17037"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	604	73422	8.23	15632	38.64
+	"DeKalb County, IL"	"17037"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	20	1975	10.13	541	36.97
+	"DuPage County, IL"	"17043"	"Asian"	"A"	"Hispanic or Latino"	"2135-2"	11	1552	7.09	323	34.06
+	"DuPage County, IL"	"17043"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	1374	123124	11.16	25366	54.17
+	"DuPage County, IL"	"17043"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	39	3243	12.03	814	47.91
+	"DuPage County, IL"	"17043"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	571	47565	12.00	11244	50.78
+	"DuPage County, IL"	"17043"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	1948	129643	15.03	29803	65.36
+	"DuPage County, IL"	"17043"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	5639	590814	9.54	100380	56.18
+	"DuPage County, IL"	"17043"	"White"	"2106-3"	"Unknown or Not Stated"	"9"	10	Not Available	Not Available	Not Available	Not Available
+	"DuPage County, IL"	"17043"	"More than one race"	"M"	"Hispanic or Latino"	"2135-2"	13	3509	3.70	806	16.13
+	"DuPage County, IL"	"17043"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	124	16908	7.33	3752	33.05
+	"Kane County, IL"	"17089"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	285	23207	12.28	5010	56.89
+	"Kane County, IL"	"17089"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	16	3879	4.12	950	16.84
+	"Kane County, IL"	"17089"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	313	27030	11.58	5675	55.15
+	"Kane County, IL"	"17089"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	2413	156502	15.42	35404	68.16
+	"Kane County, IL"	"17089"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	2377	285758	8.32	46534	51.08
+	"Kane County, IL"	"17089"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	57	7326	7.78	1721	33.12
+	"Kankakee County, IL"	"17091"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	232	15665	14.81	3323	69.82
+	"Kankakee County, IL"	"17091"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	212	11612	18.26	2723	77.86
+	"Kankakee County, IL"	"17091"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	666	74033	9.00	13397	49.71
+	"Kankakee County, IL"	"17091"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	27	2093	12.90	411	65.69
+	"Kendall County, IL"	"17093"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	80	5196	15.40	1195	66.95
+	"Kendall County, IL"	"17093"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	138	11714	11.78	2678	51.53
+	"Kendall County, IL"	"17093"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	411	28571	14.39	6890	59.65
+	"Kendall County, IL"	"17093"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	861	86484	9.96	16776	51.32
+	"Kendall County, IL"	"17093"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	16	2555	6.26	542	29.52
+	"Lake County, IL"	"17097"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	540	64424	8.38	13775	39.20
+	"Lake County, IL"	"17097"	"Asian"	"A"	"Unknown or Not Stated"	"9"	34	Not Available	Not Available	Not Available	Not Available
+	"Lake County, IL"	"17097"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	45	5132	8.77	1274	35.32
+	"Lake County, IL"	"17097"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	483	49349	9.79	11054	43.69
+	"Lake County, IL"	"17097"	"Black or African American"	"2054-5"	"Unknown or Not Stated"	"9"	40	Not Available	Not Available	Not Available	Not Available
+	"Lake County, IL"	"17097"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	2192	150559	14.56	34074	64.33
+	"Lake County, IL"	"17097"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	3043	414412	7.34	66425	45.81
+	"Lake County, IL"	"17097"	"White"	"2106-3"	"Unknown or Not Stated"	"9"	211	Not Available	Not Available	Not Available	Not Available
+	"Lake County, IL"	"17097"	"More than one race"	"M"	"Hispanic or Latino"	"2135-2"	14	3809	3.68	872	16.06
+	"Lake County, IL"	"17097"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	102	12787	7.98	2737	37.27
+	"LaSalle County, IL"	"17099"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	31	2831	10.95	378	82.01
+	"LaSalle County, IL"	"17099"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	167	11046	15.12	2425	68.87
+	"LaSalle County, IL"	"17099"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	888	90657	9.80	15066	58.94
+	"LaSalle County, IL"	"17099"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	19	1369	13.88	303	62.71
+	"McHenry County, IL"	"17111"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	118	9802	12.04	2102	56.14
+	"McHenry County, IL"	"17111"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	71	5328	13.33	1061	66.92
+	"McHenry County, IL"	"17111"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	737	43884	16.79	10009	73.63
+	"McHenry County, IL"	"17111"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	2094	243984	8.58	41567	50.38
+	"McHenry County, IL"	"17111"	"White"	"2106-3"	"Unknown or Not Stated"	"9"	70	Not Available	Not Available	Not Available	Not Available
+	"McHenry County, IL"	"17111"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	40	4477	8.93	1016	39.37
+	"McLean County, IL"	"17113"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	105	8816	11.91	2217	47.36
+	"McLean County, IL"	"17113"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	194	14996	12.94	3947	49.15
+	"McLean County, IL"	"17113"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	114	8082	14.11	2161	52.75
+	"McLean County, IL"	"17113"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	1126	133173	8.46	29807	37.78
+	"McLean County, IL"	"17113"	"White"	"2106-3"	"Unknown or Not Stated"	"9"	15	Not Available	Not Available	Not Available	Not Available
+	"McLean County, IL"	"17113"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	54	4217	12.81	1081	49.95
+	"Macon County, IL"	"17115"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	16	1222	13.09	274	58.39
+	"Macon County, IL"	"17115"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	322	18512	17.39	4088	78.77
+	"Macon County, IL"	"17115"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	32	2120	15.09	483	66.25
+	"Macon County, IL"	"17115"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	736	75306	9.77	12960	56.79
+	"Macon County, IL"	"17115"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	53	3424	15.48	773	68.56
+	"Madison County, IL"	"17119"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	35	2753	12.71	685	51.09
+	"Madison County, IL"	"17119"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	11	634	17.35	95	115.79
+	"Madison County, IL"	"17119"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	350	24610	14.22	6258	55.93
+	"Madison County, IL"	"17119"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	149	8689	17.15	2005	74.31
+	"Madison County, IL"	"17119"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	2025	219653	9.22	40008	50.61
+	"Madison County, IL"	"17119"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	71	5735	12.38	1222	58.10
+	"Peoria County, IL"	"17143"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	83	7597	10.93	1614	51.43
+	"Peoria County, IL"	"17143"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	594	33680	17.64	7613	78.02
+	"Peoria County, IL"	"17143"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	180	8206	21.94	1883	95.59
+	"Peoria County, IL"	"17143"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	1153	121093	9.52	21443	53.77
+	"Peoria County, IL"	"17143"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	59	5333	11.06	1283	45.99
+	"Rock Island County, IL"	"17161"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	43	3776	11.39	805	53.42
+	"Rock Island County, IL"	"17161"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	318	16134	19.71	3294	96.54
+	"Rock Island County, IL"	"17161"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	242	17194	14.07	3839	63.04
+	"Rock Island County, IL"	"17161"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	830	97606	8.50	16289	50.95
+	"Rock Island County, IL"	"17161"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	57	3942	14.46	838	68.02
+	"St. Clair County, IL"	"17163"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	43	3858	11.15	853	50.41
+	"St. Clair County, IL"	"17163"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	14	897	15.61	212	66.04
+	"St. Clair County, IL"	"17163"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	1004	76901	13.06	16637	60.35
+	"St. Clair County, IL"	"17163"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	116	9731	11.92	2282	50.83
+	"St. Clair County, IL"	"17163"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	1336	152505	8.76	26857	49.74
+	"St. Clair County, IL"	"17163"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	65	6649	9.78	1458	44.58
+	"Sangamon County, IL"	"17167"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	66	4549	14.51	1083	60.94
+	"Sangamon County, IL"	"17167"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	435	26376	16.49	6274	69.33
+	"Sangamon County, IL"	"17167"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	64	4219	15.17	1127	56.79
+	"Sangamon County, IL"	"17167"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	1324	152711	8.67	26768	49.46
+	"Sangamon County, IL"	"17167"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	87	5252	16.57	1181	73.67
+	"Tazewell County, IL"	"17179"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	13	1210	10.74	323	40.25
+	"Tazewell County, IL"	"17179"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	19	1952	9.73	340	55.88
+	"Tazewell County, IL"	"17179"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	40	3107	12.87	720	55.56
+	"Tazewell County, IL"	"17179"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	1126	120800	9.32	21176	53.17
+	"Tazewell County, IL"	"17179"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	20	1992	10.04	425	47.06
+	"Will County, IL"	"17197"	"Asian"	"A"	"Hispanic or Latino"	"2135-2"	10	1112	8.99	250	40.00
+	"Will County, IL"	"17197"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	457	45819	9.97	9765	46.80
+	"Will County, IL"	"17197"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	32	4143	7.72	957	33.44
+	"Will County, IL"	"17197"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	857	84891	10.10	18052	47.47
+	"Will County, IL"	"17197"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	1704	124366	13.70	28868	59.03
+	"Will County, IL"	"17197"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	3811	417697	9.12	72420	52.62
+	"Will County, IL"	"17197"	"White"	"2106-3"	"Unknown or Not Stated"	"9"	12	Not Available	Not Available	Not Available	Not Available
+	"Will County, IL"	"17197"	"More than one race"	"M"	"Hispanic or Latino"	"2135-2"	17	3008	5.65	691	24.60
+	"Will County, IL"	"17197"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	75	11722	6.40	2616	28.67
+	"Winnebago County, IL"	"17201"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	118	8040	14.68	1646	71.69
+	"Winnebago County, IL"	"17201"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	21	1960	10.71	444	47.30
+	"Winnebago County, IL"	"17201"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	687	38841	17.69	8780	78.25
+	"Winnebago County, IL"	"17201"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	719	37276	19.29	8917	80.63
+	"Winnebago County, IL"	"17201"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	1597	184469	8.66	30275	52.75
+	"Winnebago County, IL"	"17201"	"More than one race"	"M"	"Hispanic or Latino"	"2135-2"	12	1683	7.13	402	29.85
+	"Winnebago County, IL"	"17201"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	120	7734	15.52	1712	70.09
+	"Unidentified Counties, IL"	"17999"	"American Indian or Alaska Native"	"1002-5"	"Hispanic or Latino"	"2135-2"	10	3744	2.67	683	14.64
+	"Unidentified Counties, IL"	"17999"	"American Indian or Alaska Native"	"1002-5"	"Not Hispanic or Latino"	"2186-5"	22	4742	4.64	744	29.57
+	"Unidentified Counties, IL"	"17999"	"Asian"	"A"	"Not Hispanic or Latino"	"2186-5"	120	15541	7.72	3757	31.94
+	"Unidentified Counties, IL"	"17999"	"Black or African American"	"2054-5"	"Hispanic or Latino"	"2135-2"	40	4185	9.56	812	49.26
+	"Unidentified Counties, IL"	"17999"	"Black or African American"	"2054-5"	"Not Hispanic or Latino"	"2186-5"	846	80600	10.50	13618	62.12
+	"Unidentified Counties, IL"	"17999"	"Native Hawaiian or Other Pacific Islander"	"NHOPI"	"Not Hispanic or Latino"	"2186-5"	12	754	15.92	183	65.57
+	"Unidentified Counties, IL"	"17999"	"White"	"2106-3"	"Hispanic or Latino"	"2135-2"	1269	84016	15.10	18229	69.61
+	"Unidentified Counties, IL"	"17999"	"White"	"2106-3"	"Not Hispanic or Latino"	"2186-5"	16626	1715985	9.69	287035	57.92
+	"Unidentified Counties, IL"	"17999"	"White"	"2106-3"	"Unknown or Not Stated"	"9"	34	Not Available	Not Available	Not Available	Not Available
+	"Unidentified Counties, IL"	"17999"	"More than one race"	"M"	"Hispanic or Latino"	"2135-2"	32	4484	7.14	939	34.08
+	"Unidentified Counties, IL"	"17999"	"More than one race"	"M"	"Not Hispanic or Latino"	"2186-5"	354	30814	11.49	6044	58.57
+"---"
+"Dataset: Natality, 2016-2022 expanded"
+"Query Parameters:"
+"States: Illinois (17)"
+"Year: 2022"
+"Group By: County of Residence; Mother's Single Race 6; Mother's Hispanic Origin"
+"Show Totals: Disabled"
+"Show Zero Values: False"
+"Show Suppressed: False"
+"Calculate Rates Per: 1,000"
+"---"
+"Help: See http://wonder.cdc.gov/wonder/help/Natality-expanded.html for more information."
+"---"
+"Query Date: Oct 30, 2023 6:08:04 PM"
+"---"
+"Suggested Citation: Centers for Disease Control and Prevention, National Center for Health Statistics. National Vital Statistics"
+"System, Natality on CDC WONDER Online Database. Data are from the Natality Records 2016-2022, as compiled from data provided by"
+"the 57 vital statistics jurisdictions through the Vital Statistics Cooperative Program. Accessed at"
+"http://wonder.cdc.gov/natality-expanded-current.html on Oct 30, 2023 6:08:04 PM"
+"---"
+Messages:
+"1. Totals are not available for these results due to suppression constraints. More Information:"
+"http://wonder.cdc.gov/wonder/help/faq.html#Privacy."
+"2. Rows with zero Births are hidden. Use Quick Options above to show zero rows."
+"3. Rows with suppressed Births are hidden. Use Quick Options above to show suppressed rows."
+"---"
+Caveats:
+"1. 'Not Available' appears when the denominator population for a rate measure is not available."
+"2. 'Suppressed' appears when the data do not meet the criteria for confidentiality constraints. More information:"
+"http://wonder.cdc.gov/wonder/help/Natality-expanded.html#Assurance of Confidentiality."
+"3. Each birth record represents one liveborn infant."
+"4. County-level data are shown only for counties with populations of 100,000 persons or more. Within each state, data for all"
+"counties with fewer than 100,000 persons are combined together under the label ""Unidentified Counties."""
+"5. Birth rates are calculated as the number of births divided by total population in the given year(s). When the numerator is"
+"sub-set by mother's race, mother's hispanicity, location, or year of birth, then the same sub-set for age, race, hispanicity,"
+"location and year applies to the denominator population."
+"6. Fertility rates are calculated as the number of births divided by the number of females age 15 - 44 years old in the given"
+"year(s). When the numerator is sub-set by mother's age, mother's race, mother's hispanicity, location, or year of birth, then"
+"the same sub-set for age, race, hispanicity, location and year applies to the denominator population. However, if you sub-set"
+"mother's age selecting some years not in the 15 - 44 range, those years of mother's age ouside this range will not be included"
+"in the denominator population. If you sub-set mother's age selecting only years outside the 15 - 44 range, then ""Not"
+"Available"" is reported for the denominator population."
+"7. Rates returned for Hispanicity in combination with Single Race are calculated differently here than in other natality"
+"published reports. More information: http://wonder.cdc.gov/wonder/help/Natality-expanded.html#About-Rates."
+"8. Birth rates and fertility rates are calculated using the following populations: The populations for year 2021 are from the"
+"postcensal single race series of July 1st estimates of the resident population, released by Census Bureau on June 30, 2022. The"
+"2021 population estimates are based on the Blended Base produced by the US Census Bureau in lieu of the April 1, 2020 decennial"
+"population count. The populations for year 2020 are from the postcensal single race series of July 1st estimates of the resident"
+"population, released by Census Bureau on July 27, 2021. The populations for year 2019 are from the postcensal single race series"
+"of July 1st estimates of the resident population, released by Census Bureau on June 25, 2020; The populations for year 2018 are"
+"from the postcensal single race series of July 1st estimates of the resident population, released by Census Bureau on June 21,"
+"2019; The populations for year 2017 are from the postcensal single race series of July 1st estimates of the resident population,"
+"released by Census Bureau on June 21, 2018; The populations for year 2016 are from the postcensal single race series of July 1st"
+"estimates of the resident population, released by Census Bureau on June 22, 2017. More information:"
+"http://wonder.cdc.gov/wonder/help/Natality-expanded.html#Denominator-Population-Sources."

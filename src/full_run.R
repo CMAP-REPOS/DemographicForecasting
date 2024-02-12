@@ -22,11 +22,6 @@
 
 
 
-
-
-
-
-
 COUNTIES <- list(
   IL = c(31, 43, 89, 93, 97, 111, 197,       # CMAP counties
          7, 37, 63, 91, 99, 103, 141, 201),  # Non-CMAP Illinois counties

@@ -12,6 +12,7 @@ load("Output/POP_PEP.Rdata")
 
 county_list <- POP$`2019` |>  #choice of year here is arbitrary
   distinct(GEOID, County, State, Region)
+
 # calculate average percentage of total -----------------------------------
 
 pep_2010_ftp <- read_csv("Input/pep_2020_2010.csv")
@@ -45,6 +46,9 @@ pep_2020_ftp_proc <- pep_2020_ftp |>
   county_fips = str_c(new_state, new_county)) |>
   select(county_fips, starts_with("INTERNATIONALMIG"))
 
+
+# combine years and calc percentages --------------------------------------
+
 pep_all_years <- pep_2010_ftp_proc |>
   left_join(pep_2020_ftp_proc) |>
   janitor::clean_names() |>
@@ -68,6 +72,7 @@ pep_all_years <- pep_2010_ftp_proc |>
          year = row_number() + 2010) |>
   filter(year != 2020) #weird year
 
+#add percent of total column
 for (x in setdiff(names(pep_all_years),c("year","total"))) {
 
   new_name <- str_c(x,"_%")

@@ -31,7 +31,7 @@ lastyear = as.character(max(cycleyears))
 
 if(startyr == baseyr){
   print(paste("GENERATING", baseyr, "PROJECTION"))
-  print(paste("USING", TNMnote, "TARGET MIGRATION VALUES"))
+  # print(paste("USING", TNMnote, "TARGET MIGRATION VALUES"))
 
   #Import the baseyear population data (2020)
   baseyearpoptable <- POP[[baseyr]] %>%
@@ -288,7 +288,7 @@ Migration <- Base_Mig %>%
 ################ THIS PART NEEDS PROOFING vvv (-Alexis)
 Migration <- Migration %>%
   group_by(Region) %>%
-  mutate(Male_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + Male_0to24 + Female_0to24)/2,
+  mutate(Male_NMR = case_when(Age %in% c('0 to 4 years', '5 to 9 years', '10 to 14 years') ~ (NetRates_Female + NetRates_Male + Male_0to24 + Female_0to24)/2, #theory is that children can't move on their own
                               Age %in% c('15 to 19 years', '20 to 24 years') ~ NetRates_Male + Male_0to24,
                               Age %in% c('25 to 29 years', '30 to 34 years', '35 to 39 years') ~ NetRates_Male + Male_25to39,
                               Age %in% c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years') ~ NetRates_Male + Male_40to69,
@@ -297,8 +297,7 @@ Migration <- Migration %>%
                                Age %in% c('15 to 19 years', '20 to 24 years') ~ NetRates_Female + Female_0to24,
                                Age %in% c('25 to 29 years', '30 to 34 years', '35 to 39 years') ~ NetRates_Female + Female_25to39,
                                Age %in% c('40 to 44 years', '45 to 49 years', '50 to 54 years', '55 to 59 years', '60 to 64 years', '65 to 69 years') ~ NetRates_Female + Female_40to69,
-                               TRUE ~ NetRates_Female + Female_70Plus))
-%>%
+                               TRUE ~ NetRates_Female + Female_70Plus)) %>%
                   select(1:2 | ends_with("NMR")) %>%
                   pivot_longer(cols = ends_with("NMR"), names_to = "Sex", values_to = "NMRs") %>%
                   mutate(Sex = case_when(Sex == "Male_NMR" ~ "Male",

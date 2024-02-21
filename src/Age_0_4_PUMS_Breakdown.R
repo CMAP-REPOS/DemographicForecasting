@@ -3,13 +3,11 @@
 # AB -- still need to update PUMAs, not sure if automated way to get 2020 boundaries yet
 #https://www.census.gov/geographies/mapping-files/2020/geo/tiger-line-file.html ; https://www2.census.gov/geo/tiger/TIGER2020/PUMA20/
 
-# ab -- updated the year of the ACS but it may be running iwth the old PUMA files;
+# ab -- updated the year of the ACS but it may be running with the old PUMA files;
 
 # This script has two parts: first, it spatially relates 2010 PUMAs to each of the four modeling regions.
 # Second, it pulls 2019 ACS data (by PUMA) to determine an estimate of 0-1 and 1-4 year-old individuals
 # by Region. The result is a ratio of 0-1 year-olds to 0-4 year-olds that is used in Mortality.R
-
-#install.packages("devtools")
 
 library(devtools)
 library(tidyverse)

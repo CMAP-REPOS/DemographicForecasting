@@ -231,9 +231,8 @@ labor_force_regionwide <- civ_non_inst |>
   summarize(labor_supply = sum(num_in_lf))
 
 #just CMAP for now
-civ_non_inst_cmap <- civ_non_inst |>
-  filter(region == "CMAP Region") |>
-  group_by(age, sex) |>
+civ_non_inst_region <- civ_non_inst |>
+  group_by(age, sex, region) |>
   summarize(pop_with_intl_mig = sum(pop_with_intl_mig),
             net_intl_mig = sum(new_immigrants_region)) |>
   ungroup()
@@ -257,14 +256,12 @@ lf_demand_proc <- lf_demand |>
   group_by(region) |>
   summarize(labor_demand = sum(V1)) |>
   left_join(labor_force_regionwide) |>
-  mutate(workers_needed = labor_demand - labor_supply) |>
-  filter(region == "CMAP Region")
+  mutate(workers_needed = labor_demand - labor_supply)
 
 
 #labor forece multiplier is from domestic_migration.R script and says how many people to expect for each person that moves here for a job
 # each opening in the labor force causes ~1.4 people to move
 balanced_migration_number <-  lf_demand_proc$workers_needed * labor_force_multiplier
-
 
 #turn the number into demographic breakdowns
 domestic_migration <- labor_force_movers_demo |>
@@ -274,9 +271,8 @@ domestic_migration <- labor_force_movers_demo |>
 
 # combine all -------------------------------------------------------------
 
-final_projection <- civ_non_inst_cmap |>
+final_projection <- civ_non_inst_region |>
   left_join(domestic_migration) |>
-  mutate(total_pop = pop_with_intl_mig + domestic_movers,
-         region = "CMAP Region") |>
+  mutate(total_pop = pop_with_intl_mig + domestic_movers) |>
   select(age, sex, region, total_pop)
 

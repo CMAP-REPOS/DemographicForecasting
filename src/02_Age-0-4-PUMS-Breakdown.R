@@ -1,6 +1,4 @@
-
 # Overview ----------------------------------------------------------------
-
 
 # CMAP | Noel Peterson, Alex Bahls | 7/12
 
@@ -8,16 +6,10 @@
 # Second, it pulls 2021 ACS data (by PUMA) to determine an estimate of 0-1 and 1-4 year-old individuals
 # by Region. The result is a ratio of 0-1 year-olds to 0-4 year-olds that is used in Mortality.R
 
-# AB -- this is currently using 2021 PUMS data to avoid having data in two geographies (the 2022 PUMS data has
-# both 2010 PUMS and 2020 PUMS geography depending on year) -- this is something that COULD be improved but right now
-# I consider the cost of adding another year relatively high (itd take some thinking to code in) and the payoff to be
-# quite low (did the ratio of <1 year olds to 1-4 year olds really change much when looking at 2017 vs 2022?)
-# see https://github.com/walkerke/tidycensus/issues/555
-
+#we want to keep the PUMS data at 2018 since its used to create mortality rates from death data 2014-2018;
+#if we update the mortality data period we need to update PUMS to match
 
 # set up ------------------------------------------------------------------
-
-
 library(devtools)
 library(tidyverse)
 library(tidycensus)
@@ -38,8 +30,8 @@ COUNTIES <- list(
   WI = c(59, 101, 127)                       # Wisconsin counties
 )
 
-#see note above -- should stay at 2021 for now
-pums_year <- 2021
+#see note above -- should stay at 2018 for now
+pums_year <- 2018
 
 #  create puma sf for modelling region -------
 

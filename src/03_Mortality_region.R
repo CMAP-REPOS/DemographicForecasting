@@ -186,8 +186,8 @@ census_mort_proj_processed <- census_mort_proj |>
 #then to mirror the SSA data the raw number should be a ratio of present (2017) survival rates
 census_data_combined <- census_17_proc |>
   left_join(census_mort_proj_processed) |>
-  mutate(across(where(is.numeric), \(x) (1-x)/(1-x2017))) |>
-  select(!x2017)
+  mutate(across(where(is.numeric), \(x) (1-x)/(1-x2017))) |> #note this is two steps -- first change mortality rate to survival rate (1-x), then yoke to 2017
+  select(!x2017) #great than 1 means more people are expected to survive at that year compared to 2017
 
 # Create final projections for each region  ------------------------------------
 
@@ -208,7 +208,7 @@ mort_proj_midpoints <- mort_proj %>%
 
 # Clean-up to values >= 1  ------------------------------------ This could use some adjustments to make it more dynamic
 
-# qc_over_1 <- Mort_Proj %>% filter_at(vars(4:11), any_vars(. >= 1))
+# qc_over_1 <- mort_proj_midpoints %>% filter_at(vars(4:9), any_vars(. >= 1))
 
 save(deaths, mort_proj_midpoints, mort_pop, file="Output/Mort_Proj_region.Rdata")
 

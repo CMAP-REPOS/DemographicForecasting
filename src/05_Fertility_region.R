@@ -68,7 +68,7 @@ gq_proc <- gq_pep |>
   distinct()
 
 ## Step 5: Multiply 2010 proportions by 2011-2019 GQ estimates to get expected number of females ----
-gqe_project <- gq_2010 |>
+gqe_impute <- gq_2010 |>
   left_join(gq_proc, by = "geoid") %>%
   mutate(gqe_pred = round(prop_female*population,0)) %>%
   select(geoid, age, gqe_pred, year, region) #region redundant but used later
@@ -91,7 +91,7 @@ for (YEAR in GQE_YEARS) {
 # lengths(lapply(yearly_total_pop, unique)) # quick check
 
 ## Step 7: For 2011-2019 subtract expected GQ population from county Total to get County HH populations -----
-hh_population <- gqe_project |>
+hh_population <- gqe_impute |>
   left_join(yearly_total_pop) %>%
   mutate(hh_pop = county_total - gqe_pred) %>%
   select(geoid, age, hh_pop, year, region) #region redundant but used later

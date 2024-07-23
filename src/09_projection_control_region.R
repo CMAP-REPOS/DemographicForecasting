@@ -89,20 +89,15 @@ print(paste("Creating forecast for the period",projstart, "to", projend, sep=" "
 #run the projection code
 source("src/09a_projection_loop_region.R")
 
-#save the MigrationProjections.R outputs in list format
-
-POPPROJ[[as.character(projend)]] <- final_projection
 i <- i+1
 }
 
 #save the Net Migration rates
-NETMIGPROJ[[as.character(projend)]] <- Migration
 
 #save the Components of Change
 COMPONENTS[[as.character(projend)]] <- Components
 
 #save the detailed Migration data
-MIG_DETAIL[[as.character(projend)]] <- detailedMigs
 
   i <- i+1
 }

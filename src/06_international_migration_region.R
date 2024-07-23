@@ -91,7 +91,7 @@ mean_mig <- pep_all_years |>
   select(ends_with("%")) %>%
   map_df(~(data.frame(average = mean(.x))),
                       .id = "variable") |>
-  mutate(average = ifelse(average < 0, 0, average))
+  mutate(average = ifelse(average < 0, 0, average)) #only one county and its basically 0, fine to set to 0
 
 rm(list=setdiff(ls(), c("mean_mig","pep_all_years")))
 

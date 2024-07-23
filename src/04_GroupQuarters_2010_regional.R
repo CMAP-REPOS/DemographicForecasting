@@ -8,7 +8,7 @@
 # the issue is the 2014-2018 population estimates from the Census do not split out the GQ population
 # however, the 2010 and 2020 Census do have group quarters estimates
 # this script assumes the GQ proportions (or, in the case of military, absolute counts) are the same
-# in 2014-2018 as they were in 2010. There is an argument we should be using 2020, but I think 2020 is better
+# in 2014-2018 as they were in 2010. There is an argument we should be using 2020, but I think 2010 is better
 # COVID causes general issues with the Census and the Census basically admitted they miscounted GQ in Illinois in 2020
 # see https://www.illinois.gov/news/press-release.29476.html
 
